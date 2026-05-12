@@ -3,12 +3,11 @@ build_orgmap.py
 Fetches player data for Valorandle and writes org-map.json.
 
 Sources:
-  1. vlrgg API  — team name per player (required, via VLRGG_API_URL secret)
-  2. vlrgg API  — agent picks from recent matches → auto-detect role (optional)
-  3. Liquipedia API — birthdate → age (DISABLED — awaiting API key approval)
+  1. vlrgg API  — team name + top agents per player (via /v2/stats, already called)
+  2. Liquipedia API — birthdate → age (DISABLED — awaiting API key approval)
 
 Output format (org-map.json):
-  { "playername": { "team": "Team Name", "age": 22, "role": "Duelist" }, ... }
+  { "playername": { "team": "Team Name", "role": "Duelist" } }
 
 Run by GitHub Actions weekly (see .github/workflows/update-players.yml).
 Requires: pip install httpx
@@ -19,7 +18,6 @@ import json
 import os
 import sys
 import time
-from collections import defaultdict
 
 # ── Secrets ───────────────────────────────────────────────────────────────────
 API_BASE = os.environ.get("VLRGG_API_URL", "").rstrip("/")
@@ -29,53 +27,75 @@ if not API_BASE:
     sys.exit(1)
 
 # ── Agent → Role map (all 29 VALORANT agents — updated 2026-05-12) ────────────
+# Keys are lowercase to match the vlrgg API response format.
 AGENT_ROLE = {
     # Duelists (8)
-    "Jett":       "Duelist",
-    "Reyna":      "Duelist",
-    "Phoenix":    "Duelist",
-    "Neon":       "Duelist",
-    "Iso":        "Duelist",
-    "Raze":       "Duelist",
-    "Yoru":       "Duelist",
-    "Waylay":     "Duelist",    # released 2026
+    "jett":       "Duelist",
+    "reyna":      "Duelist",
+    "phoenix":    "Duelist",
+    "neon":       "Duelist",
+    "iso":        "Duelist",
+    "raze":       "Duelist",
+    "yoru":       "Duelist",
+    "waylay":     "Duelist",    # released 2026
     # Initiators (7)
-    "Sova":       "Initiator",
-    "Fade":       "Initiator",
-    "Breach":     "Initiator",
-    "KAY/O":      "Initiator",
-    "Skye":       "Initiator",
-    "Gekko":      "Initiator",
-    "Tejo":       "Initiator",  # released early 2025
+    "sova":       "Initiator",
+    "fade":       "Initiator",
+    "breach":     "Initiator",
+    "kayo":       "Initiator",  # vlrgg omits slash: "kayo" not "kay/o"
+    "skye":       "Initiator",
+    "gekko":      "Initiator",
+    "tejo":       "Initiator",  # released early 2025
     # Controllers (7)
-    "Brimstone":  "Controller",
-    "Viper":      "Controller",
-    "Omen":       "Controller",
-    "Astra":      "Controller",
-    "Harbor":     "Controller",
-    "Clove":      "Controller",
-    "Miks":       "Controller", # released March 2026
+    "brimstone":  "Controller",
+    "viper":      "Controller",
+    "omen":       "Controller",
+    "astra":      "Controller",
+    "harbor":     "Controller",
+    "clove":      "Controller",
+    "miks":       "Controller", # released March 2026
     # Sentinels (7)
-    "Killjoy":    "Sentinel",
-    "Cypher":     "Sentinel",
-    "Sage":       "Sentinel",
-    "Chamber":    "Sentinel",
-    "Deadlock":   "Sentinel",
-    "Vyse":       "Sentinel",   # released August 2025
-    "Veto":       "Sentinel",   # released October 2025
+    "killjoy":    "Sentinel",
+    "cypher":     "Sentinel",
+    "sage":       "Sentinel",
+    "chamber":    "Sentinel",
+    "deadlock":   "Sentinel",
+    "vyse":       "Sentinel",   # released August 2025
+    "veto":       "Sentinel",   # released October 2025
 }
 
 TIMEOUT = 30
 
 
-# ── Step 1: Build team map from vlrgg stats ───────────────────────────────────
+def detect_role(agents):
+    """
+    Given a list of agent names (ordered by usage, most played first),
+    return the dominant role using positional weights (3/2/1).
+    Returns None if no known agents found.
+    """
+    weights = [3, 2, 1]
+    role_scores = {}
+    for i, agent in enumerate(agents[:3]):
+        role = AGENT_ROLE.get(agent.lower().replace("/", "").replace("-", ""))
+        if role:
+            w = weights[i] if i < len(weights) else 1
+            role_scores[role] = role_scores.get(role, 0) + w
+    if not role_scores:
+        return None
+    total = sum(role_scores.values())
+    dominant = max(role_scores, key=role_scores.get)
+    return dominant if role_scores[dominant] / total >= 0.50 else "Flex"
+
+
+# ── Step 1: Build team + role maps from vlrgg stats ───────────────────────────
 REGIONS  = ["na", "eu", "ap", "la-s", "la-n", "br", "kr", "cn"]
 TIMESPAN = "all"
 
-org_map = {}   # name.lower() → team string (interim)
-errors  = []
+org_map  = {}   # name.lower() → team string
+role_map = {}   # name.lower() → detected role string
+errors   = []
 
-print("[vlrgg] Fetching player/team data...\n")
+print("[vlrgg] Fetching player data (team + agents)...\n")
 
 for region in REGIONS:
     url = f"{API_BASE}/v2/stats?region={region}&timespan={TIMESPAN}"
@@ -87,129 +107,31 @@ for region in REGIONS:
         for seg in segments:
             player = seg.get("player", "").strip()
             org    = seg.get("org", "").strip()
-            if player and org:
-                org_map[player.lower()] = org
-                count += 1
+            if not player or not org:
+                continue
+            key = player.lower()
+            org_map[key] = org
+            agents = seg.get("agents") or []
+            role = detect_role(agents)
+            if role:
+                role_map[key] = role
+            count += 1
         print(f"  ✓ {region:6s}  {count} players")
     except Exception as e:
         print(f"  ✗ {region:6s}  {e}")
         errors.append(region)
 
-print(f"\n  Total: {len(org_map)} players from vlrgg\n")
+print(f"\n  Total: {len(org_map)} players, {len(role_map)} roles detected\n")
 
 
-# ── Step 2: Detect role from recent agent picks (vlrgg) ───────────────────────
-# Tries two endpoint patterns; skips gracefully if neither is available.
-
-role_map = {}   # name.lower() → detected role string
-
-def detect_role_from_agents(agent_counts):
-    """Given {agent_name: pick_count}, return dominant role or None."""
-    if not agent_counts:
-        return None
-    role_counts = {}
-    total = 0
-    for agent, count in agent_counts.items():
-        role = AGENT_ROLE.get(agent)
-        if role:
-            role_counts[role] = role_counts.get(role, 0) + count
-            total += count
-    if not role_counts or total == 0:
-        return None
-    dominant = max(role_counts, key=role_counts.get)
-    return dominant if role_counts[dominant] / total >= 0.60 else "Flex"
-
-print("[vlrgg] Attempting agent/match data for role detection...")
-
-# Attempt A: /v2/agents endpoint (bulk agent stats per region)
-agents_ok = False
-try:
-    sample_url = f"{API_BASE}/v2/agents?region=na&timespan=60d"
-    r = httpx.get(sample_url, timeout=TIMEOUT, follow_redirects=True)
-    if r.status_code == 200:
-        segs = r.json().get("data", {}).get("segments", [])
-        player_agents = defaultdict(dict)
-        for seg in segs:
-            pname = seg.get("player", "").strip().lower()
-            agent = seg.get("agent", "").strip()
-            rounds = seg.get("rounds_played") or seg.get("rounds") or 1
-            if pname and agent:
-                player_agents[pname][agent] = player_agents[pname].get(agent, 0) + rounds
-        # Fetch remaining regions
-        for region in [r2 for r2 in REGIONS if r2 != "na"]:
-            try:
-                r2 = httpx.get(f"{API_BASE}/v2/agents?region={region}&timespan=60d",
-                                timeout=TIMEOUT, follow_redirects=True)
-                if r2.status_code == 200:
-                    for seg in r2.json().get("data", {}).get("segments", []):
-                        pname = seg.get("player", "").strip().lower()
-                        agent = seg.get("agent", "").strip()
-                        rounds = seg.get("rounds_played") or seg.get("rounds") or 1
-                        if pname and agent:
-                            player_agents[pname][agent] = player_agents[pname].get(agent, 0) + rounds
-            except Exception:
-                pass
-        for pname, acounts in player_agents.items():
-            detected = detect_role_from_agents(acounts)
-            if detected:
-                role_map[pname] = detected
-        agents_ok = True
-        print(f"  ✓ /v2/agents  — detected roles for {len(role_map)} players")
-    else:
-        print(f"  ✗ /v2/agents returned {r.status_code}")
-except Exception as e:
-    print(f"  ✗ /v2/agents not available ({e})")
-
-# Attempt B: /v2/player?name=<name> per player (slower fallback)
-if not agents_ok and org_map:
-    print("  Trying /v2/player?name=<player> per player...")
-    sample = next(iter(org_map))
-    try:
-        probe = httpx.get(f"{API_BASE}/v2/player?name={sample}",
-                          timeout=TIMEOUT, follow_redirects=True)
-        pdata = probe.json().get("data", {}) if probe.status_code == 200 else {}
-        has_agents = bool(pdata.get("agents") or pdata.get("top_agents"))
-        if has_agents:
-            print(f"  ✓ /v2/player supports agents — fetching all {len(org_map)} players...")
-            for pname in list(org_map.keys()):
-                try:
-                    pr = httpx.get(f"{API_BASE}/v2/player?name={pname}",
-                                   timeout=15, follow_redirects=True)
-                    if pr.status_code == 200:
-                        pd = pr.json().get("data", {})
-                        agents_raw = pd.get("agents") or pd.get("top_agents") or []
-                        acounts = {}
-                        for a in agents_raw:
-                            aname = a.get("agent") or a.get("name", "")
-                            rounds = a.get("rounds_played") or a.get("rounds") or a.get("games") or 1
-                            if aname:
-                                acounts[aname] = rounds
-                        detected = detect_role_from_agents(acounts)
-                        if detected:
-                            role_map[pname] = detected
-                    time.sleep(0.5)
-                except Exception:
-                    pass
-            print(f"  ✓ Detected roles for {len(role_map)} players via /v2/player")
-        else:
-            print("  ✗ /v2/player has no agent data — role detection skipped")
-    except Exception as e:
-        print(f"  ✗ /v2/player not available ({e}) — role detection skipped")
-
-if not role_map:
-    print("  Role detection skipped — roles remain as defined in players.js\n")
-else:
-    print()
-
-
-# ── Step 3: Liquipedia API — birthdate → age ──────────────────────────────────
+# ── Step 2: Liquipedia API — birthdate → age ──────────────────────────────────
 # DISABLED: awaiting Liquipedia API key approval.
 # To enable: uncomment this block and ensure LIQUIPEDIA_API_KEY secret is set.
 #
+# from datetime import date
 # age_map = {}
 # LIQUIPEDIA_KEY = os.environ.get("LIQUIPEDIA_API_KEY", "").strip()
 # if LIQUIPEDIA_KEY:
-#     from datetime import date
 #     print("[Liquipedia] Fetching player birthdates...")
 #     today = date.today()
 #     liq_headers = {
@@ -231,8 +153,7 @@ else:
 #             )
 #             result = r.json().get("result", [])
 #             if result and result[0].get("birthdate"):
-#                 from datetime import date as _d
-#                 bd = _d.fromisoformat(result[0]["birthdate"])
+#                 bd = date.fromisoformat(result[0]["birthdate"])
 #                 age = today.year - bd.year - ((today.month, today.day) < (bd.month, bd.day))
 #                 age_map[pname] = age
 #         except Exception as e:
@@ -247,7 +168,7 @@ else:
 age_map = {}   # empty until Liquipedia block is re-enabled
 
 
-# ── Step 4: Build final player_data dict and write org-map.json ──────────────
+# ── Step 3: Build final player_data dict and write org-map.json ──────────────
 player_data = {}
 for pname, team in org_map.items():
     entry = {"team": team}
