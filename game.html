@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>AgentGuess</title>
+  <title>Valorandle</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Russo+One&family=Space+Grotesk:wght@300;400;500;600&family=Space+Mono:wght@700&display=swap" rel="stylesheet" />
@@ -375,14 +375,14 @@
 
   <header class="game-header">
     <div class="header-left">
-      <a class="back-btn" href="lobby.html" id="back-btn">← Lobby</a>
+      <a class="back-btn" href="index.html" id="back-btn">← Lobby</a>
       <div class="streak-chip" id="streak-chip" title="Sequência atual">
         <span>🔥</span><span class="streak-num" id="streak-num">0</span>
       </div>
     </div>
 
     <div class="game-title-area">
-      <div class="game-logo">AGENT<span>GUESS</span></div>
+      <div class="game-logo">VALOR<span>ANDLE</span></div>
       <div class="mode-tag" id="mode-tag">Daily Mode</div>
       <div class="league-tag" id="league-tag"></div>
     </div>
@@ -462,7 +462,7 @@
 
 <!-- Loading overlay — shown while API fetch runs -->
 <div id="loading-overlay">
-  <div class="lo-logo">AGENT<span>GUESS</span></div>
+  <div class="lo-logo">VALOR<span>ANDLE</span></div>
   <div class="lo-spinner"></div>
 </div>
 
@@ -496,7 +496,7 @@
   let t    = I18N[lang];
 
   // Per-league daily state keys
-  const DAILY_KEY_PREFIX = `agentguess_daily_${LEAGUE}_`;
+  const DAILY_KEY_PREFIX = `valorandle_daily_${LEAGUE}_`;
 
   function loadLeagueDailyState() {
     try {
@@ -519,17 +519,17 @@
   let FLIP_PENDING = false;
 
   // ── Settings ──────────────────────────────────────────
-  let hardMode   = localStorage.getItem("agentguess_hard") === "1";
-  let soundOn    = localStorage.getItem("agentguess_sound") !== "0";
+  let hardMode   = localStorage.getItem("valorandle_hard") === "1";
+  let soundOn    = localStorage.getItem("valorandle_sound") !== "0";
 
   function toggleHard() {
     hardMode = !hardMode;
-    localStorage.setItem("agentguess_hard", hardMode ? "1" : "0");
+    localStorage.setItem("valorandle_hard", hardMode ? "1" : "0");
     document.getElementById("hard-btn").classList.toggle("active", hardMode);
   }
   function toggleSound() {
     soundOn = !soundOn;
-    localStorage.setItem("agentguess_sound", soundOn ? "1" : "0");
+    localStorage.setItem("valorandle_sound", soundOn ? "1" : "0");
     document.getElementById("sound-btn").classList.toggle("active", soundOn);
   }
 
@@ -1017,7 +1017,7 @@
 
     acts.appendChild(makeBtn(t.shareBtn,"btn-action btn-share",shareDaily));
     acts.appendChild(makeBtn(lang==="pt-BR"?"Img":"Img","btn-action btn-img",shareImage));
-    acts.appendChild(makeBtn(t.backLobby,"btn-action btn-lobby",()=>{ window.location.href="lobby.html"; }));
+    acts.appendChild(makeBtn(t.backLobby,"btn-action btn-lobby",()=>{ window.location.href="index.html"; }));
   }
 
   function makeBtn(label, cls, fn) {
@@ -1064,7 +1064,7 @@
     acts.innerHTML = "";
     acts.appendChild(makeBtn(t.shareBtn,"btn-action btn-next",shareDaily));
     acts.appendChild(makeBtn(lang==="pt-BR"?"Salvar Img":"Save Img","btn-action btn-share",shareImage));
-    acts.appendChild(makeBtn(t.backLobby,"btn-action btn-lobby",()=>{ window.location.href="lobby.html"; }));
+    acts.appendChild(makeBtn(t.backLobby,"btn-action btn-lobby",()=>{ window.location.href="index.html"; }));
   }
 
   function startFreeRound() {
@@ -1172,12 +1172,12 @@
     // "agentguess" watermark
     ctx.font = "9px 'Space Mono', monospace";
     ctx.fillStyle = "#252838";
-    ctx.fillText("agentguess", PAD, H-7);
+    ctx.fillText("valorandle.com", PAD, H-7);
 
     // Download
     canvas.toBlob(blob => {
       if (navigator.share && navigator.canShare && navigator.canShare({files:[new File([blob],"result.png",{type:"image/png"})]})) {
-        navigator.share({ files:[new File([blob],"agentguess.png",{type:"image/png"})], title:"AgentGuess" })
+        navigator.share({ files:[new File([blob],"valorandle.png",{type:"image/png"})], title:"Valorandle" })
           .catch(()=>downloadBlob(blob));
       } else {
         downloadBlob(blob);
@@ -1188,7 +1188,7 @@
   function downloadBlob(blob) {
     const url = URL.createObjectURL(blob);
     const a   = document.createElement("a");
-    a.href=url; a.download=`agentguess-${getDailyDateKey()}.png`;
+    a.href=url; a.download=`valorandle-${getDailyDateKey()}.png`;
     a.click(); URL.revokeObjectURL(url);
     showToast(lang==="pt-BR"?"Imagem salva!":"Image saved!");
   }

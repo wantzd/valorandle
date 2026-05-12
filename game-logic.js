@@ -252,7 +252,7 @@ function seededRandom(seed) {
 
 function getDailyPlayers(players) {
   const dateKey = getDailyDateKey();
-  const rng = seededRandom(`agentguess-${dateKey}`);
+  const rng = seededRandom(`valorandle-${dateKey}`);
   // Fisher-Yates shuffle with seeded RNG
   const arr = [...players];
   for (let i = arr.length - 1; i > 0; i--) {
@@ -312,9 +312,9 @@ function getCookie(name) {
 // ── LocalStorage helpers (with cookie fallback for lang) ──
 
 const LS_KEYS = {
-  stats:      "agentguess_stats",
-  dailyState: "agentguess_daily_",
-  lang:       "agentguess_lang"
+  stats:      "valorandle_stats",
+  dailyState: "valorandle_daily_",
+  lang:       "valorandle_lang"
 };
 
 function loadStats() {
@@ -362,20 +362,20 @@ function loadLang() {
     const ls = localStorage.getItem(LS_KEYS.lang);
     if (ls) return ls;
   } catch {}
-  const ck = getCookie("agentguess_lang");
+  const ck = getCookie("valorandle_lang");
   if (ck) return ck;
   return "pt-BR";
 }
 
 function saveLang(lang) {
   try { localStorage.setItem(LS_KEYS.lang, lang); } catch {}
-  setCookie("agentguess_lang", lang, 365);
+  setCookie("valorandle_lang", lang, 365);
 }
 
 // Share text generator
 function generateShareText(dailyDate, roundResults, lang) {
   const emojiMap = { correct: "🟩", close: "🟨", wrong: "🟥" };
-  let text = `AgentGuess Daily ${dailyDate}\n\n`;
+  let text = `Valorandle Daily ${dailyDate}\n\n`;
   roundResults.forEach((round, i) => {
     text += `Round ${i + 1}: `;
     if (!round.won) {
@@ -387,6 +387,6 @@ function generateShareText(dailyDate, roundResults, lang) {
     }
     text += "\n";
   });
-  text += "🎮 agentguess.gg";
+  text += "🎮 valorandle.com";
   return text;
 }
