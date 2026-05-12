@@ -1,0 +1,87 @@
+RewriteEngine On
+
+# Redirecionar para HTTPS
+RewriteCond %{HTTPS} off
+RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+
+# Proteger o arquivo .htaccess
+<Files ".htaccess">
+    Order Allow,Deny
+    Deny from all
+</Files>
+
+# Evitar listagem de diretórios
+Options -Indexes
+
+# Proteger arquivos sensíveis
+<FilesMatch "\.(env|ini|log|conf)$">
+    Order Allow,Deny
+    Deny from all
+</FilesMatch>
+
+# Prevenir ataques de injeção SQL
+RewriteCond %{QUERY_STRING} union [NC,OR]
+RewriteCond %{QUERY_STRING} select [NC,OR]
+RewriteCond %{QUERY_STRING} insert [NC,OR]
+RewriteCond %{QUERY_STRING} delete [NC,OR]
+RewriteCond %{QUERY_STRING} update [NC]
+RewriteRule ^ - [F]
+
+# Prevenir ataques XSS
+<IfModule mod_headers.c>
+    Header set X-Content-Type-Options "nosniff"
+    Header set X-XSS-Protection "1; mode=block"
+    Header set X-Frame-Options "SAMEORIGIN"
+    Header set Referrer-Policy "same-origin"
+</IfModule>
+
+# Definir tipos de conteúdo
+AddType application/x-httpd-php .php
+
+# Proteger contra hotlinking — permite acesso direto e do próprio domínio
+RewriteCond %{HTTP_REFERER} !^$
+RewriteCond %{HTTP_REFERER} !^http(s)?://(www\.)?valorandle\.com [NC]
+RewriteRule \.(jpg|jpeg|png|gif|svg|webp)$ - [F]
+
+# Arquivos de erro personalizados
+ErrorDocument 404 /404.html
+ErrorDocument 500 /500.html
+
+# Limitar o tamanho do upload de arquivos
+php_value upload_max_filesize 10M
+php_value post_max_size 10M
+
+# Configurar cache de recursos estáticos
+<IfModule mod_expires.c>
+    ExpiresActive On
+    ExpiresDefault "access plus 1 month"
+    ExpiresByType image/jpeg "access plus 1 year"
+    ExpiresByType image/png "access plus 1 year"
+    ExpiresByType image/gif "access plus 1 year"
+    ExpiresByType image/svg+xml "access plus 1 year"
+    ExpiresByType text/css "access plus 1 month"
+    ExpiresByType application/javascript "access plus 1 month"
+</IfModule>
+
+# Impedir execução de arquivos PHP em diretórios de upload
+<FilesMatch "\.(php|php5|php7|phtml)$">
+    Order Allow,Deny
+    Deny from all
+</FilesMatch>
+
+# Proteção contra Directory Traversal
+RewriteCond %{REQUEST_URI} (\.\.)
+RewriteRule .* - [F]
+
+# Bloquear bots e crawlers maliciosos
+SetEnvIfNoCase User-Agent "bot|crawler|spider|robot" bad_bot
+Order Allow,Deny
+Allow from all
+Deny from env=bad_bot
+
+# Habilitar CORS para fontes e assets estáticos
+<IfModule mod_headers.c>
+    <FilesMatch "\.(ttf|otf|eot|woff|woff2|svg|json)$">
+        Header set Access-Control-Allow-Origin "*"
+    </FilesMatch>
+</IfModule>
