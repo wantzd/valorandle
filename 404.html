@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>404 — Valorandle</title>
+  <link rel="icon" type="image/svg+xml" href="/icons/favicon.svg" />
+  <link rel="icon" type="image/png" sizes="32x32" href="/icons/favicon-32.png" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      min-height: 100vh;
+      background: #08090d;
+      color: #eeeef5;
+      font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 2rem;
+      overflow: hidden;
+    }
+
+    body::before {
+      content: '';
+      position: fixed; inset: 0;
+      background-image: radial-gradient(circle, #1c1f2e 1px, transparent 1px);
+      background-size: 28px 28px;
+      opacity: 0.45;
+      pointer-events: none;
+    }
+
+    body::after {
+      content: '';
+      position: fixed;
+      top: -200px; left: 50%;
+      transform: translateX(-50%);
+      width: 700px; height: 500px;
+      background: radial-gradient(ellipse, rgba(255,70,85,0.06) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .wrap {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0;
+    }
+
+    .big-code {
+      font-size: clamp(7rem, 28vw, 14rem);
+      font-weight: 900;
+      line-height: 1;
+      color: #FF4655;
+      opacity: 0.12;
+      letter-spacing: -0.04em;
+      user-select: none;
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+    }
+
+    .content {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1rem;
+      padding: 4rem 0 2rem;
+    }
+
+    .wordmark {
+      font-size: clamp(1.6rem, 5vw, 2.8rem);
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: 0.02em;
+      color: #eeeef5;
+    }
+    .wordmark span { color: #FF4655; }
+
+    .divider {
+      width: 40px;
+      height: 2px;
+      background: #FF4655;
+      opacity: 0.5;
+      border-radius: 2px;
+    }
+
+    .code-label {
+      font-size: 0.65rem;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: #FF4655;
+      opacity: 0.8;
+      font-family: 'Courier New', monospace;
+    }
+
+    .msg {
+      font-size: clamp(1.1rem, 3vw, 1.4rem);
+      font-weight: 600;
+      color: #eeeef5;
+    }
+
+    .sub {
+      font-size: 0.85rem;
+      color: #50536a;
+      max-width: 320px;
+      line-height: 1.6;
+    }
+
+    .back-btn {
+      display: inline-block;
+      margin-top: 0.5rem;
+      background: #FF4655;
+      color: #fff;
+      text-decoration: none;
+      padding: 0.7rem 1.75rem;
+      border-radius: 4px;
+      font-size: 0.82rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      transition: background 0.2s, box-shadow 0.2s;
+    }
+    .back-btn:hover {
+      background: #e03040;
+      box-shadow: 0 0 20px rgba(255,70,85,0.35);
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(16px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .content { animation: fadeUp 0.5s ease both; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="big-code">404</div>
+    <div class="content">
+      <div class="wordmark">VALOR<span>ANDLE</span></div>
+      <div class="divider"></div>
+      <span class="code-label">Erro 404</span>
+      <p class="msg" id="msg">Página não encontrada</p>
+      <p class="sub" id="sub">Esta página não existe ou foi removida. Verifique o endereço e tente novamente.</p>
+      <a href="/" class="back-btn" id="back">← Voltar ao Lobby</a>
+    </div>
+  </div>
+
+  <script>
+    try {
+      const lang = localStorage.getItem("valorandle_lang") || "";
+      const nav  = lang || (navigator.language || "").toLowerCase();
+      const isEN = !nav.startsWith("pt");
+      if (isEN) {
+        document.documentElement.lang = "en";
+        document.querySelector(".code-label").textContent = "Error 404";
+        document.getElementById("msg").textContent  = "Page not found";
+        document.getElementById("sub").textContent  = "This page doesn't exist or has been removed. Check the address and try again.";
+        document.getElementById("back").textContent = "← Back to Lobby";
+      }
+    } catch(e) {}
+  </script>
+</body>
+</html>
