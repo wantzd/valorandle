@@ -5,7 +5,7 @@ Fetches player data for Valorandle and writes org-map.json.
 Sources:
   1. vlrgg API  — team name per player (required, via VLRGG_API_URL secret)
   2. vlrgg API  — agent picks from recent matches → auto-detect role (optional)
-  3. Liquipedia API — birthdate → age (optional, via LIQUIPEDIA_API_KEY secret)
+  3. Liquipedia API — birthdate → age (DISABLED — awaiting API key approval)
 
 Output format (org-map.json):
   { "playername": { "team": "Team Name", "age": 22, "role": "Duelist" }, ... }
@@ -19,31 +19,50 @@ import json
 import os
 import sys
 import time
-from datetime import date
+from collections import defaultdict
 
 # ── Secrets ───────────────────────────────────────────────────────────────────
-API_BASE        = os.environ.get("VLRGG_API_URL", "").rstrip("/")
-LIQUIPEDIA_KEY  = os.environ.get("LIQUIPEDIA_API_KEY", "").strip()
+API_BASE = os.environ.get("VLRGG_API_URL", "").rstrip("/")
 
 if not API_BASE:
     print("ERROR: VLRGG_API_URL environment variable is not set.")
     sys.exit(1)
 
-# ── Agent → Role map (all current VALORANT agents) ────────────────────────────
+# ── Agent → Role map (all 29 VALORANT agents — updated 2026-05-12) ────────────
 AGENT_ROLE = {
-    "Jett":       "Duelist",    "Reyna":      "Duelist",
-    "Phoenix":    "Duelist",    "Neon":       "Duelist",
-    "Iso":        "Duelist",    "Raze":       "Duelist",
+    # Duelists (8)
+    "Jett":       "Duelist",
+    "Reyna":      "Duelist",
+    "Phoenix":    "Duelist",
+    "Neon":       "Duelist",
+    "Iso":        "Duelist",
+    "Raze":       "Duelist",
     "Yoru":       "Duelist",
-    "Sova":       "Initiator",  "Fade":       "Initiator",
-    "Breach":     "Initiator",  "KAY/O":      "Initiator",
-    "Skye":       "Initiator",  "Gekko":      "Initiator",
-    "Brimstone":  "Controller", "Viper":      "Controller",
-    "Omen":       "Controller", "Astra":      "Controller",
-    "Harbor":     "Controller", "Clove":      "Controller",
-    "Killjoy":    "Sentinel",   "Cypher":     "Sentinel",
-    "Sage":       "Sentinel",   "Chamber":    "Sentinel",
-    "Deadlock":   "Sentinel",   "Vyse":       "Sentinel",
+    "Waylay":     "Duelist",    # released 2026
+    # Initiators (7)
+    "Sova":       "Initiator",
+    "Fade":       "Initiator",
+    "Breach":     "Initiator",
+    "KAY/O":      "Initiator",
+    "Skye":       "Initiator",
+    "Gekko":      "Initiator",
+    "Tejo":       "Initiator",  # released early 2025
+    # Controllers (7)
+    "Brimstone":  "Controller",
+    "Viper":      "Controller",
+    "Omen":       "Controller",
+    "Astra":      "Controller",
+    "Harbor":     "Controller",
+    "Clove":      "Controller",
+    "Miks":       "Controller", # released March 2026
+    # Sentinels (7)
+    "Killjoy":    "Sentinel",
+    "Cypher":     "Sentinel",
+    "Sage":       "Sentinel",
+    "Chamber":    "Sentinel",
+    "Deadlock":   "Sentinel",
+    "Vyse":       "Sentinel",   # released August 2025
+    "Veto":       "Sentinel",   # released October 2025
 }
 
 TIMEOUT = 30
@@ -56,7 +75,7 @@ TIMESPAN = "all"
 org_map = {}   # name.lower() → team string (interim)
 errors  = []
 
-print(f"[vlrgg] Fetching player/team data...\n")
+print("[vlrgg] Fetching player/team data...\n")
 
 for region in REGIONS:
     url = f"{API_BASE}/v2/stats?region={region}&timespan={TIMESPAN}"
@@ -80,7 +99,7 @@ print(f"\n  Total: {len(org_map)} players from vlrgg\n")
 
 
 # ── Step 2: Detect role from recent agent picks (vlrgg) ───────────────────────
-# Try common endpoint patterns — skip gracefully if unavailable.
+# Tries two endpoint patterns; skips gracefully if neither is available.
 
 role_map = {}   # name.lower() → detected role string
 
@@ -98,73 +117,84 @@ def detect_role_from_agents(agent_counts):
     if not role_counts or total == 0:
         return None
     dominant = max(role_counts, key=role_counts.get)
-    if role_counts[dominant] / total >= 0.60:
-        return dominant
-    return "Flex"
+    return dominant if role_counts[dominant] / total >= 0.60 else "Flex"
 
 print("[vlrgg] Attempting agent/match data for role detection...")
 
-# Try /v2/agents endpoint (player agent stats summary)
+# Attempt A: /v2/agents endpoint (bulk agent stats per region)
 agents_ok = False
 try:
     sample_url = f"{API_BASE}/v2/agents?region=na&timespan=60d"
     r = httpx.get(sample_url, timeout=TIMEOUT, follow_redirects=True)
     if r.status_code == 200:
         segs = r.json().get("data", {}).get("segments", [])
-        # Group by player, collect agent + rounds played
-        from collections import defaultdict
         player_agents = defaultdict(dict)
         for seg in segs:
             pname = seg.get("player", "").strip().lower()
             agent = seg.get("agent", "").strip()
-            rounds = seg.get("rounds_played", 0) or seg.get("rounds", 0) or 1
+            rounds = seg.get("rounds_played") or seg.get("rounds") or 1
             if pname and agent:
                 player_agents[pname][agent] = player_agents[pname].get(agent, 0) + rounds
+        # Fetch remaining regions
+        for region in [r2 for r2 in REGIONS if r2 != "na"]:
+            try:
+                r2 = httpx.get(f"{API_BASE}/v2/agents?region={region}&timespan=60d",
+                                timeout=TIMEOUT, follow_redirects=True)
+                if r2.status_code == 200:
+                    for seg in r2.json().get("data", {}).get("segments", []):
+                        pname = seg.get("player", "").strip().lower()
+                        agent = seg.get("agent", "").strip()
+                        rounds = seg.get("rounds_played") or seg.get("rounds") or 1
+                        if pname and agent:
+                            player_agents[pname][agent] = player_agents[pname].get(agent, 0) + rounds
+            except Exception:
+                pass
         for pname, acounts in player_agents.items():
             detected = detect_role_from_agents(acounts)
             if detected:
                 role_map[pname] = detected
         agents_ok = True
-        print(f"  ✓ /v2/agents  detected roles for {len(role_map)} players")
+        print(f"  ✓ /v2/agents  — detected roles for {len(role_map)} players")
+    else:
+        print(f"  ✗ /v2/agents returned {r.status_code}")
 except Exception as e:
     print(f"  ✗ /v2/agents not available ({e})")
 
-# Fallback: try /v2/player?name=<name> for individual players
+# Attempt B: /v2/player?name=<name> per player (slower fallback)
 if not agents_ok and org_map:
-    print("  Trying /v2/player?name=<player> for a sample...")
-    sample_player = next(iter(org_map))
+    print("  Trying /v2/player?name=<player> per player...")
+    sample = next(iter(org_map))
     try:
-        r = httpx.get(f"{API_BASE}/v2/player?name={sample_player}", timeout=TIMEOUT, follow_redirects=True)
-        if r.status_code == 200:
-            data = r.json().get("data", {})
-            # Check if response contains agent breakdown
-            if data.get("agents") or data.get("top_agents"):
-                print("  ✓ /v2/player supports agents — fetching all players (slow)...")
-                for pname in list(org_map.keys()):
-                    try:
-                        pr = httpx.get(f"{API_BASE}/v2/player?name={pname}", timeout=15, follow_redirects=True)
-                        if pr.status_code == 200:
-                            pdata = pr.json().get("data", {})
-                            agents_raw = pdata.get("agents") or pdata.get("top_agents") or []
-                            acounts = {}
-                            for a in agents_raw:
-                                aname = a.get("agent") or a.get("name", "")
-                                rounds = a.get("rounds_played") or a.get("rounds") or a.get("games") or 1
-                                if aname:
-                                    acounts[aname] = rounds
-                            detected = detect_role_from_agents(acounts)
-                            if detected:
-                                role_map[pname] = detected
-                        time.sleep(0.5)
-                    except Exception:
-                        pass
-                print(f"  ✓ Detected roles for {len(role_map)} players via /v2/player")
-            else:
-                print("  ✗ /v2/player response has no agent data — skipping role detection")
+        probe = httpx.get(f"{API_BASE}/v2/player?name={sample}",
+                          timeout=TIMEOUT, follow_redirects=True)
+        pdata = probe.json().get("data", {}) if probe.status_code == 200 else {}
+        has_agents = bool(pdata.get("agents") or pdata.get("top_agents"))
+        if has_agents:
+            print(f"  ✓ /v2/player supports agents — fetching all {len(org_map)} players...")
+            for pname in list(org_map.keys()):
+                try:
+                    pr = httpx.get(f"{API_BASE}/v2/player?name={pname}",
+                                   timeout=15, follow_redirects=True)
+                    if pr.status_code == 200:
+                        pd = pr.json().get("data", {})
+                        agents_raw = pd.get("agents") or pd.get("top_agents") or []
+                        acounts = {}
+                        for a in agents_raw:
+                            aname = a.get("agent") or a.get("name", "")
+                            rounds = a.get("rounds_played") or a.get("rounds") or a.get("games") or 1
+                            if aname:
+                                acounts[aname] = rounds
+                        detected = detect_role_from_agents(acounts)
+                        if detected:
+                            role_map[pname] = detected
+                    time.sleep(0.5)
+                except Exception:
+                    pass
+            print(f"  ✓ Detected roles for {len(role_map)} players via /v2/player")
         else:
-            print(f"  ✗ /v2/player returned {r.status_code} — skipping role detection")
+            print("  ✗ /v2/player has no agent data — role detection skipped")
     except Exception as e:
-        print(f"  ✗ /v2/player not available ({e}) — skipping role detection")
+        print(f"  ✗ /v2/player not available ({e}) — role detection skipped")
 
 if not role_map:
     print("  Role detection skipped — roles remain as defined in players.js\n")
@@ -172,48 +202,52 @@ else:
     print()
 
 
-# ── Step 3: Fetch birthdate → age from Liquipedia API ─────────────────────────
-age_map = {}   # name.lower() → int age
+# ── Step 3: Liquipedia API — birthdate → age ──────────────────────────────────
+# DISABLED: awaiting Liquipedia API key approval.
+# To enable: uncomment this block and ensure LIQUIPEDIA_API_KEY secret is set.
+#
+# age_map = {}
+# LIQUIPEDIA_KEY = os.environ.get("LIQUIPEDIA_API_KEY", "").strip()
+# if LIQUIPEDIA_KEY:
+#     from datetime import date
+#     print("[Liquipedia] Fetching player birthdates...")
+#     today = date.today()
+#     liq_headers = {
+#         "Authorization": f"Apikey {LIQUIPEDIA_KEY}",
+#         "Accept":        "application/json",
+#     }
+#     liq_errors = 0
+#     for pname in list(org_map.keys()):
+#         page = pname.title()
+#         try:
+#             r = httpx.get(
+#                 "https://api.liquipedia.net/api/v3/player",
+#                 params={"wiki": "valorant",
+#                         "conditions": f"[[pagename::{page}]]",
+#                         "fields": "id,birthdate"},
+#                 headers=liq_headers,
+#                 timeout=15,
+#                 follow_redirects=True,
+#             )
+#             result = r.json().get("result", [])
+#             if result and result[0].get("birthdate"):
+#                 from datetime import date as _d
+#                 bd = _d.fromisoformat(result[0]["birthdate"])
+#                 age = today.year - bd.year - ((today.month, today.day) < (bd.month, bd.day))
+#                 age_map[pname] = age
+#         except Exception as e:
+#             liq_errors += 1
+#             if liq_errors <= 3:
+#                 print(f"  ✗ Liquipedia miss: {pname} — {e}")
+#         time.sleep(1.1)
+#     print(f"  ✓ Got age for {len(age_map)} players ({liq_errors} misses)\n")
+# else:
+#     print("[Liquipedia] LIQUIPEDIA_API_KEY not set — skipping\n")
 
-if LIQUIPEDIA_KEY:
-    print("[Liquipedia] Fetching player birthdates...")
-    today = date.today()
-    liq_headers = {
-        "Authorization": f"Apikey {LIQUIPEDIA_KEY}",
-        "Accept":        "application/json",
-    }
-    liq_errors = 0
-
-    for pname in list(org_map.keys()):
-        # Liquipedia pagenames use title-case (e.g., "aspas" → "Aspas")
-        page = pname.title()
-        try:
-            r = httpx.get(
-                "https://api.liquipedia.net/api/v3/player",
-                params={"wiki": "valorant",
-                        "conditions": f"[[pagename::{page}]]",
-                        "fields": "id,birthdate"},
-                headers=liq_headers,
-                timeout=15,
-                follow_redirects=True,
-            )
-            result = r.json().get("result", [])
-            if result and result[0].get("birthdate"):
-                bd = date.fromisoformat(result[0]["birthdate"])
-                age = today.year - bd.year - ((today.month, today.day) < (bd.month, bd.day))
-                age_map[pname] = age
-        except Exception as e:
-            liq_errors += 1
-            if liq_errors <= 3:
-                print(f"  ✗ Liquipedia miss: {pname} — {e}")
-        time.sleep(1.1)   # respect 1 req/s rate limit
-
-    print(f"  ✓ Got age for {len(age_map)} players ({liq_errors} misses)\n")
-else:
-    print("[Liquipedia] LIQUIPEDIA_API_KEY not set — ages remain as defined in players.js\n")
+age_map = {}   # empty until Liquipedia block is re-enabled
 
 
-# ── Step 4: Build final player_data dict and write JSON ──────────────────────
+# ── Step 4: Build final player_data dict and write org-map.json ──────────────
 player_data = {}
 for pname, team in org_map.items():
     entry = {"team": team}
