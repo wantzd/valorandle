@@ -1,60 +1,87 @@
 RewriteEngine On
 
-# Redirecionar para HTTPS
+# ── HTTPS redirect ────────────────────────────────────────────────────────────
 RewriteCond %{HTTPS} off
 RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
 
-# lobby.html não existe mais — redirecionar para a raiz
+# ── Redirects ─────────────────────────────────────────────────────────────────
 Redirect 301 /lobby.html /
 
-# Proteger o arquivo .htaccess
+# ── Directory security ────────────────────────────────────────────────────────
+Options -Indexes -MultiViews
+
+# Protect .htaccess itself
 <Files ".htaccess">
-    Order Allow,Deny
-    Deny from all
+    Require all denied
 </Files>
 
-# Evitar listagem de diretórios
-Options -Indexes
-
-# Proteger arquivos sensíveis
-<FilesMatch "\.(env|ini|log|conf)$">
-    Order Allow,Deny
-    Deny from all
+# Block sensitive file types
+<FilesMatch "\.(env|ini|log|conf|bak|sql|tar|gz|zip)$">
+    Require all denied
 </FilesMatch>
 
-# Prevenir ataques de injeção SQL
-RewriteCond %{QUERY_STRING} union [NC,OR]
-RewriteCond %{QUERY_STRING} select [NC,OR]
-RewriteCond %{QUERY_STRING} insert [NC,OR]
-RewriteCond %{QUERY_STRING} delete [NC,OR]
-RewriteCond %{QUERY_STRING} update [NC]
-RewriteRule ^ - [F]
+# Block PHP execution — this is a static site, no PHP needed
+<FilesMatch "\.(php|php3|php4|php5|php7|phtml)$">
+    Require all denied
+</FilesMatch>
 
-# Prevenir ataques XSS
+# ── Security headers ──────────────────────────────────────────────────────────
 <IfModule mod_headers.c>
-    Header set X-Content-Type-Options "nosniff"
-    Header set X-XSS-Protection "1; mode=block"
-    Header set X-Frame-Options "SAMEORIGIN"
-    Header set Referrer-Policy "same-origin"
+    # Force HTTPS for 1 year (HSTS)
+    Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains"
+
+    # Prevent MIME sniffing
+    Header always set X-Content-Type-Options "nosniff"
+
+    # Block clickjacking — standalone app, no iframe embedding needed
+    Header always set X-Frame-Options "DENY"
+
+    # Legacy XSS filter (for older browsers)
+    Header always set X-XSS-Protection "1; mode=block"
+
+    # Referrer: send origin only on cross-origin requests
+    Header always set Referrer-Policy "strict-origin-when-cross-origin"
+
+    # Disable cross-domain Flash/PDF policies
+    Header always set X-Permitted-Cross-Domain-Policies "none"
+
+    # Disable browser APIs this site doesn't use
+    Header always set Permissions-Policy "camera=(), microphone=(), geolocation=(), payment=(), usb=(), bluetooth=(), gyroscope=(), accelerometer=()"
+
+    # Content Security Policy
+    # Note: unsafe-inline is required because all JS and CSS are inline in this project.
+    # frame-ancestors 'none' replaces X-Frame-Options for modern browsers.
+    Header always set Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdn.jsdelivr.net; font-src 'self' https://fonts.gstatic.com https://cdn.jsdelivr.net; img-src 'self' data:; connect-src 'self'; frame-ancestors 'none'; base-uri 'self'; form-action 'self'; object-src 'none';"
 </IfModule>
 
-# Definir tipos de conteúdo
-AddType application/x-httpd-php .php
+# ── Directory traversal protection ───────────────────────────────────────────
+RewriteCond %{REQUEST_URI} \.\.
+RewriteRule .* - [F,L]
 
-# Proteger contra hotlinking — permite acesso direto e do próprio domínio
+# ── Hotlinking protection ─────────────────────────────────────────────────────
+# Allow: empty referer (direct/browser bar access) and valorandle.com itself
 RewriteCond %{HTTP_REFERER} !^$
-RewriteCond %{HTTP_REFERER} !^http(s)?://(www\.)?valorandle\.com [NC]
-RewriteRule \.(jpg|jpeg|png|gif|svg|webp)$ - [F]
+RewriteCond %{HTTP_REFERER} !^https?://(www\.)?valorandle\.com [NC]
+RewriteRule \.(jpg|jpeg|png|gif|svg|webp)$ - [F,L]
 
-# Arquivos de erro personalizados
+# ── Malicious bot blocking ────────────────────────────────────────────────────
+# Targets known scrapers and security scanners.
+# Does NOT block search engines (Googlebot, Bingbot, DuckDuckBot, etc.)
+SetEnvIfNoCase User-Agent "AhrefsBot|SemrushBot|DotBot|BLEXBot|MJ12bot|DataForSeoBot|MauiBot|PetalBot|sqlmap|nikto|masscan|zgrab|nessus|nuclei" bad_bot
+<RequireAll>
+    Require all granted
+    Require not env bad_bot
+</RequireAll>
+
+# ── Error pages ───────────────────────────────────────────────────────────────
+ErrorDocument 400 /404.html
+ErrorDocument 403 /404.html
 ErrorDocument 404 /404.html
 ErrorDocument 500 /500.html
+ErrorDocument 502 /500.html
+ErrorDocument 503 /500.html
 
-# Limitar o tamanho do upload de arquivos
-php_value upload_max_filesize 10M
-php_value post_max_size 10M
-
-# HTML nunca cacheado — usuário sempre recebe a versão mais recente
+# ── Cache: HTML never cached, assets cached long-term ────────────────────────
 <IfModule mod_headers.c>
     <FilesMatch "\.(html|htm)$">
         Header set Cache-Control "no-cache, no-store, must-revalidate"
@@ -63,39 +90,27 @@ php_value post_max_size 10M
     </FilesMatch>
 </IfModule>
 
-# Cache longo para assets estáticos (imagens, CSS, JS)
 <IfModule mod_expires.c>
     ExpiresActive On
-    ExpiresDefault "access plus 1 week"
-    ExpiresByType image/jpeg "access plus 1 year"
-    ExpiresByType image/png "access plus 1 year"
-    ExpiresByType image/gif "access plus 1 year"
-    ExpiresByType image/svg+xml "access plus 1 year"
-    ExpiresByType text/css "access plus 1 month"
-    ExpiresByType application/javascript "access plus 1 month"
-    ExpiresByType application/json "access plus 1 week"
-    ExpiresByType text/html "access plus 0 seconds"
+    ExpiresDefault                          "access plus 1 week"
+    ExpiresByType text/html                 "access plus 0 seconds"
+    ExpiresByType image/jpeg                "access plus 1 year"
+    ExpiresByType image/png                 "access plus 1 year"
+    ExpiresByType image/gif                 "access plus 1 year"
+    ExpiresByType image/svg+xml             "access plus 1 year"
+    ExpiresByType image/webp                "access plus 1 year"
+    ExpiresByType image/x-icon              "access plus 1 year"
+    ExpiresByType font/woff2                "access plus 1 year"
+    ExpiresByType font/woff                 "access plus 1 year"
+    ExpiresByType text/css                  "access plus 1 month"
+    ExpiresByType application/javascript    "access plus 1 month"
+    ExpiresByType application/json          "access plus 1 week"
+    ExpiresByType application/manifest+json "access plus 1 week"
 </IfModule>
 
-# Impedir execução de arquivos PHP em diretórios de upload
-<FilesMatch "\.(php|php5|php7|phtml)$">
-    Order Allow,Deny
-    Deny from all
-</FilesMatch>
-
-# Proteção contra Directory Traversal
-RewriteCond %{REQUEST_URI} (\.\.)
-RewriteRule .* - [F]
-
-# Bloquear bots e crawlers maliciosos
-SetEnvIfNoCase User-Agent "bot|crawler|spider|robot" bad_bot
-Order Allow,Deny
-Allow from all
-Deny from env=bad_bot
-
-# Habilitar CORS para fontes e assets estáticos
+# ── CORS for fonts and manifest ───────────────────────────────────────────────
 <IfModule mod_headers.c>
-    <FilesMatch "\.(ttf|otf|eot|woff|woff2|svg|json)$">
+    <FilesMatch "\.(ttf|otf|eot|woff|woff2|json)$">
         Header set Access-Control-Allow-Origin "*"
     </FilesMatch>
 </IfModule>
