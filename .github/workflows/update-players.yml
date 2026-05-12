@@ -29,8 +29,9 @@ jobs:
       - name: Upload org-map.json to Hostinger via FTP
         run: |
           sudo apt-get install -y lftp
-          lftp -u "${{ secrets.FTP_USER }},${{ secrets.FTP_PASS }}" \
+          lftp -p 21 -u "${{ secrets.FTP_USER }},${{ secrets.FTP_PASS }}" \
             -e "set ftp:ssl-allow no; \
+                set net:timeout 30; \
                 put org-map.json -o ${{ secrets.FTP_PATH }}/org-map.json; \
                 bye" \
             ${{ secrets.FTP_HOST }}
