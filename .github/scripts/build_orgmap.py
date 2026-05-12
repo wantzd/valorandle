@@ -3,8 +3,10 @@ build_orgmap.py
 Fetches player data for Valorandle and writes org-map.json.
 
 Sources:
-  1. vlrgg API  — team name + top agents per player (via /v2/stats, already called)
-  2. Liquipedia API — birthdate → age (DISABLED — awaiting API key approval)
+  1. vlrgg /v2/stats — team name per player + fallback agents (all-time top 3)
+  2. vlrgg /v2/match?q=results + /v2/match/details — agent picks from last 5 VCT
+     matches per player (more accurate than all-time top agents)
+  3. Liquipedia API — birthdate → age (DISABLED — awaiting API key approval)
 
 Output format (org-map.json):
   { "playername": { "team": "Team Name", "role": "Duelist" } }
@@ -18,6 +20,7 @@ import json
 import os
 import sys
 import time
+from collections import defaultdict
 
 # ── Secrets ───────────────────────────────────────────────────────────────────
 API_BASE = os.environ.get("VLRGG_API_URL", "").rstrip("/")
@@ -27,7 +30,7 @@ if not API_BASE:
     sys.exit(1)
 
 # ── Agent → Role map (all 29 VALORANT agents — updated 2026-05-12) ────────────
-# Keys are lowercase to match the vlrgg API response format.
+# Keys lowercase to match vlrgg API format.
 AGENT_ROLE = {
     # Duelists (8)
     "jett":       "Duelist",
@@ -42,7 +45,8 @@ AGENT_ROLE = {
     "sova":       "Initiator",
     "fade":       "Initiator",
     "breach":     "Initiator",
-    "kayo":       "Initiator",  # vlrgg omits slash: "kayo" not "kay/o"
+    "kayo":       "Initiator",  # "KAY/O" normalized
+    "kay/o":      "Initiator",  # match details use title-case with slash
     "skye":       "Initiator",
     "gekko":      "Initiator",
     "tejo":       "Initiator",  # released early 2025
@@ -64,38 +68,45 @@ AGENT_ROLE = {
     "veto":       "Sentinel",   # released October 2025
 }
 
-TIMEOUT = 30
+TIMEOUT         = 30
+RESULTS_PAGES   = 2     # pages of recent results to scan (50 matches/page)
+MAX_MATCHES     = 5     # max recent VCT matches per player for role detection
+VCT_KEYWORDS    = ["VCT 2026", "VCT 2025"]  # tournament names to filter
 
 
-def detect_role(agents):
+def agent_to_role(agent_name):
+    """Normalize agent name and look up role. Returns None if unknown."""
+    return AGENT_ROLE.get(agent_name.lower())
+
+
+def detect_role(agent_list):
     """
-    Given a list of agent names (ordered by usage, most played first),
-    return the dominant role using positional weights (3/2/1).
+    Given a list of agents (ordered by recency/frequency), return dominant role.
+    Uses equal weighting — intended for recent match agent lists.
     Returns None if no known agents found.
     """
-    weights = [3, 2, 1]
-    role_scores = {}
-    for i, agent in enumerate(agents[:3]):
-        role = AGENT_ROLE.get(agent.lower().replace("/", "").replace("-", ""))
+    role_counts = defaultdict(int)
+    for agent in agent_list:
+        role = agent_to_role(agent)
         if role:
-            w = weights[i] if i < len(weights) else 1
-            role_scores[role] = role_scores.get(role, 0) + w
-    if not role_scores:
+            role_counts[role] += 1
+    if not role_counts:
         return None
-    total = sum(role_scores.values())
-    dominant = max(role_scores, key=role_scores.get)
-    return dominant if role_scores[dominant] / total >= 0.50 else "Flex"
+    total = sum(role_counts.values())
+    dominant = max(role_counts, key=role_counts.get)
+    return dominant if role_counts[dominant] / total >= 0.50 else "Flex"
 
 
-# ── Step 1: Build team + role maps from vlrgg stats ───────────────────────────
+# ── Step 1: Build team map + fallback agents from vlrgg stats ─────────────────
 REGIONS  = ["na", "eu", "ap", "la-s", "la-n", "br", "kr", "cn"]
 TIMESPAN = "all"
 
-org_map  = {}   # name.lower() → team string
-role_map = {}   # name.lower() → detected role string
-errors   = []
+org_map        = {}   # name.lower() → team string
+fallback_agents = {}  # name.lower() → [agent, ...] from all-time top 3
 
-print("[vlrgg] Fetching player data (team + agents)...\n")
+errors = []
+
+print("[vlrgg] Fetching player data (team + fallback agents)...\n")
 
 for region in REGIONS:
     url = f"{API_BASE}/v2/stats?region={region}&timespan={TIMESPAN}"
@@ -112,19 +123,109 @@ for region in REGIONS:
             key = player.lower()
             org_map[key] = org
             agents = seg.get("agents") or []
-            role = detect_role(agents)
-            if role:
-                role_map[key] = role
+            if agents:
+                fallback_agents[key] = agents
             count += 1
         print(f"  ✓ {region:6s}  {count} players")
     except Exception as e:
         print(f"  ✗ {region:6s}  {e}")
         errors.append(region)
 
-print(f"\n  Total: {len(org_map)} players, {len(role_map)} roles detected\n")
+print(f"\n  Total: {len(org_map)} players\n")
 
 
-# ── Step 2: Liquipedia API — birthdate → age ──────────────────────────────────
+# ── Step 2: Build recent agent map from last VCT match results ────────────────
+# player.lower() → list of agents played (across last MAX_MATCHES VCT matches)
+
+recent_agents = defaultdict(list)   # name.lower() → [agent, agent, ...]
+match_count_per_player = defaultdict(int)
+
+print(f"[vlrgg] Fetching recent VCT match results ({RESULTS_PAGES} pages)...")
+
+match_ids = []
+for page in range(1, RESULTS_PAGES + 1):
+    try:
+        r = httpx.get(
+            f"{API_BASE}/v2/match",
+            params={"q": "results", "num_pages": 1, "from_page": page},
+            timeout=TIMEOUT,
+            follow_redirects=True,
+        )
+        r.raise_for_status()
+        results = r.json().get("data", {}).get("segments", [])
+        for match in results:
+            name = match.get("tournament_name", "")
+            page_path = match.get("match_page", "")
+            is_vct = any(kw in name for kw in VCT_KEYWORDS)
+            if is_vct and page_path:
+                mid = page_path.strip("/").split("/")[0]
+                if mid.isdigit():
+                    match_ids.append(mid)
+        print(f"  Page {page}: {len(results)} results, {len(match_ids)} VCT so far")
+    except Exception as e:
+        print(f"  ✗ Results page {page}: {e}")
+
+match_ids = list(dict.fromkeys(match_ids))   # deduplicate, preserve order
+print(f"\n  Fetching details for {len(match_ids)} VCT matches...\n")
+
+for mid in match_ids:
+    try:
+        r = httpx.get(
+            f"{API_BASE}/v2/match/details",
+            params={"match_id": mid},
+            timeout=TIMEOUT,
+            follow_redirects=True,
+        )
+        r.raise_for_status()
+        seg = (r.json().get("data", {}).get("segments") or [{}])[0]
+        maps = seg.get("maps") or []
+
+        # Each map has players.team1 / players.team2 with name + agent
+        for game_map in maps:
+            players_data = game_map.get("players") or {}
+            for side in ("team1", "team2"):
+                for p in players_data.get(side) or []:
+                    pname = (p.get("name") or "").strip().lower()
+                    agent = (p.get("agent") or "").strip()
+                    if not pname or not agent:
+                        continue
+                    # Only keep last MAX_MATCHES matches worth of agents
+                    if match_count_per_player[pname] < MAX_MATCHES:
+                        recent_agents[pname].append(agent)
+
+        # Count distinct matches per player (use first map's team1 player list)
+        if maps:
+            first_map_players = (maps[0].get("players") or {})
+            for side in ("team1", "team2"):
+                for p in (first_map_players.get(side) or []):
+                    pname = (p.get("name") or "").strip().lower()
+                    if pname:
+                        match_count_per_player[pname] += 1
+
+        time.sleep(0.4)   # be polite to the API
+    except Exception as e:
+        print(f"  ✗ match {mid}: {e}")
+
+players_with_recent = sum(1 for p in org_map if p in recent_agents)
+print(f"  Recent agents found for {players_with_recent} / {len(org_map)} players\n")
+
+
+# ── Step 3: Detect role per player ────────────────────────────────────────────
+role_map = {}   # name.lower() → detected role string
+
+for pname in org_map:
+    agents = recent_agents.get(pname) or fallback_agents.get(pname) or []
+    source = "recent" if pname in recent_agents else "fallback"
+    role = detect_role(agents)
+    if role:
+        role_map[pname] = role
+
+recent_roles   = sum(1 for p in role_map if p in recent_agents)
+fallback_roles = len(role_map) - recent_roles
+print(f"[roles] Detected {len(role_map)} roles ({recent_roles} from recent matches, {fallback_roles} from all-time fallback)\n")
+
+
+# ── Step 4: Liquipedia API — birthdate → age ──────────────────────────────────
 # DISABLED: awaiting Liquipedia API key approval.
 # To enable: uncomment this block and ensure LIQUIPEDIA_API_KEY secret is set.
 #
@@ -168,7 +269,7 @@ print(f"\n  Total: {len(org_map)} players, {len(role_map)} roles detected\n")
 age_map = {}   # empty until Liquipedia block is re-enabled
 
 
-# ── Step 3: Build final player_data dict and write org-map.json ──────────────
+# ── Step 5: Build final player_data dict and write org-map.json ──────────────
 player_data = {}
 for pname, team in org_map.items():
     entry = {"team": team}
