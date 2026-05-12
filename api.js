@@ -14,8 +14,8 @@
   "use strict";
 
   const ORG_MAP_URL    = "./org-map.json";
-  const CACHE_DATA_KEY = "agentguess_api_cache_v1";
-  const CACHE_EXP_KEY  = "agentguess_api_cache_exp";
+  const CACHE_DATA_KEY = "valorandle_api_cache_v1";
+  const CACHE_EXP_KEY  = "valorandle_api_cache_exp";
   const CACHE_TTL_MS   = 7 * 24 * 60 * 60 * 1000; // 7 days
 
   // ── Cache ─────────────────────────────────────────────────
@@ -65,7 +65,7 @@
       setCache(merged);
     } catch (err) {
       // 3. Silent fallback: local data from players.js
-      console.warn("[AgentGuess] org-map.json unavailable — using local data.", err.message);
+      console.warn("[Valorandle] org-map.json unavailable — using local data.", err.message);
     }
   };
 
@@ -73,6 +73,6 @@
   window.clearPlayerCache = function () {
     localStorage.removeItem(CACHE_DATA_KEY);
     localStorage.removeItem(CACHE_EXP_KEY);
-    console.info("[AgentGuess] Player cache cleared. Reload to fetch fresh data.");
+    console.info("[Valorandle] Player cache cleared. Reload to fetch fresh data.");
   };
 })();

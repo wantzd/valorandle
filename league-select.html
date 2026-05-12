@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>AgentGuess — Selecionar Liga</title>
+  <title>Valorandle — Selecionar Liga</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Russo+One&family=Space+Grotesk:wght@300;400;500;600&family=Space+Mono:wght@700&display=swap" rel="stylesheet" />
@@ -200,8 +200,8 @@
 <div class="page">
 
   <header class="header">
-    <a class="back-btn" href="lobby.html">← Lobby</a>
-    <div class="header-logo">AGENT<span>GUESS</span></div>
+    <a class="back-btn" href="/">← Lobby</a>
+    <div class="header-logo">VALOR<span>ANDLE</span></div>
     <div class="mode-pill" id="mode-pill">Daily</div>
   </header>
 
@@ -311,7 +311,7 @@
 
       // If daily mode, show completion badge on cards
       if (MODE === "daily") {
-        const key = `agentguess_daily_${league}_` + getDailyDateKey();
+        const key = `valorandle_daily_${league}_` + getDailyDateKey();
         try {
           const saved = JSON.parse(localStorage.getItem(key) || "null");
           if (saved && saved.dailyDone) {
