@@ -22,13 +22,16 @@ jobs:
         run: |
           sudo apt-get install -y lftp
 
-          # Build lftp script — heredoc expands $FTP_* vars cleanly, no shell quoting issues
+          # Copy only site files to a staging dir, leaving out git metadata
+          rsync -a --exclude='.git' --exclude='.github' . /tmp/site/
+
+          # lftp script — open command inside the file, no quoting issues
           cat > /tmp/deploy.lftp << EOF
           open -p 21 -u $FTP_USER,$FTP_PASS $FTP_HOST
           set ftp:ssl-allow no
           set net:timeout 60
           set net:max-retries 3
-          mirror --reverse --verbose --exclude-rx ^\.git . $FTP_PATH
+          mirror --reverse --verbose /tmp/site/ $FTP_PATH
           bye
           EOF
 
