@@ -375,7 +375,7 @@
 
   <header class="game-header">
     <div class="header-left">
-      <a class="back-btn" href="index.html" id="back-btn">← Lobby</a>
+      <a class="back-btn" href="/" id="back-btn">← Lobby</a>
       <div class="streak-chip" id="streak-chip" title="Sequência atual">
         <span>🔥</span><span class="streak-num" id="streak-num">0</span>
       </div>
@@ -1017,7 +1017,7 @@
 
     acts.appendChild(makeBtn(t.shareBtn,"btn-action btn-share",shareDaily));
     acts.appendChild(makeBtn(lang==="pt-BR"?"Img":"Img","btn-action btn-img",shareImage));
-    acts.appendChild(makeBtn(t.backLobby,"btn-action btn-lobby",()=>{ window.location.href="index.html"; }));
+    acts.appendChild(makeBtn(t.backLobby,"btn-action btn-lobby",()=>{ window.location.href="/"; }));
   }
 
   function makeBtn(label, cls, fn) {
@@ -1064,7 +1064,7 @@
     acts.innerHTML = "";
     acts.appendChild(makeBtn(t.shareBtn,"btn-action btn-next",shareDaily));
     acts.appendChild(makeBtn(lang==="pt-BR"?"Salvar Img":"Save Img","btn-action btn-share",shareImage));
-    acts.appendChild(makeBtn(t.backLobby,"btn-action btn-lobby",()=>{ window.location.href="index.html"; }));
+    acts.appendChild(makeBtn(t.backLobby,"btn-action btn-lobby",()=>{ window.location.href="/"; }));
   }
 
   function startFreeRound() {

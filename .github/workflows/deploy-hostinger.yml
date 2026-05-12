@@ -31,7 +31,7 @@ jobs:
           set ftp:ssl-allow no
           set net:timeout 60
           set net:max-retries 3
-          mirror --reverse --verbose /tmp/site/ $FTP_PATH
+          mirror --reverse --verbose --delete /tmp/site/ $FTP_PATH
           bye
           EOF
 
