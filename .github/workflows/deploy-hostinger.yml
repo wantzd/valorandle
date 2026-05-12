@@ -1,0 +1,29 @@
+name: Deploy to Hostinger
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Upload site files to Hostinger via FTP
+        run: |
+          sudo apt-get install -y lftp
+          lftp -p 21 -u "${{ secrets.FTP_USER }},${{ secrets.FTP_PASS }}" \
+            -e "set ftp:ssl-allow no; \
+                set net:timeout 30; \
+                set net:max-retries 3; \
+                mirror --reverse --verbose \
+                  --exclude '^\.git/' \
+                  --exclude '^\.github/' \
+                  --exclude '\.md$' \
+                  . ${{ secrets.FTP_PATH }}; \
+                bye" \
+            ${{ secrets.FTP_HOST }}

@@ -221,34 +221,33 @@
       <div class="league-count" id="count-americas">— players</div>
     </a>
 
-    <!-- ── VCT EMEA ── lime #C4FF00 -->
-    <a class="league-card" id="card-emea" href="#" style="--lc:var(--col-emea)">
+    <!-- ── VCT EMEA ── lime #C4FF00 — LOCKED -->
+    <div class="league-card soon" style="--lc:var(--col-emea)">
       <div class="league-icon-wrap"><img src="logos/emea.png" alt="VCT EMEA" /></div>
       <div class="league-name">VCT<br>EMEA</div>
       <div class="league-region">EU · TR · CIS</div>
-      <div class="league-count" id="count-emea">— players</div>
-    </a>
+      <div class="soon-badge" id="badge-emea">Em breve</div>
+    </div>
 
-    <!-- ── VCT Pacific ── cyan #00DCFF -->
-    <a class="league-card" id="card-pacific" href="#" style="--lc:var(--col-pacific)">
+    <!-- ── VCT Pacific ── cyan #00DCFF — LOCKED -->
+    <div class="league-card soon" style="--lc:var(--col-pacific)">
       <div class="league-icon-wrap"><img src="logos/pacific.png" alt="VCT Pacific" /></div>
       <div class="league-name">VCT<br>Pacific</div>
       <div class="league-region">KR · JP · SEA</div>
-      <div class="league-count" id="count-pacific">— players</div>
-    </a>
+      <div class="soon-badge" id="badge-pacific">Em breve</div>
+    </div>
 
-    <!-- ── VCT China ── hot pink #FF1675 -->
-    <a class="league-card" id="card-china" href="#" style="--lc:var(--col-china)">
+    <!-- ── VCT China ── hot pink #FF1675 — LOCKED -->
+    <div class="league-card soon" style="--lc:var(--col-china)">
       <div class="league-icon-wrap"><img src="logos/china.png" alt="VCT China" /></div>
       <div class="league-name">VCT<br>China</div>
       <div class="league-region">CN</div>
-      <div class="league-count" id="count-china">— players</div>
-    </a>
+      <div class="soon-badge" id="badge-china">Em breve</div>
+    </div>
 
-    <!-- ── All ── gold #E5C96A -->
-    <a class="league-card all" id="card-all" href="#" style="--lc:var(--col-all)">
+    <!-- ── All ── gold #E5C96A — LOCKED -->
+    <div class="league-card all soon" style="--lc:var(--col-all)">
       <svg class="league-icon" viewBox="0 0 56 56" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <!-- Globe: outer circle + meridians + parallels -->
         <circle cx="28" cy="28" r="22" stroke="#E5C96A" stroke-width="2"/>
         <ellipse cx="28" cy="28" rx="11" ry="22" stroke="#E5C96A" stroke-width="1.5"/>
         <line x1="6" y1="18" x2="50" y2="18" stroke="#E5C96A" stroke-width="1" opacity="0.5"/>
@@ -258,8 +257,8 @@
       </svg>
       <div class="league-name">All —<br>Todas</div>
       <div class="league-region">AM · EMEA · PAC · CN</div>
-      <div class="league-count" id="count-all">— players</div>
-    </a>
+      <div class="soon-badge" id="badge-all">Em breve</div>
+    </div>
 
   </div>
 
@@ -288,30 +287,26 @@
     document.getElementById("hero-sub").textContent   = isPT ? "Escolha a liga dos jogadores para adivinhar" : "Choose the league to guess from";
     document.getElementById("footer-note").textContent = isPT ? "Dados aproximados — Apr 2026" : "Approximate data — Apr 2026";
 
-    // Player counts
-    const counts = { americas:0, emea:0, pacific:0, china:0, all:0 };
-    PLAYERS_DB.forEach(p => {
-      if (p.leagueId && counts[p.leagueId] !== undefined) counts[p.leagueId]++;
-      counts.all++;
-    });
+    // Player count — Americas only
+    let americasCount = 0;
+    PLAYERS_DB.forEach(p => { if (p.leagueId === "americas") americasCount++; });
     const pl = isPT ? "jogadores" : "players";
-    ["americas","emea","pacific","china"].forEach(id => {
-      const el = document.getElementById("count-" + id);
-      if (el) el.textContent = counts[id] + " " + pl;
+    const countEl = document.getElementById("count-americas");
+    if (countEl) countEl.textContent = americasCount + " " + pl;
+
+    // "Coming soon" badge translation for locked leagues
+    const soonText = isPT ? "Em breve" : "Coming soon";
+    ["emea","pacific","china","all"].forEach(id => {
+      const el = document.getElementById("badge-" + id);
+      if (el) el.textContent = soonText;
     });
-    const allEl = document.getElementById("count-all");
-    if (allEl) allEl.textContent = counts.all + " " + pl;
 
-    // Build hrefs with daily-complete indicator
-    const leagues = ["americas","emea","pacific","china","all"];
-    leagues.forEach(league => {
-      const el = document.getElementById("card-" + league);
-      if (!el) return;
-      el.href = `game.html?mode=${MODE}&league=${league}`;
-
-      // If daily mode, show completion badge on cards
+    // Build href for Americas + daily-complete indicator
+    const cardAm = document.getElementById("card-americas");
+    if (cardAm) {
+      cardAm.href = `game.html?mode=${MODE}&league=americas`;
       if (MODE === "daily") {
-        const key = `valorandle_daily_${league}_` + getDailyDateKey();
+        const key = `valorandle_daily_americas_` + getDailyDateKey();
         try {
           const saved = JSON.parse(localStorage.getItem(key) || "null");
           if (saved && saved.dailyDone) {
@@ -319,16 +314,16 @@
             const badge = document.createElement("div");
             badge.style.cssText = "font-family:var(--font-mono);font-size:0.58rem;color:var(--lc);opacity:0.8;margin-top:-4px";
             badge.textContent = `✓ ${wins}/5`;
-            el.appendChild(badge);
+            cardAm.appendChild(badge);
           } else if (saved && !saved.finished && saved.guesses && saved.guesses.length > 0) {
             const badge = document.createElement("div");
             badge.style.cssText = "font-family:var(--font-mono);font-size:0.58rem;color:var(--text-dim);margin-top:-4px";
             badge.textContent = isPT ? "▶ em progresso" : "▶ in progress";
-            el.appendChild(badge);
+            cardAm.appendChild(badge);
           }
         } catch(e) {}
       }
-    });
+    }
 
     // Stagger card animation
     document.querySelectorAll(".league-card").forEach((card, i) => {

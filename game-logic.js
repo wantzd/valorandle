@@ -357,14 +357,15 @@ function cleanOldDailyStates() {
 
 // Lang: saved in BOTH localStorage AND cookie for maximum compatibility
 function loadLang() {
-  // Try localStorage first, then cookie, then default
   try {
     const ls = localStorage.getItem(LS_KEYS.lang);
     if (ls) return ls;
   } catch {}
   const ck = getCookie("valorandle_lang");
   if (ck) return ck;
-  return "pt-BR";
+  // Auto-detect browser language; default to English if not Portuguese
+  const nav = (navigator.language || "").toLowerCase();
+  return nav.startsWith("pt") ? "pt-BR" : "en";
 }
 
 function saveLang(lang) {
