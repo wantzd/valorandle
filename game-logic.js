@@ -1,5 +1,5 @@
 // ============================================================
-// AGENTGUESS — Core Logic (game-logic.js)
+// VALORANDLE — Core Logic (game-logic.js)
 // ============================================================
 
 // ── Idioma ────────────────────────────────────────────────
@@ -88,6 +88,68 @@ const I18N = {
       IGL: "IGL"
     }
   }
+};
+
+// ── Country name translations (PT → EN) ──────────────────
+const COUNTRY_EN = {
+  "Brasil": "Brazil",
+  "EUA": "USA",
+  "Reino Unido": "UK",
+  "Coreia do Sul": "South Korea",
+  "Japão": "Japan",
+  "China": "China",
+  "Canadá": "Canada",
+  "Austrália": "Australia",
+  "Argentina": "Argentina",
+  "Chile": "Chile",
+  "México": "Mexico",
+  "Colômbia": "Colombia",
+  "Peru": "Peru",
+  "Uruguai": "Uruguay",
+  "Venezuela": "Venezuela",
+  "Turquia": "Turkey",
+  "Alemanha": "Germany",
+  "França": "France",
+  "Espanha": "Spain",
+  "Itália": "Italy",
+  "Suécia": "Sweden",
+  "Noruega": "Norway",
+  "Dinamarca": "Denmark",
+  "Finlândia": "Finland",
+  "Polônia": "Poland",
+  "Rússia": "Russia",
+  "Ucrânia": "Ukraine",
+  "Quirguistão": "Kyrgyzstan",
+  "Cazaquistão": "Kazakhstan",
+  "Paquistão": "Pakistan",
+  "Índia": "India",
+  "Tailândia": "Thailand",
+  "Filipinas": "Philippines",
+  "Indonésia": "Indonesia",
+  "Mongólia": "Mongolia",
+  "Marrocos": "Morocco",
+  "África do Sul": "South Africa",
+  "Nigéria": "Nigeria",
+  "Egito": "Egypt",
+  "Hong Kong": "Hong Kong",
+  "Taiwan": "Taiwan",
+  "Cingapura": "Singapore",
+  "Nova Zelândia": "New Zealand",
+  "Islândia": "Iceland",
+  "Portugal": "Portugal",
+  "Bélgica": "Belgium",
+  "Países Baixos": "Netherlands",
+  "Suíça": "Switzerland",
+  "Áustria": "Austria",
+  "República Tcheca": "Czech Republic",
+  "Romênia": "Romania",
+  "Hungria": "Hungary",
+  "Grécia": "Greece",
+  "Croácia": "Croatia",
+  "Sérvia": "Serbia",
+  "Geórgia": "Georgia",
+  "Armênia": "Armenia",
+  "Azerbaijão": "Azerbaijan",
 };
 
 // ── Constantes ────────────────────────────────────────────

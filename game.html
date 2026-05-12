@@ -356,6 +356,15 @@
     .toast.show { transform:translateX(-50%) translateY(0); }
 
     @media (max-width:640px) { .game-logo { font-size:1.1rem; } }
+    @media (max-width:600px) {
+      .grid-container { min-width: unset; }
+      .guess-row, .grid-headers, .guess-row-empty { grid-template-columns: 110px repeat(6, 1fr); }
+      .col-header, .cell-value { font-size: 0.62rem; }
+      .cell-hint { font-size: 0.7rem; }
+    }
+    @media (max-width:420px) {
+      .guess-row, .grid-headers, .guess-row-empty { grid-template-columns: 85px repeat(6, 1fr); }
+    }
 
     /* ── Loading overlay ── */
     #loading-overlay {
@@ -686,8 +695,10 @@
     if (fb.attr === "role"         && t.roles[fb.value]) return t.roles[fb.value];
     if (fb.attr === "yearsActive")                        return `${fb.value} ${t.years}`;
     if (fb.attr === "titles" && fb.value === "Nenhum")    return t.noTitles;
-    if (fb.attr === "country")
-      return `<span class="cell-flag">${flagHtml(player.countryCode)} <span>${fb.value}</span></span>`;
+    if (fb.attr === "country") {
+      const countryName = lang === "en" ? (COUNTRY_EN[fb.value] || fb.value) : fb.value;
+      return `<span class="cell-flag">${flagHtml(player.countryCode)} <span>${countryName}</span></span>`;
+    }
     return String(fb.value);
   }
 
@@ -975,6 +986,16 @@
     panel.style.display = "block";
     panel.className     = "result-panel " + (won?"won":"lost");
 
+    const hardBadge = document.getElementById("result-hard-badge");
+    if (hardBadge) hardBadge.remove();
+    if (hardMode) {
+      const badge = document.createElement("span");
+      badge.id = "result-hard-badge";
+      badge.textContent = "HARD";
+      badge.style.cssText = "display:inline-block;margin-left:0.5rem;padding:0.15rem 0.45rem;background:#FF4655;color:#fff;font-size:0.6rem;font-weight:700;letter-spacing:0.1em;border-radius:3px;vertical-align:middle;";
+      document.getElementById("banner-title").insertAdjacentElement("afterend", badge);
+    }
+
     document.getElementById("banner-title").textContent = won
       ? (lang==="pt-BR"?"Correto!":"Correct!")
       : (lang==="pt-BR"?`Era: ${target.displayName}`:`It was: ${target.displayName}`);
@@ -1134,9 +1155,9 @@
     // Title
     ctx.font = "bold 18px 'Russo One', sans-serif";
     ctx.fillStyle = "#eeeef5";
-    ctx.fillText("AGENT", PAD, PAD+18);
+    ctx.fillText("VALOR", PAD, PAD+18);
     ctx.fillStyle = "#FF4655";
-    ctx.fillText("GUESS", PAD + ctx.measureText("AGENT").width, PAD+18);
+    ctx.fillText("ANDLE", PAD + ctx.measureText("VALOR").width, PAD+18);
 
     // Date + league
     ctx.font = "10px 'Space Mono', monospace";
