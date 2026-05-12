@@ -18,12 +18,12 @@ jobs:
           sudo apt-get install -y lftp
           lftp -p 21 -u "${{ secrets.FTP_USER }},${{ secrets.FTP_PASS }}" \
             -e "set ftp:ssl-allow no; \
-                set net:timeout 30; \
+                set net:timeout 60; \
                 set net:max-retries 3; \
                 mirror --reverse --verbose \
-                  --exclude '^\.git/' \
-                  --exclude '^\.github/' \
-                  --exclude '\.md$' \
+                  --exclude-rx '^\.git($|/)' \
+                  --exclude-rx '^\.github($|/)' \
+                  --exclude-rx '\.md$' \
                   . ${{ secrets.FTP_PATH }}; \
                 bye" \
             ${{ secrets.FTP_HOST }}
