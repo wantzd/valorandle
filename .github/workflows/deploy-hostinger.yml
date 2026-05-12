@@ -22,8 +22,9 @@ jobs:
         run: |
           sudo apt-get install -y lftp
 
-          # Write lftp script to a file to avoid shell quoting issues with regex
+          # Build lftp script — heredoc expands $FTP_* vars cleanly, no shell quoting issues
           cat > /tmp/deploy.lftp << EOF
+          open -p 21 -u $FTP_USER,$FTP_PASS $FTP_HOST
           set ftp:ssl-allow no
           set net:timeout 60
           set net:max-retries 3
@@ -31,4 +32,4 @@ jobs:
           bye
           EOF
 
-          lftp -p 21 -u "$FTP_USER,$FTP_PASS" -f /tmp/deploy.lftp "$FTP_HOST"
+          lftp -f /tmp/deploy.lftp
