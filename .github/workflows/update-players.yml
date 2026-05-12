@@ -25,6 +25,7 @@ jobs:
         run: python .github/scripts/build_orgmap.py
         env:
           VLRGG_API_URL: ${{ secrets.VLRGG_API_URL }}
+          LIQUIPEDIA_API_KEY: ${{ secrets.LIQUIPEDIA_API_KEY }}
 
       - name: Upload org-map.json to Hostinger via FTP
         run: |

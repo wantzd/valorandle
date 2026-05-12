@@ -1,10 +1,12 @@
 // ============================================================
-// AGENTGUESS — Player Data Integration (api.js)
+// VALORANDLE — Player Data Integration (api.js)
 //
 // Fetches org-map.json (generated weekly by GitHub Actions)
-// and applies updated team names to the local PLAYERS_DB.
+// and merges live data into the local PLAYERS_DB.
 //
-// org-map.json format: { "playername": "Team Name", ... }
+// org-map.json format:
+//   { "playername": { "team": "...", "age": 22, "role": "Duelist" } }
+// Legacy string format still supported: { "playername": "Team Name" }
 //
 // If the file is missing or the fetch fails, the game runs
 // normally using the local data from players.js.
@@ -41,8 +43,26 @@
   // ── Merge ─────────────────────────────────────────────────
   function applyOrgMap(players, orgMap) {
     return players.map(p => {
-      const liveTeam = orgMap[p.name.toLowerCase()];
-      return (liveTeam && liveTeam !== p.team) ? { ...p, team: liveTeam } : p;
+      const entry = orgMap[p.name.toLowerCase()];
+      if (!entry) return p;
+
+      const isObj = typeof entry === "object" && entry !== null;
+      const updates = {};
+
+      const team = isObj ? entry.team : entry;
+      if (team && team !== p.team) updates.team = team;
+
+      if (isObj && entry.age  && entry.age  !== p.age)  updates.age  = entry.age;
+      if (isObj && entry.role && entry.role !== p.role) {
+        // For IGL players, apply compound role (IGL/<detected>); others apply directly
+        if (p.isIGL && !entry.role.startsWith("IGL/")) {
+          updates.role = `IGL/${entry.role}`;
+        } else if (!p.isIGL) {
+          updates.role = entry.role;
+        }
+      }
+
+      return Object.keys(updates).length ? { ...p, ...updates } : p;
     });
   }
 

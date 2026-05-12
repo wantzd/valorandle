@@ -165,6 +165,9 @@ const ROLE_GROUPS = {
   IGL:        ["IGL", "Controller"]
 };
 
+function roleBase(r)  { return r && r.includes("/") ? r.split("/")[1] : r; }
+function roleIsIGL(r) { return r && (r === "IGL" || r.startsWith("IGL/")); }
+
 const TITLE_TIERS = {
   S: ["Champions 2021", "Champions 2022", "Champions 2023", "Champions 2024", "Champions 2025"],
   A: ["Masters Reykjavik 2021", "Masters Berlim 2021", "Masters Reykjavik 2022",
@@ -227,18 +230,26 @@ function compareAge(guess, target) {
   return { attr: "age", value: guess.age, status, hint };
 }
 
-// ROLE — Verde exato, Amarelo se mesmo grupo, Vermelho senão
+// ROLE — Verde exato, Amarelo se mesmo grupo/IGL, Vermelho senão
+// Suporta roles compostos: "IGL/Controller", "IGL/Duelist", etc.
 function compareRole(guess, target) {
-  if (guess.role === target.role) {
-    return { attr: "role", value: guess.role, status: "correct", hint: null };
-  }
-  const sameGroup = (ROLE_GROUPS[guess.role] || []).includes(target.role) ||
-                    (ROLE_GROUPS[target.role] || []).includes(guess.role);
-  return {
-    attr: "role", value: guess.role,
-    status: sameGroup ? "close" : "wrong",
-    hint: null
-  };
+  const gr = guess.role, tr = target.role;
+  if (gr === tr) return { attr: "role", value: gr, status: "correct", hint: null };
+
+  const gIGL = roleIsIGL(gr), tIGL = roleIsIGL(tr);
+  const gBase = roleBase(gr),  tBase = roleBase(tr);
+
+  let close = false;
+  if (gIGL && tIGL)                                           close = true; // ambos IGLs
+  else if (gBase === tBase)                                   close = true; // mesma role base
+  else if ((ROLE_GROUPS[gr]   || []).includes(tr))            close = true;
+  else if ((ROLE_GROUPS[tr]   || []).includes(gr))            close = true;
+  else if ((ROLE_GROUPS[gBase]|| []).includes(tBase))         close = true;
+  else if ((ROLE_GROUPS[tBase]|| []).includes(gBase))         close = true;
+  else if (gIGL && (ROLE_GROUPS["IGL"] || []).includes(tBase)) close = true;
+  else if (tIGL && (ROLE_GROUPS["IGL"] || []).includes(gBase)) close = true;
+
+  return { attr: "role", value: gr, status: close ? "close" : "wrong", hint: null };
 }
 
 // TÍTULOS — APENAS Verde (idêntico) ou Vermelho (diferente)
