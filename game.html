@@ -1,0 +1,1267 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AgentGuess</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Russo+One&family=Space+Grotesk:wght@300;400;500;600&family=Space+Mono:wght@700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flag-icons@7.2.3/css/flag-icons.min.css" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg:          #08090d;
+      --surface:     #0e1018;
+      --surface2:    #141620;
+      --border:      #1c1f2e;
+      --border2:     #252838;
+      --red:         #FF4655;
+      --red-dim:     rgba(255,70,85,0.08);
+      --red-bd:      rgba(255,70,85,0.32);
+      --red-glow:    rgba(255,70,85,0.22);
+      --text:        #eeeef5;
+      --text-dim:    #50536a;
+      --text-mid:    #8a8da8;
+      --green:       #34d47e;
+      --green-bg:    rgba(52,212,126,0.10);
+      --green-bd:    rgba(52,212,126,0.45);
+      --yellow:      #f0b429;
+      --yellow-bg:   rgba(240,180,41,0.10);
+      --yellow-bd:   rgba(240,180,41,0.42);
+      --font-display:'Russo One', sans-serif;
+      --font-ui:     'Space Grotesk', sans-serif;
+      --font-mono:   'Space Mono', monospace;
+    }
+    html, body { min-height:100vh; background:var(--bg); color:var(--text); font-family:var(--font-ui); }
+    body::before {
+      content:''; position:fixed; inset:0; z-index:0;
+      background-image:radial-gradient(circle,#1c1f2e 1px,transparent 1px);
+      background-size:28px 28px; pointer-events:none; opacity:.5;
+    }
+
+    .game-screen {
+      position:relative; z-index:1;
+      max-width:980px; margin:0 auto;
+      padding:0 1rem 5rem; min-height:100vh;
+      display:flex; flex-direction:column;
+    }
+
+    /* ── Header ── */
+    .game-header {
+      display:grid; grid-template-columns:1fr auto 1fr;
+      align-items:center; padding:0.85rem 0;
+      border-bottom:1px solid var(--border); margin-bottom:1.1rem;
+    }
+    .header-left  { display:flex; align-items:center; gap:0.6rem; }
+    .header-right { display:flex; align-items:center; gap:0.55rem; justify-content:flex-end; }
+
+    .back-btn {
+      background:transparent; border:1px solid var(--border2);
+      color:var(--text-dim); font-family:var(--font-mono);
+      font-size:0.65rem; letter-spacing:0.1em; padding:0.38rem 0.8rem;
+      cursor:pointer; border-radius:3px; transition:all 0.2s; text-decoration:none;
+    }
+    .back-btn:hover { border-color:var(--red); color:var(--red); }
+
+    .game-title-area { text-align:center; }
+    .game-logo {
+      font-family:var(--font-display); font-size:1.35rem;
+      color:var(--text); text-transform:uppercase; line-height:1;
+    }
+    .game-logo span { color:var(--red); }
+    .mode-tag {
+      font-family:var(--font-mono); font-size:0.56rem;
+      color:var(--text-dim); letter-spacing:0.18em; text-transform:uppercase;
+    }
+    .league-tag {
+      font-family:var(--font-mono); font-size:0.55rem;
+      letter-spacing:0.12em; text-transform:uppercase;
+      padding:0.14rem 0.5rem; border-radius:2px;
+      font-weight:700; display:none;
+    }
+
+    /* streak chip */
+    .streak-chip {
+      font-family:var(--font-mono); font-size:0.65rem;
+      font-weight:700; letter-spacing:0.08em;
+      background:var(--surface2); border:1px solid var(--border2);
+      color:var(--text-mid); padding:0.3rem 0.6rem; border-radius:3px;
+      display:flex; align-items:center; gap:0.3rem;
+    }
+    .streak-chip .streak-num { color:var(--red); }
+
+    /* hard mode / sound buttons */
+    .icon-btn {
+      background:transparent; border:1px solid var(--border);
+      color:var(--text-dim); width:32px; height:32px;
+      border-radius:3px; cursor:pointer; display:flex;
+      align-items:center; justify-content:center;
+      font-size:0.75rem; transition:all 0.2s;
+    }
+    .icon-btn:hover { border-color:var(--border2); color:var(--text-mid); }
+    .icon-btn.active { border-color:var(--red); color:var(--red); background:var(--red-dim); }
+    .icon-btn svg { width:16px; height:16px; }
+
+    /* ── Round pips ── */
+    .round-progress {
+      display:flex; align-items:center; justify-content:center;
+      gap:4px; margin-bottom:1rem;
+    }
+    .round-pip {
+      width:40px; height:4px; border-radius:2px;
+      background:var(--surface2); border:1px solid var(--border);
+      transition:all 0.3s;
+    }
+    .round-pip.done   { background:var(--green); border-color:var(--green); }
+    .round-pip.failed { background:#200d10; border-color:var(--red-bd); }
+    .round-pip.active { background:var(--red); border-color:var(--red); box-shadow:0 0 8px var(--red-glow); }
+
+    /* ── Round info ── */
+    .round-info {
+      display:flex; justify-content:space-between; align-items:center;
+      padding:0 0 0.9rem; border-bottom:1px solid var(--border); margin-bottom:0.9rem;
+    }
+    .round-label { font-family:var(--font-mono); font-size:0.65rem; font-weight:700; letter-spacing:0.15em; color:var(--text-mid); text-transform:uppercase; }
+    .attempts-label { font-family:var(--font-mono); font-size:0.65rem; color:var(--text-dim); letter-spacing:0.08em; }
+    .attempts-label.low { color:var(--red); }
+
+    /* ── Input ── */
+    .input-section { position:relative; margin-bottom:1.1rem; }
+    .guess-input-wrap { display:flex; }
+    .guess-input {
+      flex:1; background:var(--surface); border:1px solid var(--border2);
+      border-right:none; border-radius:4px 0 0 4px;
+      color:var(--text); font-family:var(--font-ui);
+      font-size:0.95rem; padding:0.8rem 1.1rem;
+      outline:none; transition:border-color 0.2s;
+    }
+    .guess-input:focus { border-color:var(--red); }
+    .guess-input::placeholder { color:var(--text-dim); }
+    .guess-input:disabled { opacity:0.4; cursor:not-allowed; }
+    .guess-btn {
+      background:var(--red); border:none; color:#fff;
+      font-family:var(--font-mono); font-size:0.8rem; font-weight:700;
+      letter-spacing:0.08em; padding:0.8rem 1.4rem;
+      border-radius:0 4px 4px 0; cursor:pointer; transition:all 0.2s;
+    }
+    .guess-btn:hover:not(:disabled) { background:#e03040; box-shadow:0 0 18px var(--red-glow); }
+    .guess-btn:disabled { background:var(--surface2); color:var(--text-dim); cursor:not-allowed; }
+
+    /* ── Autocomplete ── */
+    .autocomplete-list {
+      position:absolute; top:calc(100% + 4px); left:0; right:0;
+      background:var(--surface2); border:1px solid var(--border2);
+      border-radius:4px; z-index:100; max-height:230px;
+      overflow-y:auto; box-shadow:0 12px 32px rgba(0,0,0,.5);
+    }
+    .autocomplete-item {
+      padding:0.6rem 1rem; cursor:pointer;
+      display:flex; align-items:center; gap:0.75rem;
+      border-bottom:1px solid var(--border); transition:background 0.12s;
+    }
+    .autocomplete-item:last-child { border-bottom:none; }
+    .autocomplete-item:hover, .autocomplete-item.highlighted { background:var(--surface); }
+    .ac-flag { width:22px; height:16px; display:flex; align-items:center; flex-shrink:0; }
+    .ac-flag .fi { font-size:1rem; line-height:1; border-radius:2px; }
+    .ac-name { font-weight:600; font-size:0.88rem; }
+    .ac-team { font-size:0.72rem; color:var(--text-dim); }
+    .ac-league { margin-left:auto; font-family:var(--font-mono); font-size:0.58rem; color:var(--text-dim); background:var(--border); padding:0.1rem 0.4rem; border-radius:2px; }
+
+    .input-error { font-family:var(--font-mono); font-size:0.7rem; color:var(--red); margin-top:0.45rem; min-height:1.2em; padding-left:0.25rem; }
+
+    /* ── Grid ── */
+    /* TOOLTIP FIX: overflow on scroll-wrapper only, grid-container has overflow:visible */
+    .grid-scroll-wrapper { overflow-x:auto; -webkit-overflow-scrolling:touch; }
+    .grid-container      { min-width:740px; overflow:visible; }
+
+    .grid-headers {
+      display:grid; grid-template-columns:160px repeat(6,1fr);
+      gap:3px; margin-bottom:3px;
+    }
+    .col-header {
+      font-family:var(--font-mono); font-size:0.58rem; font-weight:700;
+      letter-spacing:0.16em; text-transform:uppercase; color:var(--text-dim);
+      text-align:center; padding:0.45rem 0.25rem;
+      background:var(--surface); border:1px solid var(--border); border-radius:3px;
+    }
+    .col-header:first-child { text-align:left; padding-left:0.75rem; }
+
+    .guess-grid { display:flex; flex-direction:column; gap:3px; }
+
+    .guess-row {
+      display:grid; grid-template-columns:160px repeat(6,1fr);
+      gap:3px; animation:rowReveal 0.28s ease both;
+    }
+    @keyframes rowReveal { from{opacity:0;transform:translateY(-6px);} to{opacity:1;transform:translateY(0);} }
+
+    .guess-row-empty { display:grid; grid-template-columns:160px repeat(6,1fr); gap:3px; }
+
+    .guess-cell {
+      background:var(--surface); border:1px solid var(--border); border-radius:3px;
+      padding:0.55rem 0.5rem;
+      display:flex; flex-direction:column; align-items:center;
+      justify-content:center; gap:2px; text-align:center;
+      min-height:58px; position:relative; cursor:default;
+      /* NO transform-style:preserve-3d here - that broke fixed positioning */
+    }
+    .guess-cell:first-child { align-items:flex-start; text-align:left; padding-left:0.75rem; border-left:3px solid transparent; }
+
+    .guess-cell.correct { background:var(--green-bg); border-color:var(--green-bd); }
+    .guess-cell.correct:first-child { border-left-color:var(--green); }
+    .guess-cell.close   { background:var(--yellow-bg); border-color:var(--yellow-bd); }
+    .guess-cell.wrong   { background:var(--red-dim); border-color:var(--red-bd); }
+    .guess-cell.empty   { background:var(--surface); opacity:.22; }
+
+    .cell-value { font-family:var(--font-ui); font-size:0.8rem; font-weight:600; line-height:1.3; color:var(--text); }
+    .cell-hint  { font-family:var(--font-mono); font-size:0.72rem; font-weight:700; line-height:1; }
+    .correct .cell-hint { color:var(--green); }
+    .close   .cell-hint { color:var(--yellow); }
+    .wrong   .cell-hint { color:var(--red); }
+
+    /* Flag inline */
+    .cell-flag { display:inline-flex; align-items:center; gap:0.3rem; }
+    .cell-flag .fi { font-size:0.85rem; border-radius:2px; flex-shrink:0; }
+
+    /* Flip animation */
+    @keyframes flipOut { 0%{transform:scaleY(1);} 100%{transform:scaleY(0);opacity:.2;} }
+    @keyframes flipIn  { 0%{transform:scaleY(0);opacity:.2;} 100%{transform:scaleY(1);} }
+    .guess-cell.flip-out { animation:flipOut 0.17s ease forwards; }
+    .guess-cell.flip-in  { animation:flipIn  0.17s ease forwards; }
+
+    /* ── Global tooltip (appended to body, avoids any transform context) ── */
+    #g-tip {
+      display:none; position:fixed; z-index:9000;
+      pointer-events:none;
+      background:#101220; border:1px solid var(--border2);
+      border-radius:5px; padding:0.55rem 0.85rem;
+      min-width:160px; max-width:270px;
+      box-shadow:0 8px 24px rgba(0,0,0,.7);
+      font-family:var(--font-ui); font-size:0.75rem;
+      color:var(--text); line-height:1.65;
+    }
+    #g-tip::before {
+      content:''; position:absolute; bottom:100%; left:50%;
+      transform:translateX(-50%);
+      border:5px solid transparent; border-bottom-color:var(--border2);
+    }
+    #g-tip.tip-above::before {
+      bottom:auto; top:100%;
+      border-bottom-color:transparent; border-top-color:var(--border2);
+    }
+    .tip-title {
+      font-family:var(--font-mono); font-size:0.58rem; font-weight:700;
+      letter-spacing:0.14em; text-transform:uppercase;
+      color:var(--text-dim); margin-bottom:0.35rem; display:block;
+    }
+    .tip-row { display:block; }
+    .tip-row.ok  { color:var(--green); }
+    .tip-row.bad { color:var(--red); }
+    .tip-row.mid { color:var(--yellow); }
+
+    /* ── Result panel ── */
+    .result-panel {
+      display:none; margin-top:1.1rem;
+      background:var(--surface); border:1px solid var(--border2);
+      border-radius:6px; overflow:hidden;
+      animation:panelUp 0.38s ease both;
+    }
+    @keyframes panelUp { from{opacity:0;transform:translateY(10px);} to{opacity:1;transform:translateY(0);} }
+
+    .result-status {
+      padding:0.7rem 1.25rem;
+      font-family:var(--font-display); font-size:0.9rem;
+      letter-spacing:0.04em; text-transform:uppercase;
+      border-bottom:1px solid var(--border);
+    }
+    .result-panel.won  .result-status { color:var(--green); background:var(--green-bg); }
+    .result-panel.lost .result-status { color:var(--red);   background:var(--red-dim); }
+
+    .result-body { padding:1rem 1.25rem; display:flex; flex-direction:column; gap:1rem; }
+
+    .result-player {
+      display:flex; align-items:center; gap:0.85rem;
+      padding:0.75rem 1rem; background:var(--surface2);
+      border:1px solid var(--border); border-radius:4px;
+    }
+    .result-flag { font-size:1.5rem; line-height:1; flex-shrink:0; }
+    .result-flag .fi { border-radius:3px; }
+    .result-player-name { font-family:var(--font-display); font-size:1.2rem; color:var(--text); text-transform:uppercase; display:block; }
+    .result-player-sub  { font-size:0.75rem; color:var(--text-mid); }
+
+    /* Attempt graph */
+    .result-graph-label, .replay-label {
+      font-family:var(--font-mono); font-size:0.6rem; font-weight:700;
+      letter-spacing:0.16em; text-transform:uppercase;
+      color:var(--text-dim); margin-bottom:0.55rem; display:block;
+    }
+    .attempt-track { display:flex; gap:5px; }
+    .attempt-dot {
+      flex:1; height:28px; border-radius:3px;
+      background:var(--surface2); border:1px solid var(--border);
+      display:flex; align-items:center; justify-content:center;
+      font-family:var(--font-mono); font-size:0.58rem; color:var(--text-dim);
+      transition:background 0.3s, border-color 0.3s, color 0.3s;
+    }
+    .attempt-dot.wrong { background:var(--red-dim); border-color:var(--red-bd); color:var(--red); }
+    .attempt-dot.win   { background:var(--green-bg); border-color:var(--green-bd); color:var(--green); }
+
+    /* Replay cells */
+    .replay-cells { display:flex; gap:4px; flex-wrap:wrap; }
+    .replay-cell {
+      width:28px; height:28px; border-radius:3px; border:1px solid;
+      display:flex; align-items:center; justify-content:center;
+    }
+    .replay-cell.correct { background:var(--green-bg); border-color:var(--green-bd); }
+    .replay-cell.close   { background:var(--yellow-bg); border-color:var(--yellow-bd); }
+    .replay-cell.wrong   { background:var(--red-dim); border-color:var(--red-bd); }
+
+    /* Buttons */
+    .result-actions { display:flex; gap:6px; flex-wrap:wrap; }
+    .btn-action {
+      font-family:var(--font-mono); font-size:0.68rem; font-weight:700;
+      letter-spacing:0.1em; text-transform:uppercase;
+      padding:0.5rem 1rem; border-radius:3px; border:none; cursor:pointer; transition:all 0.2s;
+    }
+    .btn-next  { background:var(--red); color:#fff; }
+    .btn-next:hover { background:#e03040; box-shadow:0 0 14px var(--red-glow); }
+    .btn-share { background:transparent; border:1px solid var(--border2); color:var(--text-mid); }
+    .btn-share:hover { border-color:var(--red); color:var(--red); }
+    .btn-img   { background:transparent; border:1px solid var(--border2); color:var(--text-mid); }
+    .btn-img:hover { border-color:var(--red); color:var(--red); }
+    .btn-lobby { background:transparent; border:1px solid var(--border); color:var(--text-dim); }
+    .btn-lobby:hover { color:var(--text-mid); border-color:var(--border2); }
+
+    /* ── Daily Complete ── */
+    .daily-complete { display:none; text-align:center; padding:3rem 1rem; }
+    .dc-eyebrow { font-family:var(--font-mono); font-size:0.7rem; letter-spacing:0.25em; text-transform:uppercase; color:var(--red); margin-bottom:1rem; display:block; }
+    .daily-complete-title { font-family:var(--font-display); font-size:2.5rem; text-transform:uppercase; color:var(--text); margin-bottom:0.6rem; line-height:1; }
+    .daily-complete-sub { color:var(--text-mid); font-size:0.88rem; margin-bottom:1.75rem; }
+
+    /* ── Toast ── */
+    .toast {
+      position:fixed; bottom:2rem; left:50%;
+      transform:translateX(-50%) translateY(60px);
+      background:var(--red); color:#fff;
+      font-family:var(--font-mono); font-size:0.75rem; font-weight:700; letter-spacing:0.08em;
+      padding:0.6rem 1.25rem; border-radius:3px; z-index:9001;
+      transition:transform 0.28s ease; pointer-events:none;
+    }
+    .toast.show { transform:translateX(-50%) translateY(0); }
+
+    @media (max-width:640px) { .game-logo { font-size:1.1rem; } }
+
+    /* ── Loading overlay ── */
+    #loading-overlay {
+      position:fixed; inset:0; z-index:9999;
+      background:var(--bg);
+      display:flex; flex-direction:column; align-items:center; justify-content:center;
+      gap:1.2rem;
+    }
+    #loading-overlay .lo-logo {
+      font-family:var(--font-display); font-size:1.6rem; letter-spacing:0.12em; color:var(--text);
+    }
+    #loading-overlay .lo-logo span { color:var(--red); }
+    #loading-overlay .lo-spinner {
+      width:28px; height:28px; border:3px solid var(--border2);
+      border-top-color:var(--red); border-radius:50%;
+      animation:lo-spin 0.75s linear infinite;
+    }
+    @keyframes lo-spin { to { transform:rotate(360deg); } }
+  </style>
+</head>
+<body>
+<div class="game-screen">
+
+  <header class="game-header">
+    <div class="header-left">
+      <a class="back-btn" href="lobby.html" id="back-btn">← Lobby</a>
+      <div class="streak-chip" id="streak-chip" title="Sequência atual">
+        <span>🔥</span><span class="streak-num" id="streak-num">0</span>
+      </div>
+    </div>
+
+    <div class="game-title-area">
+      <div class="game-logo">AGENT<span>GUESS</span></div>
+      <div class="mode-tag" id="mode-tag">Daily Mode</div>
+      <div class="league-tag" id="league-tag"></div>
+    </div>
+
+    <div class="header-right">
+      <!-- Hard mode toggle -->
+      <button class="icon-btn" id="hard-btn" title="Modo Hard (sem setas)">
+        <svg viewBox="0 0 16 16" fill="currentColor"><path d="M8 1a7 7 0 1 0 0 14A7 7 0 0 0 8 1zm0 1.5a5.5 5.5 0 1 1 0 11 5.5 5.5 0 0 1 0-11zm0 2a.75.75 0 0 0-.75.75v3.5a.75.75 0 0 0 1.5 0v-3.5A.75.75 0 0 0 8 4.5zm0 6a.75.75 0 1 0 0 1.5.75.75 0 0 0 0-1.5z"/></svg>
+      </button>
+      <!-- Sound toggle -->
+      <button class="icon-btn active" id="sound-btn" title="Sons">
+        <svg id="sound-icon" viewBox="0 0 16 16" fill="currentColor"><path d="M9 2.5a.5.5 0 0 0-.854-.354L4.793 5.5H2.5A1.5 1.5 0 0 0 1 7v2a1.5 1.5 0 0 0 1.5 1.5h2.293l3.353 3.354A.5.5 0 0 0 9 13.5v-11zm2.854.646a.5.5 0 0 1 .707 0A6.5 6.5 0 0 1 14 8a6.5 6.5 0 0 1-1.439 4.104.5.5 0 0 1-.708-.707A5.5 5.5 0 0 0 13 8a5.5 5.5 0 0 0-1.146-3.397.5.5 0 0 1 0-.707z"/></svg>
+      </button>
+    </div>
+  </header>
+
+  <div class="round-progress" id="round-progress" style="display:none"></div>
+
+  <div class="round-info">
+    <span class="round-label" id="round-label">Round 1 de 5</span>
+    <span class="attempts-label" id="attempts-label">0/8 tentativas</span>
+  </div>
+
+  <div class="input-section">
+    <div class="guess-input-wrap">
+      <input type="text" class="guess-input" id="guess-input" autocomplete="off" spellcheck="false" />
+      <button class="guess-btn" id="guess-btn">OK →</button>
+    </div>
+    <div class="autocomplete-list" id="autocomplete-list" style="display:none"></div>
+    <div class="input-error" id="input-error"></div>
+  </div>
+
+  <div class="grid-scroll-wrapper">
+    <div class="grid-container" id="grid-container">
+      <div class="grid-headers" id="grid-headers">
+        <div class="col-header" id="hdr-name">Jogador</div>
+        <div class="col-header" id="hdr-country">País</div>
+        <div class="col-header" id="hdr-team">Time</div>
+        <div class="col-header" id="hdr-age">Idade</div>
+        <div class="col-header" id="hdr-role">Função</div>
+        <div class="col-header" id="hdr-titles">Títulos</div>
+        <div class="col-header" id="hdr-years">Anos Ativo</div>
+      </div>
+      <div class="guess-grid" id="guess-grid"></div>
+    </div>
+  </div>
+
+  <div class="result-panel" id="result-banner">
+    <div class="result-status" id="banner-title"></div>
+    <div class="result-body">
+      <div class="result-player" id="result-player-card">
+        <div class="result-flag" id="result-flag"></div>
+        <div>
+          <span class="result-player-name" id="result-name"></span>
+          <span class="result-player-sub" id="result-sub"></span>
+        </div>
+      </div>
+      <div id="result-graph" style="display:none">
+        <span class="result-graph-label" id="result-graph-label">Tentativas</span>
+        <div class="attempt-track" id="attempt-track"></div>
+      </div>
+      <div id="result-replay" style="display:none">
+        <span class="replay-label" id="replay-label">Último chute</span>
+        <div class="replay-cells" id="replay-cells"></div>
+      </div>
+      <div class="result-actions" id="banner-actions"></div>
+    </div>
+  </div>
+
+  <div class="daily-complete" id="daily-complete">
+    <span class="dc-eyebrow">Daily Completo</span>
+    <div class="daily-complete-title" id="dc-title">Parabéns!</div>
+    <div class="daily-complete-sub" id="dc-sub"></div>
+    <div class="result-actions" style="justify-content:center" id="dc-actions"></div>
+  </div>
+</div>
+
+<!-- Loading overlay — shown while API fetch runs -->
+<div id="loading-overlay">
+  <div class="lo-logo">AGENT<span>GUESS</span></div>
+  <div class="lo-spinner"></div>
+</div>
+
+<!-- Single global tooltip — direct child of body, no transform ancestors -->
+<div id="g-tip"></div>
+<div class="toast" id="toast"></div>
+
+<script src="players.js"></script>
+<script src="game-logic.js"></script>
+<script src="api.js"></script>
+<script>
+(function () {
+  "use strict";
+
+  // ── URL params ────────────────────────────────────────
+  const P      = new URLSearchParams(window.location.search);
+  const MODE   = P.get("mode") === "free" ? "free" : "daily";
+  const LEAGUE = P.get("league") || "all";
+
+  const LEAGUE_CONFIG = {
+    americas:{ label:"Americas", color:"#FF5400" },
+    emea:    { label:"EMEA",     color:"#C4FF00" },
+    pacific: { label:"Pacific",  color:"#00DCFF" },
+    china:   { label:"China",    color:"#FF1675" },
+    all:     { label:"All",      color:"#E5C96A" }
+  };
+
+  let ACTIVE; // set after initPlayersDB() resolves
+
+  let lang = loadLang();
+  let t    = I18N[lang];
+
+  // Per-league daily state keys
+  const DAILY_KEY_PREFIX = `agentguess_daily_${LEAGUE}_`;
+
+  function loadLeagueDailyState() {
+    try {
+      const raw = localStorage.getItem(DAILY_KEY_PREFIX + getDailyDateKey());
+      return raw ? JSON.parse(raw) : null;
+    } catch { return null; }
+  }
+  function saveLeagueDailyState(s) {
+    try {
+      localStorage.setItem(DAILY_KEY_PREFIX + getDailyDateKey(), JSON.stringify(s));
+    } catch {}
+  }
+
+  let state = {
+    mode:MODE, targets:[], currentRound:0,
+    guesses:[], roundResults:[], finished:false, dailyDone:false
+  };
+
+  let acHighlight = -1, acResults = [];
+  let FLIP_PENDING = false;
+
+  // ── Settings ──────────────────────────────────────────
+  let hardMode   = localStorage.getItem("agentguess_hard") === "1";
+  let soundOn    = localStorage.getItem("agentguess_sound") !== "0";
+
+  function toggleHard() {
+    hardMode = !hardMode;
+    localStorage.setItem("agentguess_hard", hardMode ? "1" : "0");
+    document.getElementById("hard-btn").classList.toggle("active", hardMode);
+  }
+  function toggleSound() {
+    soundOn = !soundOn;
+    localStorage.setItem("agentguess_sound", soundOn ? "1" : "0");
+    document.getElementById("sound-btn").classList.toggle("active", soundOn);
+  }
+
+  // ── Sound (Web Audio API) ──────────────────────────────
+  let audioCtx = null;
+  function getCtx() {
+    if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    return audioCtx;
+  }
+  function playTone(freq, dur, vol=0.07, type="sine", startDelay=0) {
+    if (!soundOn) return;
+    try {
+      const ctx  = getCtx();
+      const osc  = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = type; osc.frequency.value = freq;
+      gain.gain.setValueAtTime(vol, ctx.currentTime + startDelay);
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + startDelay + dur);
+      osc.connect(gain); gain.connect(ctx.destination);
+      osc.start(ctx.currentTime + startDelay);
+      osc.stop(ctx.currentTime + startDelay + dur + 0.05);
+    } catch(e) {}
+  }
+  function playSound(type) {
+    if (!soundOn) return;
+    if (type === "wrong") {
+      playTone(200, 0.22, 0.06, "triangle");
+    } else if (type === "correct") {
+      playTone(523, 0.15, 0.08); playTone(659, 0.15, 0.08, "sine", 0.12); playTone(784, 0.25, 0.08, "sine", 0.24);
+    } else if (type === "flip") {
+      playTone(480 + Math.random()*80, 0.07, 0.035, "sine");
+    } else if (type === "daily_win") {
+      [523,659,784,1046].forEach((f,i) => playTone(f, 0.2, 0.07, "sine", i*0.1));
+    }
+  }
+
+  // ── Flags ──────────────────────────────────────────────
+  function flagHtml(code) {
+    if (!code) return '<span class="fi fi-un"></span>';
+    return `<span class="fi fi-${code.toLowerCase()}" style="border-radius:2px"></span>`;
+  }
+
+  // ── Init ──────────────────────────────────────────────
+  function initGame() {
+    applyLang();
+    applyLeagueTag();
+    updateStreakChip();
+    setupHardSound();
+
+    if (MODE === "daily") {
+      const saved = loadDailyStateFull();
+      if (saved && saved.targets.length > 0) {
+        state = { ...state, ...saved };
+        if (state.dailyDone) { showDailyComplete(); renderRoundProgress(); return; }
+      } else {
+        state.targets = getDailyPlayers(ACTIVE);
+        state.roundResults=[]; state.currentRound=0; state.guesses=[]; state.finished=false;
+      }
+      renderRoundProgress();
+    } else {
+      state.targets=[getRandomPlayer(ACTIVE)]; state.currentRound=0; state.guesses=[]; state.finished=false;
+    }
+
+    renderRound();
+    setupInput();
+    setupGlobalTooltip();
+  }
+
+  function applyLeagueTag() {
+    const cfg = LEAGUE_CONFIG[LEAGUE];
+    if (!cfg) return;
+    const el = document.getElementById("league-tag");
+    el.style.display = "inline-block";
+    el.style.color = cfg.color;
+    el.style.border = `1px solid ${cfg.color}44`;
+    el.textContent = cfg.label;
+  }
+
+  function applyLang() {
+    t = I18N[lang];
+    document.documentElement.lang = lang;
+    document.getElementById("hdr-name").textContent    = t.attribs.name;
+    document.getElementById("hdr-country").textContent = t.attribs.country;
+    document.getElementById("hdr-team").textContent    = t.attribs.team;
+    document.getElementById("hdr-age").textContent     = t.attribs.age;
+    document.getElementById("hdr-role").textContent    = t.attribs.role;
+    document.getElementById("hdr-titles").textContent  = t.attribs.titles;
+    document.getElementById("hdr-years").textContent   = t.attribs.yearsActive;
+    document.getElementById("back-btn").textContent    = "← " + t.backLobby;
+    document.getElementById("guess-input").placeholder = t.guessPlaceholder;
+    document.getElementById("mode-tag").textContent    = MODE === "daily" ? "Daily Mode" : "Free Mode";
+  }
+
+  function setupHardSound() {
+    const hBtn = document.getElementById("hard-btn");
+    const sBtn = document.getElementById("sound-btn");
+    hBtn.classList.toggle("active", hardMode);
+    sBtn.classList.toggle("active", soundOn);
+    hBtn.addEventListener("click", toggleHard);
+    sBtn.addEventListener("click", toggleSound);
+  }
+
+  function updateStreakChip() {
+    const s = loadStats();
+    document.getElementById("streak-num").textContent = s.streak || 0;
+  }
+
+  // ── Render ────────────────────────────────────────────
+  function renderRound() {
+    state.guesses = state.guesses || []; state.finished = state.finished || false;
+    document.getElementById("round-label").textContent = MODE === "daily"
+      ? t.round(state.currentRound+1, DAILY_ROUNDS) : "Free Mode";
+    updateAttemptsLabel();
+    renderGrid();
+    document.getElementById("guess-input").disabled = state.finished;
+    document.getElementById("guess-btn").disabled   = state.finished;
+  }
+
+  function updateAttemptsLabel() {
+    const n = state.guesses.length;
+    const el = document.getElementById("attempts-label");
+    el.textContent = t.attempts(n, MAX_GUESSES);
+    el.classList.toggle("low", n >= MAX_GUESSES - 2);
+  }
+
+  function renderRoundProgress() {
+    const c = document.getElementById("round-progress");
+    if (MODE !== "daily") { c.style.display = "none"; return; }
+    c.style.display = "flex"; c.innerHTML = "";
+    for (let i = 0; i < DAILY_ROUNDS; i++) {
+      const pip = document.createElement("div");
+      pip.className = "round-pip";
+      if (i < state.currentRound) pip.classList.add((state.roundResults[i]&&state.roundResults[i].won)?"done":"failed");
+      else if (i === state.currentRound) pip.classList.add("active");
+      c.appendChild(pip);
+    }
+  }
+
+  function renderGrid() {
+    const grid = document.getElementById("guess-grid");
+    grid.innerHTML = "";
+    state.guesses.forEach(g => grid.appendChild(createGuessRow(g, false)));
+    for (let i=0; i < MAX_GUESSES - state.guesses.length; i++) grid.appendChild(createEmptyRow());
+  }
+
+  // ── Cell building ─────────────────────────────────────
+  function cellValue(fb, player) {
+    if (fb.attr === "role"         && t.roles[fb.value]) return t.roles[fb.value];
+    if (fb.attr === "yearsActive")                        return `${fb.value} ${t.years}`;
+    if (fb.attr === "titles" && fb.value === "Nenhum")    return t.noTitles;
+    if (fb.attr === "country")
+      return `<span class="cell-flag">${flagHtml(player.countryCode)} <span>${fb.value}</span></span>`;
+    return String(fb.value);
+  }
+
+  function createGuessRow(guessData, animate) {
+    const {player, feedback} = guessData;
+    const target = state.targets[state.currentRound];
+    const isWin  = player.id === target.id;
+    const row    = document.createElement("div");
+    row.className = "guess-row";
+
+    // Name cell
+    const nc = document.createElement("div");
+    nc.className = "guess-cell" + (isWin ? " correct" : "");
+    nc.innerHTML = `<span class="cell-value">${player.displayName}</span><span style="font-size:.62rem;color:var(--text-dim);font-family:var(--font-mono)">${player.league}</span>`;
+    nc.dataset.tip = buildNameTip(player);
+    row.appendChild(nc);
+
+    // Feedback cells
+    feedback.forEach((fb, i) => {
+      const cell = document.createElement("div");
+      cell.className = animate ? "guess-cell" : `guess-cell ${fb.status}`;
+      // In hard mode hide direction hints for age/yearsActive
+      const hint = (!hardMode && fb.hint) ? fb.hint : "";
+      cell.innerHTML = `<span class="cell-value">${cellValue(fb, player)}</span>${hint ? `<span class="cell-hint">${hint}</span>` : ""}`;
+      cell.dataset.tip = buildFeedbackTip(fb, player, target);
+      row.appendChild(cell);
+
+      if (animate) {
+        const delay = (i+1) * 115;
+        setTimeout(() => {
+          cell.classList.add("flip-out");
+          setTimeout(() => {
+            cell.classList.remove("flip-out");
+            cell.classList.add(fb.status, "flip-in");
+            playSound("flip");
+            setTimeout(() => cell.classList.remove("flip-in"), 180);
+          }, 170);
+        }, delay);
+      }
+    });
+
+    // Animate name cell
+    if (animate) {
+      nc.classList.remove("correct");
+      setTimeout(() => {
+        nc.classList.add("flip-out");
+        setTimeout(() => {
+          nc.classList.remove("flip-out");
+          if (isWin) nc.classList.add("correct");
+          nc.classList.add("flip-in");
+          setTimeout(() => nc.classList.remove("flip-in"), 180);
+        }, 170);
+      }, 0);
+    }
+    return row;
+  }
+
+  function createEmptyRow() {
+    const row = document.createElement("div");
+    row.className = "guess-row guess-row-empty";
+    for (let i=0; i<7; i++) {
+      const c = document.createElement("div"); c.className = "guess-cell empty"; row.appendChild(c);
+    }
+    return row;
+  }
+
+  // ── Tooltip data builders ─────────────────────────────
+  function buildNameTip(p) {
+    return `<span class="tip-title">${p.displayName}</span>` +
+      `<span class="tip-row">${flagHtml(p.countryCode)} ${p.country}</span>` +
+      `<span class="tip-row">${p.team} · ${p.league}</span>` +
+      `<span class="tip-row">${t.roles[p.role]||p.role} · ${p.age} ${t.years}</span>` +
+      `<span class="tip-row">${p.yearsActive} ${t.years} ${lang==="pt-BR"?"ativo":"active"}</span>`;
+  }
+
+  function buildFeedbackTip(fb, player, target) {
+    const isPT = lang === "pt-BR";
+    let h = `<span class="tip-title">${t.attribs[fb.attr]||fb.attr}</span>`;
+    const ok  = fb.status === "correct";
+    const mid = fb.status === "close";
+
+    if (fb.attr === "country") {
+      h += `<span class="tip-row">${flagHtml(player.countryCode)} ${player.country}</span>`;
+      h += `<span class="tip-row ${ok?"ok":"bad"}">${ok?(isPT?"Correto!":"Correct!"):(isPT?"Errado":"Wrong")}</span>`;
+    } else if (fb.attr === "team") {
+      h += `<span class="tip-row">${fb.value}</span>`;
+      h += `<span class="tip-row ${ok?"ok":"bad"}">${ok?(isPT?"Correto!":"Correct!"):(isPT?"Errado":"Wrong")}</span>`;
+    } else if (fb.attr === "age") {
+      const diff = target.age - player.age;
+      h += `<span class="tip-row">${fb.value} ${t.years}</span>`;
+      if (diff === 0) { h += `<span class="tip-row ok">${isPT?"Correto!":"Correct!"}</span>`; }
+      else {
+        const dir = diff>0?(isPT?"↑ Alvo é mais velho":"↑ Target is older"):(isPT?"↓ Alvo é mais novo":"↓ Target is younger");
+        const cl  = Math.abs(diff) <= 3;
+        h += `<span class="tip-row">${dir}</span>`;
+        h += `<span class="tip-row ${cl?"mid":"bad"}">${cl?(isPT?"Quase!":"Close!"):(isPT?"Longe!":"Far!")}</span>`;
+      }
+    } else if (fb.attr === "role") {
+      h += `<span class="tip-row">${t.roles[fb.value]||fb.value}</span>`;
+      if (ok)       h += `<span class="tip-row ok">${isPT?"Correto!":"Correct!"}</span>`;
+      else if (mid) h += `<span class="tip-row mid">${isPT?"Mesmo grupo":"Same group"}</span>`;
+      else          h += `<span class="tip-row bad">${isPT?"Grupo diferente":"Different group"}</span>`;
+    } else if (fb.attr === "titles") {
+      if (fb.fullList && fb.fullList.length > 0) fb.fullList.forEach(tt => { h += `<span class="tip-row">— ${tt}</span>`; });
+      else h += `<span class="tip-row">${t.noTitles}</span>`;
+      h += `<span class="tip-row ${ok?"ok":"bad"}">${ok?(isPT?"Correto!":"Correct!"):(isPT?"Diferente":"Different")}</span>`;
+    } else if (fb.attr === "yearsActive") {
+      const diff = (target.yearsActive||0) - (player.yearsActive||0);
+      h += `<span class="tip-row">${fb.value} ${t.years}</span>`;
+      if (diff === 0) { h += `<span class="tip-row ok">${isPT?"Correto!":"Correct!"}</span>`; }
+      else {
+        const dir = diff>0?(isPT?"↑ Alvo tem mais":"↑ Target has more"):(isPT?"↓ Alvo tem menos":"↓ Target has less");
+        const cl  = Math.abs(diff) <= 1;
+        h += `<span class="tip-row">${dir}</span>`;
+        h += `<span class="tip-row ${cl?"mid":"bad"}">${cl?(isPT?"Quase!":"Close!"):(isPT?"Longe!":"Far!")}</span>`;
+      }
+    }
+    return h;
+  }
+
+  // ── Global Tooltip (position:fixed, child of body) ─────
+  // Avoids ANY transform/overflow context issues
+  function setupGlobalTooltip() {
+    const tip  = document.getElementById("g-tip");
+    const grid = document.getElementById("guess-grid");
+    let   cur  = null;
+
+    function show(cell) {
+      const data = cell.dataset.tip;
+      if (!data) return;
+      tip.innerHTML = data;
+      tip.style.display = "block";
+      tip.classList.remove("tip-above");
+
+      const r = cell.getBoundingClientRect();
+      const cx = r.left + r.width / 2;
+
+      // Position below by default
+      tip.style.top  = (r.bottom + 8) + "px";
+      tip.style.left = cx + "px";
+      tip.style.transform = "translateX(-50%)";
+
+      // After paint: clamp & flip if needed
+      requestAnimationFrame(() => {
+        const tr = tip.getBoundingClientRect();
+        // Flip above if overflows bottom
+        if (tr.bottom > window.innerHeight - 10) {
+          tip.style.top = (r.top - tr.height - 8) + "px";
+          tip.classList.add("tip-above");
+        }
+        // Clamp horizontal
+        const tr2 = tip.getBoundingClientRect();
+        if (tr2.right > window.innerWidth - 8)  tip.style.left = (cx - (tr2.right - window.innerWidth + 8)) + "px";
+        if (tr2.left  < 8)                       tip.style.left = (cx + (8 - tr2.left)) + "px";
+      });
+
+      cur = cell;
+    }
+
+    function hide() {
+      tip.style.display = "none";
+      tip.classList.remove("tip-above");
+      cur = null;
+    }
+
+    grid.addEventListener("mouseover", e => {
+      const cell = e.target.closest(".guess-cell:not(.empty)");
+      if (cell && cell !== cur) show(cell);
+      else if (!cell) hide();
+    });
+    grid.addEventListener("mouseleave", hide);
+    // Also hide on scroll
+    document.querySelector(".grid-scroll-wrapper").addEventListener("scroll", hide);
+  }
+
+  // ── Autocomplete ──────────────────────────────────────
+  function setupInput() {
+    const input = document.getElementById("guess-input");
+    const btn   = document.getElementById("guess-btn");
+
+    input.addEventListener("input", () => {
+      const q = input.value.trim().toLowerCase();
+      if (!q) { hideAC(); return; }
+      const used = state.guesses.map(g => g.player.id);
+      acResults = ACTIVE.filter(p =>
+        (p.name.toLowerCase().includes(q) || p.displayName.toLowerCase().includes(q)) && !used.includes(p.id)
+      ).slice(0, 8);
+      renderAC(acResults);
+    });
+
+    input.addEventListener("keydown", e => {
+      if      (e.key==="ArrowDown"){ e.preventDefault(); acHighlight=Math.min(acHighlight+1,acResults.length-1); hlAC(); }
+      else if (e.key==="ArrowUp")  { e.preventDefault(); acHighlight=Math.max(acHighlight-1,-1); hlAC(); }
+      else if (e.key==="Enter")    { e.preventDefault(); acHighlight>=0&&acResults[acHighlight]?selectP(acResults[acHighlight]):submitGuess(); }
+      else if (e.key==="Escape")   hideAC();
+    });
+
+    btn.addEventListener("click", submitGuess);
+    document.addEventListener("click", e => { if (!e.target.closest(".input-section")) hideAC(); });
+  }
+
+  function renderAC(players) {
+    const list = document.getElementById("autocomplete-list");
+    if (!players.length) { list.style.display="none"; return; }
+    list.style.display="block"; acHighlight=-1; list.innerHTML="";
+    players.forEach(p => {
+      const item = document.createElement("div");
+      item.className = "autocomplete-item";
+      item.innerHTML = `<span class="ac-flag">${flagHtml(p.countryCode)}</span><span><span class="ac-name">${p.displayName}</span><span class="ac-team"> · ${p.team}</span></span><span class="ac-league">${p.league}</span>`;
+      item.addEventListener("mousedown", e => { e.preventDefault(); selectP(p); });
+      list.appendChild(item);
+    });
+  }
+
+  function hlAC() {
+    document.querySelectorAll(".autocomplete-item").forEach((el,i)=>el.classList.toggle("highlighted",i===acHighlight));
+    if (acHighlight>=0&&acResults[acHighlight]) document.getElementById("guess-input").value=acResults[acHighlight].displayName;
+  }
+
+  function selectP(player) { document.getElementById("guess-input").value=player.displayName; hideAC(); submitGuessForPlayer(player); }
+  function hideAC() { document.getElementById("autocomplete-list").style.display="none"; acResults=[]; acHighlight=-1; }
+
+  // ── Submit ────────────────────────────────────────────
+  function submitGuess() {
+    if (FLIP_PENDING) return;
+    const q = document.getElementById("guess-input").value.trim().toLowerCase();
+    if (!q) return;
+    const player = ACTIVE.find(p => p.name.toLowerCase()===q || p.displayName.toLowerCase()===q);
+    if (!player) { showError(t.notFound); return; }
+    submitGuessForPlayer(player);
+  }
+
+  function submitGuessForPlayer(player) {
+    if (FLIP_PENDING || state.finished) return;
+    clearError();
+    if (state.guesses.some(g => g.player.id===player.id)) { showError(t.alreadyGuessed); return; }
+
+    const target   = state.targets[state.currentRound];
+    const feedback = compareGuess(player, target);
+    state.guesses.push({ player, feedback });
+    document.getElementById("guess-input").value = "";
+    hideAC();
+
+    // Insert animated row BEFORE the first empty row (so guesses always stack at top)
+    const grid    = document.getElementById("guess-grid");
+    const empties = grid.querySelectorAll(".guess-row-empty");
+    if (empties.length) empties[empties.length-1].remove();
+    const newRow     = createGuessRow({player, feedback}, true);
+    const firstEmpty = grid.querySelector(".guess-row-empty");
+    if (firstEmpty) grid.insertBefore(newRow, firstEmpty);
+    else            grid.appendChild(newRow);
+    updateAttemptsLabel();
+
+    const FLIP_MS  = 7 * 115 + 170 + 180;
+    const won      = player.id === target.id;
+    const outOfG   = state.guesses.length >= MAX_GUESSES;
+
+    if (won || outOfG) {
+      FLIP_PENDING = true;
+      document.getElementById("guess-btn").disabled   = true;
+      document.getElementById("guess-input").disabled = true;
+      setTimeout(() => {
+        FLIP_PENDING = false;
+        endRound(won, target);
+        playSound(won ? "correct" : "wrong");
+      }, FLIP_MS + 100);
+    }
+
+    if (MODE === "daily") saveLeagueDailyState(getSerializableState());
+  }
+
+  // ── End round ─────────────────────────────────────────
+  function endRound(won, target) {
+    state.finished = true;
+    document.getElementById("guess-input").disabled = true;
+    document.getElementById("guess-btn").disabled   = true;
+    if (MODE==="daily") { state.roundResults.push({won, guesses:state.guesses}); renderRoundProgress(); }
+    if (MODE==="free")  updateStats(won, true);
+    showRoundResult(won, target);
+    if (MODE==="daily") saveLeagueDailyState(getSerializableState());
+  }
+
+  function showRoundResult(won, target) {
+    const panel = document.getElementById("result-banner");
+    panel.style.display = "block";
+    panel.className     = "result-panel " + (won?"won":"lost");
+
+    document.getElementById("banner-title").textContent = won
+      ? (lang==="pt-BR"?"Correto!":"Correct!")
+      : (lang==="pt-BR"?`Era: ${target.displayName}`:`It was: ${target.displayName}`);
+
+    document.getElementById("result-flag").innerHTML = flagHtml(target.countryCode);
+    document.getElementById("result-name").textContent = target.displayName;
+    document.getElementById("result-sub").textContent  = `${target.team} · ${t.roles[target.role]||target.role} · ${target.age} ${t.years} · ${target.yearsActive} ${t.years} ${lang==="pt-BR"?"ativo":"active"}`;
+
+    // Attempt graph
+    const graphDiv = document.getElementById("result-graph");
+    graphDiv.style.display = "block";
+    document.getElementById("result-graph-label").textContent = lang==="pt-BR"
+      ? `${state.guesses.length} de ${MAX_GUESSES} tentativas`
+      : `${state.guesses.length} of ${MAX_GUESSES} attempts`;
+    const track = document.getElementById("attempt-track");
+    track.innerHTML = "";
+    for (let i=1; i<=MAX_GUESSES; i++) {
+      const dot = document.createElement("div");
+      dot.className = "attempt-dot"; dot.textContent = i;
+      if (i < state.guesses.length)      dot.classList.add("wrong");
+      else if (i === state.guesses.length) dot.classList.add(won?"win":"wrong");
+      track.appendChild(dot);
+    }
+
+    // Replay
+    const repDiv = document.getElementById("result-replay");
+    repDiv.style.display = "block";
+    document.getElementById("replay-label").textContent = lang==="pt-BR"?"Último chute":"Last guess";
+    const cells = document.getElementById("replay-cells");
+    cells.innerHTML = "";
+    const last = state.guesses[state.guesses.length-1];
+    if (last) last.feedback.forEach(fb => {
+      const sq = document.createElement("div");
+      sq.className = `replay-cell ${fb.status}`; sq.title = fb.attr;
+      cells.appendChild(sq);
+    });
+
+    const acts = document.getElementById("banner-actions");
+    acts.innerHTML = "";
+    if (MODE==="daily" && state.currentRound < DAILY_ROUNDS-1)
+      acts.appendChild(makeBtn(lang==="pt-BR"?"Próximo →":"Next →","btn-action btn-next",advanceRound));
+    if (MODE==="free")
+      acts.appendChild(makeBtn(t.playAgain,"btn-action btn-next",startFreeRound));
+    if (MODE==="daily" && state.currentRound===DAILY_ROUNDS-1)
+      setTimeout(completeDailyAndFinish, 600);
+
+    acts.appendChild(makeBtn(t.shareBtn,"btn-action btn-share",shareDaily));
+    acts.appendChild(makeBtn(lang==="pt-BR"?"Img":"Img","btn-action btn-img",shareImage));
+    acts.appendChild(makeBtn(t.backLobby,"btn-action btn-lobby",()=>{ window.location.href="lobby.html"; }));
+  }
+
+  function makeBtn(label, cls, fn) {
+    const b = document.createElement("button");
+    b.className=cls; b.textContent=label; b.addEventListener("click",fn); return b;
+  }
+
+  // ── Advance / Free ────────────────────────────────────
+  function advanceRound() {
+    state.currentRound++; state.guesses=[]; state.finished=false;
+    document.getElementById("result-banner").style.display="none";
+    document.getElementById("guess-input").disabled=false;
+    document.getElementById("guess-btn").disabled=false;
+    renderRoundProgress(); renderRound();
+    saveLeagueDailyState(getSerializableState());
+  }
+
+  function completeDailyAndFinish() {
+    state.dailyDone = true;
+    const wins = state.roundResults.filter(r=>r.won).length;
+    updateStats(wins===DAILY_ROUNDS, true);
+    saveLeagueDailyState(getSerializableState());
+    updateStreakChip();
+    showDailyComplete();
+    if (wins === DAILY_ROUNDS) launchConfetti();
+    else if (wins > 0) playSound("correct");
+    playSound("daily_win");
+  }
+
+  function showDailyComplete() {
+    document.getElementById("daily-complete").style.display    = "block";
+    document.getElementById("result-banner").style.display     = "none";
+    document.querySelector(".input-section").style.display     = "none";
+    document.querySelector(".grid-scroll-wrapper").style.display = "none";
+    document.querySelector(".round-info").style.display        = "none";
+    const wins   = (state.roundResults||[]).filter(r=>r.won).length;
+    document.getElementById("dc-title").textContent = wins===DAILY_ROUNDS
+      ? (lang==="pt-BR"?"Daily Completo!":"Daily Complete!")
+      : (lang==="pt-BR"?"Daily Encerrado":"Daily Ended");
+    document.getElementById("dc-sub").textContent = lang==="pt-BR"
+      ? `Você acertou ${wins} de ${DAILY_ROUNDS} rounds.`
+      : `You got ${wins} out of ${DAILY_ROUNDS} rounds.`;
+    const acts = document.getElementById("dc-actions");
+    acts.innerHTML = "";
+    acts.appendChild(makeBtn(t.shareBtn,"btn-action btn-next",shareDaily));
+    acts.appendChild(makeBtn(lang==="pt-BR"?"Salvar Img":"Save Img","btn-action btn-share",shareImage));
+    acts.appendChild(makeBtn(t.backLobby,"btn-action btn-lobby",()=>{ window.location.href="lobby.html"; }));
+  }
+
+  function startFreeRound() {
+    const used = state.targets.map(p=>p.id);
+    state.targets=[getRandomPlayer(ACTIVE,used)||getRandomPlayer(ACTIVE)];
+    state.guesses=[]; state.finished=false;
+    document.getElementById("result-banner").style.display="none";
+    document.getElementById("guess-input").disabled=false;
+    document.getElementById("guess-btn").disabled=false;
+    renderRound();
+  }
+
+  // ── Stats ──────────────────────────────────────────────
+  function updateStats(won, countPlay) {
+    const s = loadStats();
+    if (countPlay) s.played++;
+    if (won) { s.wins++; s.streak++; s.maxStreak=Math.max(s.streak,s.maxStreak); }
+    else s.streak=0;
+    saveStats(s);
+  }
+
+  // ── Share (text) ──────────────────────────────────────
+  function shareDaily() {
+    const text = generateShareText(getDailyDateKey(), state.roundResults, lang);
+    if (navigator.clipboard)
+      navigator.clipboard.writeText(text)
+        .then(()=>showToast(lang==="pt-BR"?"Copiado!":"Copied!"))
+        .catch(()=>fallbackCopy(text));
+    else fallbackCopy(text);
+  }
+  function fallbackCopy(text) {
+    const ta=document.createElement("textarea"); ta.value=text;
+    document.body.appendChild(ta); ta.select(); document.execCommand("copy");
+    document.body.removeChild(ta); showToast(lang==="pt-BR"?"Copiado!":"Copied!");
+  }
+
+  // ── Share as Image (canvas) ────────────────────────────
+  function shareImage() {
+    const guesses    = state.guesses;
+    const DPR        = Math.min(window.devicePixelRatio||1, 2);
+    const COLS       = 6;  // feedback columns
+    const CELL       = 22; // px per mini cell
+    const GAP        = 3;
+    const PAD        = 20;
+    const ROW_H      = CELL + GAP;
+    const W          = PAD*2 + (COLS*CELL + (COLS-1)*GAP);
+    const H          = PAD*2 + 64 + guesses.length*ROW_H + 20;
+
+    const canvas = document.createElement("canvas");
+    canvas.width  = W * DPR; canvas.height = H * DPR;
+    const ctx = canvas.getContext("2d");
+    ctx.scale(DPR, DPR);
+
+    // Background
+    ctx.fillStyle = "#08090d"; ctx.fillRect(0,0,W,H);
+
+    // Dot grid
+    ctx.fillStyle = "#1c1f2e";
+    for (let gx=0; gx<W; gx+=14) for (let gy=0; gy<H; gy+=14) ctx.fillRect(gx,gy,1,1);
+
+    // Title
+    ctx.font = "bold 18px 'Russo One', sans-serif";
+    ctx.fillStyle = "#eeeef5";
+    ctx.fillText("AGENT", PAD, PAD+18);
+    ctx.fillStyle = "#FF4655";
+    ctx.fillText("GUESS", PAD + ctx.measureText("AGENT").width, PAD+18);
+
+    // Date + league
+    ctx.font = "10px 'Space Mono', monospace";
+    ctx.fillStyle = "#50536a";
+    ctx.fillText(`${getDailyDateKey()} · ${(LEAGUE_CONFIG[LEAGUE]||{label:"All"}).label}`, PAD, PAD+36);
+
+    // Hard mode badge
+    if (hardMode) {
+      ctx.fillStyle = "#FF4655"; ctx.font = "9px 'Space Mono', monospace";
+      const hx = PAD + ctx.measureText(`${getDailyDateKey()} · ${(LEAGUE_CONFIG[LEAGUE]||{label:"All"}).label}  `).width;
+      ctx.fillText("HARD", hx, PAD+36);
+    }
+
+    // Separator
+    ctx.strokeStyle = "#1c1f2e"; ctx.lineWidth=1;
+    ctx.beginPath(); ctx.moveTo(PAD,PAD+46); ctx.lineTo(W-PAD,PAD+46); ctx.stroke();
+
+    // Guess cells
+    const colors = {
+      correct: { bg:"#0d1f14", bd:"#34d47e" },
+      close:   { bg:"#1a1408", bd:"#f0b429" },
+      wrong:   { bg:"#160508", bd:"#FF4655" }
+    };
+
+    guesses.forEach((g, gi) => {
+      const gy = PAD + 58 + gi*ROW_H;
+      g.feedback.forEach((fb, fi) => {
+        const gx = PAD + fi*(CELL+GAP);
+        const c  = colors[fb.status] || colors.wrong;
+        ctx.fillStyle   = c.bg;
+        ctx.strokeStyle = c.bd;
+        ctx.lineWidth   = 1;
+        ctx.beginPath();
+        ctx.roundRect(gx, gy, CELL, CELL, 2);
+        ctx.fill(); ctx.stroke();
+      });
+    });
+
+    // "agentguess" watermark
+    ctx.font = "9px 'Space Mono', monospace";
+    ctx.fillStyle = "#252838";
+    ctx.fillText("agentguess", PAD, H-7);
+
+    // Download
+    canvas.toBlob(blob => {
+      if (navigator.share && navigator.canShare && navigator.canShare({files:[new File([blob],"result.png",{type:"image/png"})]})) {
+        navigator.share({ files:[new File([blob],"agentguess.png",{type:"image/png"})], title:"AgentGuess" })
+          .catch(()=>downloadBlob(blob));
+      } else {
+        downloadBlob(blob);
+      }
+    }, "image/png");
+  }
+
+  function downloadBlob(blob) {
+    const url = URL.createObjectURL(blob);
+    const a   = document.createElement("a");
+    a.href=url; a.download=`agentguess-${getDailyDateKey()}.png`;
+    a.click(); URL.revokeObjectURL(url);
+    showToast(lang==="pt-BR"?"Imagem salva!":"Image saved!");
+  }
+
+  // ── Confetti ──────────────────────────────────────────
+  function launchConfetti() {
+    const canvas = document.createElement("canvas");
+    canvas.style.cssText="position:fixed;inset:0;z-index:8999;pointer-events:none;width:100%;height:100%";
+    canvas.width=window.innerWidth; canvas.height=window.innerHeight;
+    document.body.appendChild(canvas);
+    const ctx    = canvas.getContext("2d");
+    const colors = ["#FF4655","#ffffff","#FF8C94","#ffccd1","#cc2233","#ff6670","#FF5400","#C4FF00"];
+    const pieces = Array.from({length:110}, ()=>({
+      x: Math.random()*canvas.width, y: -10-Math.random()*120,
+      w: 4+Math.random()*9, h: 3+Math.random()*5,
+      r: Math.random()*Math.PI*2, rv:(Math.random()-.5)*.18,
+      vx:(Math.random()-.5)*2.2, vy:1.8+Math.random()*3,
+      g:0.04+Math.random()*.04,
+      c:colors[Math.floor(Math.random()*colors.length)]
+    }));
+    let raf;
+    (function draw() {
+      ctx.clearRect(0,0,canvas.width,canvas.height);
+      let alive=false;
+      pieces.forEach(p => {
+        p.x+=p.vx; p.y+=p.vy; p.vy+=p.g; p.r+=p.rv;
+        if (p.y<canvas.height+20) alive=true;
+        ctx.save(); ctx.translate(p.x,p.y); ctx.rotate(p.r);
+        ctx.fillStyle=p.c; ctx.fillRect(-p.w/2,-p.h/2,p.w,p.h);
+        ctx.restore();
+      });
+      if (alive) raf=requestAnimationFrame(draw); else canvas.remove();
+    })();
+    setTimeout(()=>{ cancelAnimationFrame(raf); canvas.remove(); }, 5500);
+  }
+
+  // ── Toast ──────────────────────────────────────────────
+  function showToast(msg) {
+    const el=document.getElementById("toast");
+    el.textContent=msg; el.classList.add("show");
+    setTimeout(()=>el.classList.remove("show"),2200);
+  }
+  function showError(msg) { document.getElementById("input-error").textContent=msg; }
+  function clearError()   { document.getElementById("input-error").textContent=""; }
+
+  // ── Serialisation ──────────────────────────────────────
+  function getSerializableState() {
+    return {
+      mode:state.mode, targets:state.targets.map(p=>p.id), currentRound:state.currentRound,
+      guesses:state.guesses.map(g=>({playerId:g.player.id,feedback:g.feedback})),
+      roundResults:(state.roundResults||[]).map(r=>({won:r.won,guesses:r.guesses.map(g=>({playerId:g.player.id,feedback:g.feedback}))})),
+      finished:state.finished, dailyDone:state.dailyDone
+    };
+  }
+  function loadDailyStateFull() {
+    const raw=loadLeagueDailyState(); if (!raw) return null;
+    const pm=Object.fromEntries(PLAYERS_DB.map(p=>[p.id,p]));
+    return {
+      mode:raw.mode, targets:(raw.targets||[]).map(id=>pm[id]).filter(Boolean),
+      currentRound:raw.currentRound||0,
+      guesses:(raw.guesses||[]).map(g=>({player:pm[g.playerId],feedback:g.feedback})).filter(g=>g.player),
+      roundResults:(raw.roundResults||[]).map(r=>({won:r.won,guesses:(r.guesses||[]).map(g=>({player:pm[g.playerId],feedback:g.feedback})).filter(g=>g.player)})),
+      finished:raw.finished||false, dailyDone:raw.dailyDone||false
+    };
+  }
+
+  document.addEventListener("DOMContentLoaded", async function () {
+    await window.initPlayersDB();
+    ACTIVE = LEAGUE === "all" ? PLAYERS_DB : PLAYERS_DB.filter(p => p.leagueId === LEAGUE);
+    document.getElementById("loading-overlay").style.display = "none";
+    initGame();
+  });
+})();
+</script>
+</body>
+</html>

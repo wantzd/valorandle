@@ -1,0 +1,36 @@
+name: Update Player Data
+
+on:
+  schedule:
+    - cron: '0 6 * * 1'   # Every Monday at 06:00 UTC
+  workflow_dispatch:        # Manual trigger from the GitHub Actions UI
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: pip install httpx
+
+      - name: Build org-map.json
+        run: python .github/scripts/build_orgmap.py
+        env:
+          VLRGG_API_URL: ${{ secrets.VLRGG_API_URL }}
+
+      - name: Upload org-map.json to Hostinger via FTP
+        run: |
+          sudo apt-get install -y lftp
+          lftp -u "${{ secrets.FTP_USER }},${{ secrets.FTP_PASS }}" \
+            -e "set ftp:ssl-allow no; \
+                put org-map.json -o ${{ secrets.FTP_PATH }}/org-map.json; \
+                bye" \
+            ${{ secrets.FTP_HOST }}
