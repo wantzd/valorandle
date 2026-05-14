@@ -224,12 +224,25 @@ function compareAge(guess, target) {
   return { attr: "age", value: guess.age, status, hint };
 }
 
-// ROLE — Verde exato, Amarelo se mesmo grupo, Vermelho senão
+// ROLE — Verde exato, Amarelo se mesmo grupo ou mesma base, Vermelho senão
+// Suporta roles compostas tipo "Duelist (Flex)":
+//   - Mesma string exata → verde
+//   - Mesma base (ex: "Duelist" vs "Duelist (Flex)") → amarelo
+//   - Grupos existentes (Flex↔Initiator/Sentinel, etc.) usando base → amarelo
 function compareRole(guess, target) {
   const gr = guess.role, tr = target.role;
   if (gr === tr) return { attr: "role", value: gr, status: "correct", hint: null };
-  const sameGroup = (ROLE_GROUPS[gr] || []).includes(tr) ||
-                    (ROLE_GROUPS[tr] || []).includes(gr);
+
+  // Extrai base: "Duelist (Flex)" → "Duelist"
+  const gBase = gr.replace(" (Flex)", "");
+  const tBase = tr.replace(" (Flex)", "");
+
+  // Mesma base → amarelo (ex: "Duelist" vs "Duelist (Flex)")
+  if (gBase === tBase) return { attr: "role", value: gr, status: "close", hint: null };
+
+  // Grupos existentes usando a base de cada role
+  const sameGroup = (ROLE_GROUPS[gBase] || []).includes(tBase) ||
+                    (ROLE_GROUPS[tBase] || []).includes(gBase);
   return { attr: "role", value: gr, status: sameGroup ? "close" : "wrong", hint: null };
 }
 

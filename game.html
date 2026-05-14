@@ -264,6 +264,7 @@
     .tip-row.ok  { color:var(--green); }
     .tip-row.bad { color:var(--red); }
     .tip-row.mid { color:var(--yellow); }
+    .tip-note { display:block; margin-top:0.4rem; font-size:0.6rem; opacity:0.5; font-style:italic; }
 
     /* ── Result panel ── */
     .result-panel {
@@ -692,7 +693,11 @@
 
   // ── Cell building ─────────────────────────────────────
   function cellValue(fb, player) {
-    if (fb.attr === "role") return t.roles[fb.value] || fb.value || "";
+    if (fb.attr === "role") {
+      const isFlex = fb.value.includes(" (Flex)");
+      const base   = fb.value.replace(" (Flex)", "");
+      return (t.roles[base] || base) + (isFlex ? " (Flex)" : "");
+    }
     if (fb.attr === "yearsActive")                        return `${fb.value} ${t.years}`;
     if (fb.attr === "titles" && fb.value === "Nenhum")    return t.noTitles;
     if (fb.attr === "country") {
@@ -770,7 +775,7 @@
     return `<span class="tip-title">${p.displayName}</span>` +
       `<span class="tip-row">${flagHtml(p.countryCode)} ${p.country}</span>` +
       `<span class="tip-row">${p.team} · ${p.league}</span>` +
-      `<span class="tip-row">${t.roles[p.role]||p.role} · ${p.age} ${t.years}</span>` +
+      `<span class="tip-row">${(()=>{ const iF=p.role?.includes(" (Flex)"); const b=(p.role||"").replace(" (Flex)",""); return (t.roles[b]||b)+(iF?" (Flex)":""); })()} · ${p.age} ${t.years}</span>` +
       `<span class="tip-row">${p.yearsActive} ${t.years} ${lang==="pt-BR"?"ativo":"active"}</span>`;
   }
 
@@ -797,10 +802,14 @@
         h += `<span class="tip-row ${cl?"mid":"bad"}">${cl?(isPT?"Quase!":"Close!"):(isPT?"Longe!":"Far!")}</span>`;
       }
     } else if (fb.attr === "role") {
-      h += `<span class="tip-row">${t.roles[fb.value]||fb.value}</span>`;
+      const isFlex = fb.value.includes(" (Flex)");
+      const base   = fb.value.replace(" (Flex)", "");
+      const disp   = (t.roles[base] || base) + (isFlex ? " (Flex)" : "");
+      h += `<span class="tip-row">${disp}</span>`;
       if (ok)       h += `<span class="tip-row ok">${isPT?"Correto!":"Correct!"}</span>`;
       else if (mid) h += `<span class="tip-row mid">${isPT?"Mesmo grupo":"Same group"}</span>`;
       else          h += `<span class="tip-row bad">${isPT?"Grupo diferente":"Different group"}</span>`;
+      h += `<span class="tip-note">${isPT?"Baseado nas últimas 5 partidas oficiais":"Based on last 5 official matches"}</span>`;
     } else if (fb.attr === "titles") {
       if (fb.fullList && fb.fullList.length > 0) fb.fullList.forEach(tt => { h += `<span class="tip-row">— ${tt}</span>`; });
       else h += `<span class="tip-row">${t.noTitles}</span>`;

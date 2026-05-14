@@ -82,8 +82,12 @@ def agent_to_role(agent_name):
 def detect_role(agent_list):
     """
     Given a list of agents (ordered by recency/frequency), return dominant role.
-    Uses equal weighting — intended for recent match agent lists.
-    Returns None if no known agents found.
+
+    Rules:
+      - Dominant role with no significant secondary → pure role (e.g. "Duelist")
+      - Dominant role AND secondary appears 2+ times → compound (e.g. "Duelist (Flex)")
+      - No single dominant (tied counts) → "Flex"
+      - Unknown agents ignored. Returns None if no known agents.
     """
     role_counts = defaultdict(int)
     for agent in agent_list:
@@ -92,9 +96,21 @@ def detect_role(agent_list):
             role_counts[role] += 1
     if not role_counts:
         return None
-    total = sum(role_counts.values())
-    dominant = max(role_counts, key=role_counts.get)
-    return dominant if role_counts[dominant] / total >= 0.50 else "Flex"
+
+    dominant      = max(role_counts, key=role_counts.get)
+    dominant_count = role_counts[dominant]
+    max_secondary  = max((c for r, c in role_counts.items() if r != dominant), default=0)
+
+    # Tied → no clear primary → Flex
+    if dominant_count == max_secondary:
+        return "Flex"
+
+    # Secondary role played 2+ times → player is considered a flex
+    if max_secondary >= 2:
+        return f"{dominant} (Flex)"
+
+    # Secondary negligible (0 or 1 pick) → pure role
+    return dominant
 
 
 # ── Step 1: Build team map + all-time fallback agents from vlrgg stats ────────
