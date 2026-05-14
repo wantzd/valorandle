@@ -226,47 +226,64 @@ print(f"[roles] Detected {len(role_map)} roles ({recent_roles} from recent match
 
 
 # ── Step 4: Liquipedia API — birthdate → age ──────────────────────────────────
-# DISABLED: awaiting Liquipedia API key approval.
-# To enable: uncomment this block and ensure LIQUIPEDIA_API_KEY secret is set.
+# Runs automatically when LIQUIPEDIA_API_KEY secret is set in GitHub Actions.
+# No code changes needed — just add the secret and it activates.
 #
-# from datetime import date
-# age_map = {}
-# LIQUIPEDIA_KEY = os.environ.get("LIQUIPEDIA_API_KEY", "").strip()
-# if LIQUIPEDIA_KEY:
-#     print("[Liquipedia] Fetching player birthdates...")
-#     today = date.today()
-#     liq_headers = {
-#         "Authorization": f"Apikey {LIQUIPEDIA_KEY}",
-#         "Accept":        "application/json",
-#     }
-#     liq_errors = 0
-#     for pname in list(org_map.keys()):
-#         page = pname.title()
-#         try:
-#             r = httpx.get(
-#                 "https://api.liquipedia.net/api/v3/player",
-#                 params={"wiki": "valorant",
-#                         "conditions": f"[[pagename::{page}]]",
-#                         "fields": "id,birthdate"},
-#                 headers=liq_headers,
-#                 timeout=15,
-#                 follow_redirects=True,
-#             )
-#             result = r.json().get("result", [])
-#             if result and result[0].get("birthdate"):
-#                 bd = date.fromisoformat(result[0]["birthdate"])
-#                 age = today.year - bd.year - ((today.month, today.day) < (bd.month, bd.day))
-#                 age_map[pname] = age
-#         except Exception as e:
-#             liq_errors += 1
-#             if liq_errors <= 3:
-#                 print(f"  ✗ Liquipedia miss: {pname} — {e}")
-#         time.sleep(1.1)
-#     print(f"  ✓ Got age for {len(age_map)} players ({liq_errors} misses)\n")
-# else:
-#     print("[Liquipedia] LIQUIPEDIA_API_KEY not set — skipping\n")
+# API: https://api.liquipedia.net/api/v3/player
+# Rate limit: 1 req/second. ~60 players = ~60s. Well within weekly budget.
+# Name lookup: tries pname.title() first (e.g. "aspas" → "Aspas"),
+#              then pname as-is for players with unusual casing (e.g. "BABYBAY").
 
-age_map = {}   # empty until Liquipedia block is re-enabled
+from datetime import date as _date
+
+age_map = {}
+LIQUIPEDIA_KEY = os.environ.get("LIQUIPEDIA_API_KEY", "").strip()
+
+if not LIQUIPEDIA_KEY:
+    print("[Liquipedia] LIQUIPEDIA_API_KEY not set — age remains hardcoded in players.js\n")
+else:
+    print("[Liquipedia] Fetching player birthdates...")
+    today = _date.today()
+    liq_headers = {
+        "Authorization": f"Apikey {LIQUIPEDIA_KEY}",
+        "Accept":        "application/json",
+    }
+    liq_ok = liq_errors = 0
+
+    for pname in list(org_map.keys()):
+        # Try title-case first (aspas→Aspas), then original (BABYBAY stays BABYBAY)
+        candidates = [pname.title(), pname] if pname.title() != pname else [pname]
+        found = False
+        for candidate in candidates:
+            try:
+                r = httpx.get(
+                    "https://api.liquipedia.net/api/v3/player",
+                    params={"wiki":       "valorant",
+                            "conditions": f"[[pagename::{candidate}]]",
+                            "fields":     "id,birthdate"},
+                    headers=liq_headers,
+                    timeout=15,
+                    follow_redirects=True,
+                )
+                result = r.json().get("result", [])
+                if result and result[0].get("birthdate"):
+                    bd  = _date.fromisoformat(result[0]["birthdate"])
+                    age = today.year - bd.year - ((today.month, today.day) < (bd.month, bd.day))
+                    age_map[pname] = age
+                    liq_ok += 1
+                    found = True
+                    break
+            except Exception as e:
+                liq_errors += 1
+                if liq_errors <= 5:
+                    print(f"  ✗ Liquipedia error: {candidate} — {e}")
+            time.sleep(1.1)   # respect 1 req/s rate limit (sleep between candidates too)
+
+        if not found and pname not in age_map:
+            pass   # silently skip — age stays as defined in players.js
+
+    print(f"  ✓ Got age for {liq_ok} players ({liq_errors} errors, "
+          f"{len(org_map)-liq_ok} not found on Liquipedia)\n")
 
 
 # ── Step 5: Build final player_data dict and write org-map.json ──────────────
