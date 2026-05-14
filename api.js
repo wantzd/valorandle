@@ -53,14 +53,7 @@
       if (team && team !== p.team) updates.team = team;
 
       if (isObj && entry.age  && entry.age  !== p.age)  updates.age  = entry.age;
-      if (isObj && entry.role && entry.role !== p.role) {
-        // For IGL players, apply compound role (IGL/<detected>); others apply directly
-        if (p.isIGL && !entry.role.startsWith("IGL/")) {
-          updates.role = `IGL/${entry.role}`;
-        } else if (!p.isIGL) {
-          updates.role = entry.role;
-        }
-      }
+      if (isObj && entry.role && entry.role !== p.role) updates.role = entry.role;
 
       return Object.keys(updates).length ? { ...p, ...updates } : p;
     });

@@ -692,14 +692,7 @@
 
   // ── Cell building ─────────────────────────────────────
   function cellValue(fb, player) {
-    if (fb.attr === "role") {
-      if (t.roles[fb.value]) return t.roles[fb.value];
-      if (fb.value && fb.value.startsWith("IGL/")) {
-        const base = fb.value.split("/")[1];
-        return `IGL/${t.roles[base] || base}`;
-      }
-      return fb.value || "";
-    }
+    if (fb.attr === "role") return t.roles[fb.value] || fb.value || "";
     if (fb.attr === "yearsActive")                        return `${fb.value} ${t.years}`;
     if (fb.attr === "titles" && fb.value === "Nenhum")    return t.noTitles;
     if (fb.attr === "country") {
