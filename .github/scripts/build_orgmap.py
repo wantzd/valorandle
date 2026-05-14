@@ -69,7 +69,9 @@ AGENT_ROLE = {
 }
 
 TIMEOUT         = 30
-RESULTS_PAGES   = 2     # pages of recent results to scan (50 matches/page)
+RESULTS_PAGES   = 10    # pages of recent results to scan (50 matches/page)
+                        # VCT matches are sparse (~10-25/page), need 10 pages
+                        # to reliably cover all teams' last 5 VCT matches
 MAX_MATCHES     = 5     # max recent VCT matches per player for role detection
 VCT_KEYWORDS    = ["VCT 2026", "VCT 2025"]  # tournament names to filter
 
