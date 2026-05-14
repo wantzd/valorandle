@@ -97,19 +97,19 @@ def detect_role(agent_list):
     return dominant if role_counts[dominant] / total >= 0.50 else "Flex"
 
 
-# ── Step 1: Build team map + fallback agents from vlrgg stats ─────────────────
+# ── Step 1: Build team map + all-time fallback agents from vlrgg stats ────────
 REGIONS  = ["na", "eu", "ap", "la-s", "la-n", "br", "kr", "cn"]
-TIMESPAN = "all"
 
-org_map        = {}   # name.lower() → team string
-fallback_agents = {}  # name.lower() → [agent, ...] from all-time top 3
+org_map         = {}   # name.lower() → team string
+agents_all      = {}   # name.lower() → [agent, ...] from timespan=all (career)
+agents_30d      = {}   # name.lower() → [agent, ...] from timespan=30  (recent)
 
 errors = []
 
-print("[vlrgg] Fetching player data (team + fallback agents)...\n")
+print("[vlrgg] Fetching player data (timespan=all)...\n")
 
 for region in REGIONS:
-    url = f"{API_BASE}/v2/stats?region={region}&timespan={TIMESPAN}"
+    url = f"{API_BASE}/v2/stats?region={region}&timespan=all"
     try:
         r = httpx.get(url, timeout=TIMEOUT, follow_redirects=True)
         r.raise_for_status()
@@ -124,7 +124,7 @@ for region in REGIONS:
             org_map[key] = org
             agents = seg.get("agents") or []
             if agents:
-                fallback_agents[key] = agents
+                agents_all[key] = agents
             count += 1
         print(f"  ✓ {region:6s}  {count} players")
     except Exception as e:
@@ -132,6 +132,29 @@ for region in REGIONS:
         errors.append(region)
 
 print(f"\n  Total: {len(org_map)} players\n")
+
+
+# ── Step 1b: Fetch timespan=30 agents (any tournament, last 30 days) ──────────
+print("[vlrgg] Fetching recent agents (timespan=30, all tournaments)...\n")
+
+for region in REGIONS:
+    url = f"{API_BASE}/v2/stats?region={region}&timespan=30"
+    try:
+        r = httpx.get(url, timeout=TIMEOUT, follow_redirects=True)
+        r.raise_for_status()
+        segments = r.json().get("data", {}).get("segments", [])
+        count = 0
+        for seg in segments:
+            player = seg.get("player", "").strip()
+            agents = seg.get("agents") or []
+            if player and agents:
+                agents_30d[player.lower()] = agents
+                count += 1
+        print(f"  ✓ {region:6s}  {count} players")
+    except Exception as e:
+        print(f"  ✗ {region:6s}  {e}")
+
+print(f"\n  30d coverage: {len(agents_30d)} players\n")
 
 
 # ── Step 2: Build recent agent map from last VCT match results ────────────────
@@ -214,15 +237,15 @@ print(f"  Recent agents found for {players_with_recent} / {len(org_map)} players
 role_map = {}   # name.lower() → detected role string
 
 for pname in org_map:
-    agents = recent_agents.get(pname) or fallback_agents.get(pname) or []
-    source = "recent" if pname in recent_agents else "fallback"
+    agents = recent_agents.get(pname) or agents_30d.get(pname) or agents_all.get(pname) or []
     role = detect_role(agents)
     if role:
         role_map[pname] = role
 
-recent_roles   = sum(1 for p in role_map if p in recent_agents)
-fallback_roles = len(role_map) - recent_roles
-print(f"[roles] Detected {len(role_map)} roles ({recent_roles} from recent matches, {fallback_roles} from all-time fallback)\n")
+recent_count = sum(1 for p in role_map if p in recent_agents)
+d30_count    = sum(1 for p in role_map if p not in recent_agents and p in agents_30d)
+all_count    = len(role_map) - recent_count - d30_count
+print(f"[roles] {len(role_map)} roles: {recent_count} from VCT matches, {d30_count} from 30d stats, {all_count} from all-time fallback\n")
 
 
 # ── Step 4: Liquipedia API — birthdate → age ──────────────────────────────────
