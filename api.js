@@ -43,14 +43,17 @@
   // ── Merge ─────────────────────────────────────────────────
   function applyOrgMap(players, orgMap) {
     return players.map(p => {
-      const entry = orgMap[p.name.toLowerCase()];
+      // Match by vlrId first (precise), then fall back to name (collision-prone)
+      const key = p.vlrId ? String(p.vlrId) : null;
+      const entry = (key && orgMap[key]) || orgMap[p.name.toLowerCase()];
       if (!entry) return p;
 
       const isObj = typeof entry === "object" && entry !== null;
       const updates = {};
 
-      const team = isObj ? entry.team : entry;
-      if (team && team !== p.team) updates.team = team;
+      // Team: only update when org-map entry has full name (via vlrId lookup).
+      // Name-keyed entries have abbreviated API names (FUR, LEV, G2…) so we skip them.
+      if (isObj && entry.teamFull && entry.teamFull !== p.team) updates.team = entry.teamFull;
 
       if (isObj && entry.age  && entry.age  !== p.age)  updates.age  = entry.age;
       if (isObj && entry.role && entry.role !== p.role) updates.role = entry.role;
