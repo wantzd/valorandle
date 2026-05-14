@@ -9,6 +9,9 @@ jobs:
   update:
     runs-on: ubuntu-latest
 
+    permissions:
+      contents: write        # needed to push org-map.json back to the repo
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -27,12 +30,11 @@ jobs:
           VLRGG_API_URL: ${{ secrets.VLRGG_API_URL }}
           LIQUIPEDIA_API_KEY: ${{ secrets.LIQUIPEDIA_API_KEY }}
 
-      - name: Upload org-map.json to Hostinger via FTP
+      - name: Commit and push org-map.json
         run: |
-          sudo apt-get install -y lftp
-          lftp -p 21 -u "${{ secrets.FTP_USER }},${{ secrets.FTP_PASS }}" \
-            -e "set ftp:ssl-allow no; \
-                set net:timeout 30; \
-                put org-map.json -o ${{ secrets.FTP_PATH }}/org-map.json; \
-                bye" \
-            ${{ secrets.FTP_HOST }}
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add org-map.json
+          git diff --staged --quiet && echo "No changes to org-map.json" && exit 0
+          git commit -m "chore: update org-map.json"
+          git push
