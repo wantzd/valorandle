@@ -115,10 +115,14 @@ def detect_role(agent_list):
     return dominant
 
 
-# ── Step 1: Build team map + all-time fallback agents from vlrgg stats ────────
+# ── Step 1: Build agent fallback maps from vlrgg stats ───────────────────────
+# org_map (name → team) is kept for internal use only — team names from this
+# source are abbreviated (FUR, LEV, G2…) and must NOT be written to org-map.json.
+# Full team names are only available via /v2/player?id=X (used in Step 1c).
 REGIONS  = ["na", "eu", "ap", "la-s", "la-n", "br", "kr", "cn"]
 
-org_map         = {}   # name.lower() → team string
+org_map         = {}   # name.lower() → abbreviated team (internal only)
+name_regions    = defaultdict(list)  # name.lower() → list of regions it appears in
 agents_all      = {}   # name.lower() → [agent, ...] from timespan=all (career)
 agents_30d      = {}   # name.lower() → [agent, ...] from timespan=30  (recent)
 
@@ -140,6 +144,7 @@ for region in REGIONS:
                 continue
             key = player.lower()
             org_map[key] = org
+            name_regions[key].append(region)
             agents = seg.get("agents") or []
             if agents:
                 agents_all[key] = agents
@@ -148,6 +153,11 @@ for region in REGIONS:
     except Exception as e:
         print(f"  ✗ {region:6s}  {e}")
         errors.append(region)
+
+# Flag names that appear in multiple regions (collision risk)
+collisions = {k for k, v in name_regions.items() if len(v) > 1}
+if collisions:
+    print(f"\n  ⚠ Name collisions detected ({len(collisions)}): {', '.join(sorted(collisions))}")
 
 print(f"\n  Total: {len(org_map)} players\n")
 
@@ -328,14 +338,21 @@ else:
 
 
 # ── Step 5: Build final player_data dict and write org-map.json ──────────────
+# Keys are player name (lowercase) for name-based lookup.
+# "team" field is intentionally omitted — abbreviated API names (FUR, LEV…)
+# would overwrite the correct full names already in players.js.
+# "teamFull" is only set when we have a vlrId lookup (future Step 1c).
+# api.js only applies teamFull (not team) to the game database.
 player_data = {}
-for pname, team in org_map.items():
-    entry = {"team": team}
+for pname in org_map:
+    entry = {}
     if pname in age_map:
         entry["age"] = age_map[pname]
     if pname in role_map:
         entry["role"] = role_map[pname]
-    player_data[pname] = entry
+    # Only write entry if there's something useful (role or age)
+    if entry:
+        player_data[pname] = entry
 
 output_path = os.path.join(os.path.dirname(__file__), "..", "..", "org-map.json")
 output_path = os.path.normpath(output_path)
