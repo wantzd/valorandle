@@ -3,7 +3,7 @@
 // Dados: Liquipedia, vlr.gg — Aproximado para 2026
 // ============================================================
 
-const PLAYERS_DB = [
+var PLAYERS_DB = [
 
   // ══════════════════════════════════════════════════════════
   // VCT AMERICAS
