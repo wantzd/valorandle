@@ -1,5 +1,6 @@
 .claude/
 uploads/
+sandbox/
 *.DS_Store
 Thumbs.db
 __pycache__/
