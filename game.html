@@ -500,6 +500,11 @@
   const MODE   = P.get("mode") === "free" ? "free" : "daily";
   const LEAGUE = P.get("league") || "all";
 
+  const ENABLED_LEAGUES = ["americas"];
+  if (!ENABLED_LEAGUES.includes(LEAGUE)) {
+    window.location.replace("league-select.html?mode=" + MODE);
+  }
+
   const LEAGUE_CONFIG = {
     americas:{ label:"Americas", color:"#FF5400" },
     emea:    { label:"EMEA",     color:"#C4FF00" },
