@@ -22,10 +22,8 @@ jobs:
         run: |
           sudo apt-get install -y lftp
 
-          # Copy only site files to a staging dir, leaving out git metadata
           rsync -a --exclude='.git' --exclude='.github' . /tmp/site/
 
-          # lftp script — open command inside the file, no quoting issues
           cat > /tmp/deploy.lftp << EOF
           open -p 21 -u $FTP_USER,$FTP_PASS $FTP_HOST
           set ftp:ssl-allow no

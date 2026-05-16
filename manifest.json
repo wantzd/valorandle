@@ -1,9 +1,10 @@
 {
   "name": "Valorandle",
   "short_name": "Valorandle",
-  "description": "Guess the VCT pro player!",
+  "description": "Daily VALORANT pro player guessing game. 5 rounds, 4 leagues, updated weekly.",
   "start_url": "/",
   "display": "standalone",
+  "lang": "pt-BR",
   "background_color": "#08090d",
   "theme_color": "#FF4655",
   "icons": [
@@ -11,5 +12,6 @@
     { "src": "/icons/favicon-64.png",      "sizes": "64x64",   "type": "image/png" },
     { "src": "/icons/apple-touch-180.png", "sizes": "180x180", "type": "image/png", "purpose": "any" },
     { "src": "/icons/app-icon-512.png",    "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
-  ]
+  ],
+  "categories": ["games", "entertainment"]
 }

@@ -1,13 +1,10 @@
 RewriteEngine On
 
-# ── HTTPS redirect ────────────────────────────────────────────────────────────
 RewriteCond %{HTTPS} off
 RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
 
-# ── Redirects ─────────────────────────────────────────────────────────────────
 Redirect 301 /lobby.html /
 
-# ── Directory security ────────────────────────────────────────────────────────
 Options -Indexes -MultiViews
 
 # Protect .htaccess itself
@@ -25,7 +22,6 @@ Options -Indexes -MultiViews
     Require all denied
 </FilesMatch>
 
-# ── Security headers ──────────────────────────────────────────────────────────
 <IfModule mod_headers.c>
     # Force HTTPS for 1 year (HSTS)
     Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains"
@@ -54,17 +50,14 @@ Options -Indexes -MultiViews
     Header always set Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdn.jsdelivr.net; font-src 'self' https://fonts.gstatic.com https://cdn.jsdelivr.net; img-src 'self' data: https://cdn.jsdelivr.net; connect-src 'self'; frame-ancestors 'none'; base-uri 'self'; form-action 'self'; object-src 'none';"
 </IfModule>
 
-# ── Directory traversal protection ───────────────────────────────────────────
 RewriteCond %{REQUEST_URI} \.\.
 RewriteRule .* - [F,L]
 
-# ── Hotlinking protection ─────────────────────────────────────────────────────
 # Allow: empty referer (direct/browser bar access) and valorandle.com itself
 RewriteCond %{HTTP_REFERER} !^$
 RewriteCond %{HTTP_REFERER} !^https?://(www\.)?valorandle\.com [NC]
 RewriteRule \.(jpg|jpeg|png|gif|svg|webp)$ - [F,L]
 
-# ── Malicious bot blocking ────────────────────────────────────────────────────
 # Targets known scrapers and security scanners.
 # Does NOT block search engines (Googlebot, Bingbot, DuckDuckBot, etc.)
 SetEnvIfNoCase User-Agent "AhrefsBot|SemrushBot|DotBot|BLEXBot|MJ12bot|DataForSeoBot|MauiBot|PetalBot|sqlmap|nikto|masscan|zgrab|nessus|nuclei" bad_bot
@@ -73,7 +66,6 @@ SetEnvIfNoCase User-Agent "AhrefsBot|SemrushBot|DotBot|BLEXBot|MJ12bot|DataForSe
     Require not env bad_bot
 </RequireAll>
 
-# ── Error pages ───────────────────────────────────────────────────────────────
 ErrorDocument 400 /404.html
 ErrorDocument 403 /404.html
 ErrorDocument 404 /404.html
@@ -81,7 +73,6 @@ ErrorDocument 500 /500.html
 ErrorDocument 502 /500.html
 ErrorDocument 503 /500.html
 
-# ── Cache: HTML never cached, assets cached long-term ────────────────────────
 <IfModule mod_headers.c>
     <FilesMatch "\.(html|htm)$">
         Header set Cache-Control "no-cache, no-store, must-revalidate"
@@ -108,7 +99,6 @@ ErrorDocument 503 /500.html
     ExpiresByType application/manifest+json "access plus 1 week"
 </IfModule>
 
-# ── CORS for fonts and manifest ───────────────────────────────────────────────
 <IfModule mod_headers.c>
     <FilesMatch "\.(ttf|otf|eot|woff|woff2|json)$">
         Header set Access-Control-Allow-Origin "*"

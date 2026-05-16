@@ -2,15 +2,15 @@ name: Update Player Data
 
 on:
   schedule:
-    - cron: '0 6 * * 1'   # Every Monday at 06:00 UTC
-  workflow_dispatch:        # Manual trigger from the GitHub Actions UI
+    - cron: '0 6 * * 1'
+  workflow_dispatch:
 
 jobs:
   update:
     runs-on: ubuntu-latest
 
     permissions:
-      contents: write        # needed to push org-map.json back to the repo
+      contents: write
 
     steps:
       - name: Checkout repository

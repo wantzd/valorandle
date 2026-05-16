@@ -1,8 +1,3 @@
-// ============================================================
-// VALORANDLE — Core Logic (game-logic.js)
-// ============================================================
-
-// ── Idioma ────────────────────────────────────────────────
 const I18N = {
   "pt-BR": {
     correct: "Correto!",
@@ -88,7 +83,6 @@ const I18N = {
   }
 };
 
-// ── Country name translations (PT → EN) ──────────────────
 const COUNTRY_EN = {
   "Brasil": "Brazil",
   "EUA": "USA",
@@ -150,7 +144,6 @@ const COUNTRY_EN = {
   "Azerbaijão": "Azerbaijan",
 };
 
-// ── Constantes ────────────────────────────────────────────
 const MAX_GUESSES = 8;
 const DAILY_ROUNDS = 5;
 
@@ -176,8 +169,6 @@ function getTitleTier(title) {
   }
   return null;
 }
-
-// ── Vibecode (feedback rules) ─────────────────────────────
 
 function compareGuess(guess, target) {
   return [
@@ -296,8 +287,6 @@ function formatTitles(titles) {
   return `${titles[0]} +${titles.length - 1}`;
 }
 
-// ── Daily Seed (UTC-3) ────────────────────────────────────
-
 function getDailyDateKey() {
   const now = new Date();
   const utcMinus3 = new Date(now.getTime() - 3 * 60 * 60 * 1000);
@@ -334,7 +323,6 @@ function getRandomPlayer(players, exclude = []) {
   return pool[Math.floor(Math.random() * pool.length)];
 }
 
-// ── Millisegundos até próxima meia-noite UTC-3 ──────────
 function msUntilNextDaily() {
   const now = new Date();
   const utcMinus3 = new Date(now.getTime() - 3 * 60 * 60 * 1000);
@@ -353,9 +341,7 @@ function formatCountdown(ms) {
   return `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
 }
 
-// ── Cookie-based language (works on file:// protocol) ─────
 // Cookies work on file:// unlike localStorage in some browsers with strict settings
-
 function setCookie(name, value, days) {
   let expires = "";
   if (days) {
@@ -375,8 +361,6 @@ function getCookie(name) {
   }
   return null;
 }
-
-// ── LocalStorage helpers (with cookie fallback for lang) ──
 
 const LS_KEYS = {
   stats:      "valorandle_stats",
