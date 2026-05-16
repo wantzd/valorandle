@@ -5,6 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Valorandle — Selecionar Liga</title>
   <meta name="theme-color" content="#FF4655" />
+  <meta name="description" content="Escolha a liga VCT para jogar Valorandle — Americas, EMEA, Pacific ou China." />
+  <meta name="robots" content="noindex, follow" />
+  <link rel="canonical" href="https://valorandle.com/" />
   <link rel="icon" type="image/svg+xml" href="/icons/favicon.svg" />
   <link rel="icon" type="image/png" sizes="64x64" href="/icons/favicon-64.png" />
   <link rel="icon" type="image/png" sizes="32x32" href="/icons/favicon-32.png" />
@@ -53,7 +56,6 @@
       align-items: center; padding: 1.5rem 1.5rem 4rem;
     }
 
-    /* ── Header ── */
     .header {
       width: 100%; max-width: 900px;
       display: flex; align-items: center; gap: 1rem;
@@ -81,7 +83,6 @@
       padding: 0.3rem 0.7rem; border-radius: 2px;
     }
 
-    /* ── Hero ── */
     .hero { text-align: center; margin-bottom: 2.5rem; }
     .hero-eyebrow {
       font-family: var(--font-mono); font-size: 0.65rem;
@@ -98,7 +99,6 @@
       color: var(--text-dim); font-weight: 400;
     }
 
-    /* ── Grid ── */
     .league-grid {
       width: 100%; max-width: 900px;
       display: grid; grid-template-columns: repeat(5, 1fr);
@@ -169,7 +169,6 @@
     }
     .league-card:hover .league-count { opacity: 1; }
 
-    /* ── Animations ── */
     @keyframes fadeUp {
       from { opacity:0; transform:translateY(16px); }
       to   { opacity:1; transform:translateY(0); }
@@ -183,7 +182,6 @@
       font-size: 0.62rem; color: var(--text-dim); text-align: center;
     }
 
-    /* ── Disabled / Coming Soon cards ── */
     .league-card.soon {
       filter: grayscale(1) brightness(0.45);
       cursor: not-allowed !important;
@@ -219,7 +217,6 @@
 
   <div class="league-grid" id="league-grid">
 
-    <!-- ── VCT Americas ── orange #FF5400 -->
     <a class="league-card" id="card-americas" href="#" style="--lc:var(--col-americas)">
       <div class="league-icon-wrap"><img src="logos/americas.png" alt="VCT Americas" /></div>
       <div class="league-name">VCT<br>Americas</div>
@@ -227,7 +224,6 @@
       <div class="league-count" id="count-americas">— players</div>
     </a>
 
-    <!-- ── VCT EMEA ── lime #C4FF00 — LOCKED -->
     <div class="league-card soon" style="--lc:var(--col-emea)">
       <div class="league-icon-wrap"><img src="logos/emea.png" alt="VCT EMEA" /></div>
       <div class="league-name">VCT<br>EMEA</div>
@@ -235,7 +231,6 @@
       <div class="soon-badge" id="badge-emea">Em breve</div>
     </div>
 
-    <!-- ── VCT Pacific ── cyan #00DCFF — LOCKED -->
     <div class="league-card soon" style="--lc:var(--col-pacific)">
       <div class="league-icon-wrap"><img src="logos/pacific.png" alt="VCT Pacific" /></div>
       <div class="league-name">VCT<br>Pacific</div>
@@ -243,7 +238,6 @@
       <div class="soon-badge" id="badge-pacific">Em breve</div>
     </div>
 
-    <!-- ── VCT China ── hot pink #FF1675 — LOCKED -->
     <div class="league-card soon" style="--lc:var(--col-china)">
       <div class="league-icon-wrap"><img src="logos/china.png" alt="VCT China" /></div>
       <div class="league-name">VCT<br>China</div>
@@ -251,7 +245,6 @@
       <div class="soon-badge" id="badge-china">Em breve</div>
     </div>
 
-    <!-- ── All ── gold #E5C96A — LOCKED -->
     <div class="league-card all soon" style="--lc:var(--col-all)">
       <svg class="league-icon" viewBox="0 0 56 56" fill="none" xmlns="http://www.w3.org/2000/svg">
         <circle cx="28" cy="28" r="22" stroke="#E5C96A" stroke-width="2"/>

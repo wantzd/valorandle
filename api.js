@@ -1,21 +1,4 @@
-// ============================================================
-// VALORANDLE — Player Data Integration (api.js)
-//
-// Fetches org-map.json (generated weekly by GitHub Actions)
-// and merges live data into the local PLAYERS_DB.
-//
-// org-map.json format (dual-key):
-//   "<vlrId>":    { "teamFull": "...", "country": "...", "countryCode": "US",
-//                   "age": 22, "role": "Duelist" }   ← full data, keyed by VLR.gg numeric ID
-//   "<name>":     { "age": 22, "role": "Duelist" }   ← fallback for players without vlrId
-//
-// Merge rules:
-//   • vlrId match  → apply teamFull, country, countryCode, age, role
-//   • name match   → apply age and role only (country data less reliable via name lookup)
-//
-// If the file is missing or the fetch fails, the game runs
-// normally using the local data from players.js.
-// ============================================================
+// api.js — fetches org-map.json and merges live player data into PLAYERS_DB
 
 (function () {
   "use strict";
@@ -25,7 +8,6 @@
   const CACHE_EXP_KEY  = "valorandle_api_cache_exp";
   const CACHE_TTL_MS   = 7 * 24 * 60 * 60 * 1000; // 7 days
 
-  // ── Cache ─────────────────────────────────────────────────
   function getCached() {
     try {
       const exp = parseInt(localStorage.getItem(CACHE_EXP_KEY) || "0", 10);
@@ -45,7 +27,6 @@
     } catch { /* storage full or unavailable */ }
   }
 
-  // ── Merge ─────────────────────────────────────────────────
   function applyOrgMap(players, orgMap) {
     return players.map(p => {
       // Primary: match by vlrId (precise, no name collisions)
@@ -77,7 +58,6 @@
     });
   }
 
-  // ── Public API ────────────────────────────────────────────
   window.initPlayersDB = async function () {
     // 1. Serve from cache while still valid
     const cached = getCached();

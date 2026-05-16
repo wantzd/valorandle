@@ -5,6 +5,16 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Valorandle</title>
   <meta name="description" content="Adivinhe o pro player de VALORANT. Novo desafio todo dia." />
+  <link rel="canonical" href="https://valorandle.com/" />
+  <meta name="keywords" content="valorandle, valorant wordle, vct pro player guess, valorant quiz, vct wordle" />
+  <meta name="robots" content="index, follow" />
+  <meta name="author" content="Valorandle" />
+  <meta property="og:site_name" content="Valorandle" />
+  <meta property="og:locale" content="pt_BR" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Valorandle" />
+  <meta name="twitter:description" content="Adivinhe o pro player de VALORANT. Novo desafio todo dia." />
+  <meta name="twitter:image" content="https://valorandle.com/icons/app-icon-512.png" />
   <meta name="theme-color" content="#FF4655" />
   <!-- Favicon -->
   <link rel="icon" type="image/svg+xml" href="/icons/favicon.svg" />
@@ -22,6 +32,19 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Russo+One&family=Space+Grotesk:wght@300;400;500;600&family=Space+Mono:wght@700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flag-icons@7.2.3/css/flag-icons.min.css" />
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "Valorandle",
+  "description": "Adivinhe o jogador profissional de VALORANT. Novo desafio diário baseado no VCT.",
+  "url": "https://valorandle.com",
+  "applicationCategory": "GameApplication",
+  "operatingSystem": "Web",
+  "inLanguage": ["pt-BR", "en"],
+  "offers": { "@type": "Offer", "price": "0", "priceCurrency": "BRL" }
+}
+  </script>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -75,7 +98,6 @@
       padding: 1.5rem 1.5rem 5rem;
     }
 
-    /* ── Topbar ── */
     .topbar {
       width: 100%; max-width: 640px;
       display: flex; justify-content: flex-end; gap: 2px;
@@ -94,7 +116,6 @@
     .lang-btn.active { background: var(--red); color: #fff; border-color: var(--red); }
     .lang-btn:hover:not(.active) { border-color: var(--text-dim); color: var(--text-mid); }
 
-    /* ── Hero ── */
     .hero { text-align: center; margin-bottom: 3.5rem; }
 
     .hero-eyebrow {
@@ -124,7 +145,6 @@
       color: var(--text-dim); white-space: nowrap;
     }
 
-    /* ── Mode Cards ── */
     .mode-cards {
       width: 100%; max-width: 640px;
       display: grid; grid-template-columns: 1fr 1fr;
@@ -188,7 +208,6 @@
       margin-top: 0.15rem; font-family: var(--font-mono);
     }
 
-    /* ── Stats ── */
     .stats-section {
       width: 100%; max-width: 640px;
       background: var(--surface); border: 1px solid var(--border);
@@ -220,7 +239,6 @@
       color: var(--text-dim); margin-top: 0.35rem; letter-spacing: 0.05em;
     }
 
-    /* ── Countdown ── */
     .countdown-wrap {
       width: 100%; max-width: 640px;
       background: var(--surface); border: 1px solid var(--border);
@@ -236,7 +254,6 @@
       font-weight: 700; color: var(--red); letter-spacing: 0.08em;
     }
 
-    /* ── Footer ── */
     .lobby-footer {
       margin-top: 2.5rem; font-family: var(--font-mono);
       font-size: 0.68rem; color: var(--text-dim);
@@ -245,7 +262,6 @@
     .lobby-footer a { color: var(--text-mid); text-decoration: none; }
     .lobby-footer a:hover { color: var(--red); }
 
-    /* ── Animations ── */
     @keyframes fadeUp {
       from { opacity: 0; transform: translateY(18px); }
       to   { opacity: 1; transform: translateY(0); }
@@ -396,10 +412,6 @@
   document.addEventListener("DOMContentLoaded", init);
 })();
 </script>
-<!-- ════════════════════════════════════════════════════
-     FIRST-TIME TUTORIAL OVERLAY
-     Shown once; dismissed state stored in localStorage
-     ════════════════════════════════════════════════════ -->
 <div id="tutorial" role="dialog" aria-modal="true" aria-label="Tutorial" style="display:none">
   <!-- progress bar -->
   <div class="tut-bar"><div class="tut-bar-fill" id="tut-bar-fill"></div></div>
@@ -422,7 +434,6 @@
 </div>
 
 <style>
-/* ── Tutorial overlay ── */
 #tutorial {
   position: fixed; inset: 0; z-index: 20000;
   background: rgba(8,9,13,0.97);
