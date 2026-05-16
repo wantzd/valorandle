@@ -4,9 +4,14 @@
 // Fetches org-map.json (generated weekly by GitHub Actions)
 // and merges live data into the local PLAYERS_DB.
 //
-// org-map.json format:
-//   { "playername": { "team": "...", "age": 22, "role": "Duelist" } }
-// Legacy string format still supported: { "playername": "Team Name" }
+// org-map.json format (dual-key):
+//   "<vlrId>":    { "teamFull": "...", "country": "...", "countryCode": "US",
+//                   "age": 22, "role": "Duelist" }   ← full data, keyed by VLR.gg numeric ID
+//   "<name>":     { "age": 22, "role": "Duelist" }   ← fallback for players without vlrId
+//
+// Merge rules:
+//   • vlrId match  → apply teamFull, country, countryCode, age, role
+//   • name match   → apply age and role only (country data less reliable via name lookup)
 //
 // If the file is missing or the fetch fails, the game runs
 // normally using the local data from players.js.
@@ -43,18 +48,28 @@
   // ── Merge ─────────────────────────────────────────────────
   function applyOrgMap(players, orgMap) {
     return players.map(p => {
-      // Match by vlrId first (precise), then fall back to name (collision-prone)
-      const key = p.vlrId ? String(p.vlrId) : null;
-      const entry = (key && orgMap[key]) || orgMap[p.name.toLowerCase()];
+      // Primary: match by vlrId (precise, no name collisions)
+      const vlrKey   = p.vlrId ? String(p.vlrId) : null;
+      const vlrEntry = vlrKey ? orgMap[vlrKey] : null;
+
+      // Fallback: match by lowercase name (role/age only — country less reliable)
+      const nameEntry = orgMap[p.name.toLowerCase()];
+
+      const byVlrId = !!vlrEntry;
+      const entry   = vlrEntry || nameEntry;
       if (!entry) return p;
 
       const isObj = typeof entry === "object" && entry !== null;
       const updates = {};
 
-      // Team: only update when org-map entry has full name (via vlrId lookup).
-      // Name-keyed entries have abbreviated API names (FUR, LEV, G2…) so we skip them.
-      if (isObj && entry.teamFull && entry.teamFull !== p.team) updates.team = entry.teamFull;
+      if (byVlrId && isObj) {
+        // vlrId match: trust teamFull and country data from per-player API fetch
+        if (entry.teamFull    && entry.teamFull    !== p.team)        updates.team        = entry.teamFull;
+        if (entry.country     && entry.country     !== p.country)     updates.country     = entry.country;
+        if (entry.countryCode && entry.countryCode !== p.countryCode) updates.countryCode = entry.countryCode;
+      }
 
+      // age and role applied for both vlrId and name matches
       if (isObj && entry.age  && entry.age  !== p.age)  updates.age  = entry.age;
       if (isObj && entry.role && entry.role !== p.role) updates.role = entry.role;
 
