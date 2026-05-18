@@ -14,20 +14,20 @@
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="Valorandle — Adivinhe o Pro Player de VALORANT" />
   <meta name="twitter:description" content="Valorandle é o Wordle de VALORANT: adivinhe o pro player do VCT com até 8 tentativas. Novo desafio todo dia." />
-  <meta name="twitter:image" content="https://valorandle.com/icons/app-icon-512.png" />
+  <meta name="twitter:image" content="https://valorandle.com/assets/icons/app-icon-512.png" />
   <meta name="theme-color" content="#FF4655" />
   <!-- Favicon -->
-  <link rel="icon" type="image/svg+xml" href="/icons/favicon.svg" />
-  <link rel="icon" type="image/png" sizes="64x64" href="/icons/favicon-64.png" />
-  <link rel="icon" type="image/png" sizes="32x32" href="/icons/favicon-32.png" />
-  <link rel="apple-touch-icon" sizes="180x180" href="/icons/apple-touch-180.png" />
+  <link rel="icon" type="image/svg+xml" href="/assets/icons/favicon.svg" />
+  <link rel="icon" type="image/png" sizes="64x64" href="/assets/icons/favicon-64.png" />
+  <link rel="icon" type="image/png" sizes="32x32" href="/assets/icons/favicon-32.png" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/assets/icons/apple-touch-180.png" />
   <link rel="manifest" href="/manifest.json" />
   <!-- Open Graph -->
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://valorandle.com/" />
   <meta property="og:title" content="Valorandle — Adivinhe o Pro Player de VALORANT" />
   <meta property="og:description" content="Valorandle é o Wordle de VALORANT: adivinhe o pro player do VCT com até 8 tentativas. Novo desafio todo dia com jogadores das 4 ligas globais." />
-  <meta property="og:image" content="https://valorandle.com/icons/app-icon-512.png" />
+  <meta property="og:image" content="https://valorandle.com/assets/icons/app-icon-512.png" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Russo+One&family=Space+Grotesk:wght@300;400;500;600&family=Space+Mono:wght@700&display=swap" rel="stylesheet" />
@@ -46,7 +46,7 @@
   "inLanguage": ["pt-BR", "en"],
   "isAccessibleForFree": true,
   "offers": { "@type": "Offer", "price": "0", "priceCurrency": "BRL" },
-  "image": "https://valorandle.com/icons/app-icon-512.png"
+  "image": "https://valorandle.com/assets/icons/app-icon-512.png"
 }
   </script>
   <style>
@@ -265,6 +265,7 @@
     }
     .lobby-footer a { color: var(--text-mid); text-decoration: none; }
     .lobby-footer a:hover { color: var(--red); }
+    .footer-sep { margin: 0 0.4rem; color: var(--text-dim); }
 
     @keyframes fadeUp {
       from { opacity: 0; transform: translateY(18px); }
@@ -339,11 +340,13 @@
 
   <footer class="lobby-footer">
     <span id="footer-text">Fan-made. Não afiliado à <a href="https://playvalorant.com" target="_blank">Riot Games</a>.</span>
+    <span class="footer-sep">·</span>
+    <span id="footer-liq">Dados dos jogadores: <a href="https://liquipedia.net/valorant" target="_blank" rel="noopener">Liquipedia</a> (<a href="https://liquipedia.net/commons/Liquipedia:Copyrights" target="_blank" rel="noopener">CC BY-SA</a>)</span>
   </footer>
 </div>
 
-<script src="players.js"></script>
-<script src="game-logic.js"></script>
+<script src="js/players.js"></script>
+<script src="js/game-logic.js"></script>
 <script>
 (function () {
   "use strict";
@@ -378,6 +381,9 @@
     document.getElementById("footer-text").innerHTML = lang === "pt-BR"
       ? 'Fan-made. Não afiliado à <a href="https://playvalorant.com" target="_blank">Riot Games</a>.'
       : 'Fan-made. Not affiliated with <a href="https://playvalorant.com" target="_blank">Riot Games</a>.';
+    document.getElementById("footer-liq").innerHTML = lang === "pt-BR"
+      ? 'Dados dos jogadores: <a href="https://liquipedia.net/valorant" target="_blank" rel="noopener">Liquipedia</a> (<a href="https://liquipedia.net/commons/Liquipedia:Copyrights" target="_blank" rel="noopener">CC BY-SA</a>)'
+      : 'Player data: <a href="https://liquipedia.net/valorant" target="_blank" rel="noopener">Liquipedia</a> (<a href="https://liquipedia.net/commons/Liquipedia:Copyrights" target="_blank" rel="noopener">CC BY-SA</a>)';
     checkDailyStatus();
   }
 

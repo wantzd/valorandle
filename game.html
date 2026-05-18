@@ -7,10 +7,10 @@
   <meta name="theme-color" content="#FF4655" />
   <meta name="description" content="Adivinhe o pro player de VALORANT no Valorandle." />
   <meta name="robots" content="noindex, follow" />
-  <link rel="icon" type="image/svg+xml" href="/icons/favicon.svg" />
-  <link rel="icon" type="image/png" sizes="64x64" href="/icons/favicon-64.png" />
-  <link rel="icon" type="image/png" sizes="32x32" href="/icons/favicon-32.png" />
-  <link rel="apple-touch-icon" sizes="180x180" href="/icons/apple-touch-180.png" />
+  <link rel="icon" type="image/svg+xml" href="/assets/icons/favicon.svg" />
+  <link rel="icon" type="image/png" sizes="64x64" href="/assets/icons/favicon-64.png" />
+  <link rel="icon" type="image/png" sizes="32x32" href="/assets/icons/favicon-32.png" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/assets/icons/apple-touch-180.png" />
   <link rel="manifest" href="/manifest.json" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -386,6 +386,15 @@
       animation:lo-spin 0.75s linear infinite;
     }
     @keyframes lo-spin { to { transform:rotate(360deg); } }
+
+    .game-footer {
+      text-align: center; padding: 1.5rem 0 0.5rem;
+      font-size: 0.7rem; color: var(--text-dim);
+      display: flex; align-items: center; justify-content: center; gap: 0.35rem; flex-wrap: wrap;
+    }
+    .game-footer a { color: var(--text-dim); text-decoration: none; }
+    .game-footer a:hover { color: var(--red); }
+    .footer-sep { color: var(--border2); }
   </style>
 </head>
 <body>
@@ -476,6 +485,12 @@
     <div class="daily-complete-sub" id="dc-sub"></div>
     <div class="result-actions" style="justify-content:center" id="dc-actions"></div>
   </div>
+
+  <footer class="game-footer">
+    <span id="gf-liq">Dados dos jogadores: <a href="https://liquipedia.net/valorant" target="_blank" rel="noopener">Liquipedia</a> (<a href="https://liquipedia.net/commons/Liquipedia:Copyrights" target="_blank" rel="noopener">CC BY-SA</a>)</span>
+    <span class="footer-sep">·</span>
+    <span>Fan-made · <a href="https://playvalorant.com" target="_blank" rel="noopener">Riot Games</a></span>
+  </footer>
 </div>
 
 <!-- Loading overlay — shown while API fetch runs -->
@@ -488,9 +503,9 @@
 <div id="g-tip"></div>
 <div class="toast" id="toast"></div>
 
-<script src="players.js"></script>
-<script src="game-logic.js"></script>
-<script src="api.js"></script>
+<script src="js/players.js"></script>
+<script src="js/game-logic.js"></script>
+<script src="js/api.js"></script>
 <script>
 (function () {
   "use strict";
@@ -644,6 +659,10 @@
     document.getElementById("back-btn").textContent    = "← " + t.backLobby;
     document.getElementById("guess-input").placeholder = t.guessPlaceholder;
     document.getElementById("mode-tag").textContent    = MODE === "daily" ? "Daily Mode" : "Free Mode";
+    const gfLiq = document.getElementById("gf-liq");
+    if (gfLiq) gfLiq.innerHTML = lang === "pt-BR"
+      ? 'Dados dos jogadores: <a href="https://liquipedia.net/valorant" target="_blank" rel="noopener">Liquipedia</a> (<a href="https://liquipedia.net/commons/Liquipedia:Copyrights" target="_blank" rel="noopener">CC BY-SA</a>)'
+      : 'Player data: <a href="https://liquipedia.net/valorant" target="_blank" rel="noopener">Liquipedia</a> (<a href="https://liquipedia.net/commons/Liquipedia:Copyrights" target="_blank" rel="noopener">CC BY-SA</a>)';
   }
 
   function setupHardSound() {
