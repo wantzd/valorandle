@@ -2,7 +2,7 @@
 
 A daily guessing game for VALORANT esports fans. Each day, five VCT pro players are hidden across the four global leagues — Americas, EMEA, Pacific, and China. Identify them from their stats in up to 8 attempts per round.
 
-**[valorandle.com](https://valorandle.com)**
+**[valorandle.com](https://valorandle.com/en)**
 
 ---
 
