@@ -131,7 +131,7 @@ var PLAYERS_DB = [
 
   // ── Karmine Corp ──────────────────────────────────────────
   { id:"avez",      vlrId:5654,  name:"avez",      displayName:"avez",      country:"França",          countryCode:"FR", team:"Karmine Corp",  league:"VCT EMEA", leagueId:"emea", age:22, role:"Duelist",                yearsActive:3, titles:["Nenhum"] },
-  { id:"SUYGETSU",  vlrId:2858,  name:"SUYGETSU",  displayName:"SUYGETSU",  country:"Ucrânia",         countryCode:"UA", team:"Karmine Corp",  league:"VCT EMEA", leagueId:"emea", age:23, role:"Flex",                   yearsActive:4, titles:["Nenhum"] },
+  { id:"SUYGETSU",  vlrId:2858,  name:"SUYGETSU",  displayName:"SUYGETSU",  country:"Rússia",          countryCode:"RU", team:"Karmine Corp",  league:"VCT EMEA", leagueId:"emea", age:23, role:"Flex",                   yearsActive:4, titles:["Nenhum"] },
   { id:"dos9",      vlrId:16215, name:"dos9",      displayName:"dos9",      country:"França",          countryCode:"FR", team:"Karmine Corp",  league:"VCT EMEA", leagueId:"emea", age:21, role:"Initiator",              yearsActive:2, titles:["Nenhum"] },
   { id:"LêwN",      vlrId:20144, name:"LêwN",      displayName:"LêwN",      country:"França",          countryCode:"FR", team:"Karmine Corp",  league:"VCT EMEA", leagueId:"emea", age:22, role:"Controller",             yearsActive:3, titles:["Nenhum"] },
   { id:"N4RRATE",   vlrId:36245, name:"N4RRATE",   displayName:"N4RRATE",   country:"França",          countryCode:"FR", team:"Karmine Corp",  league:"VCT EMEA", leagueId:"emea", age:23, role:"Sentinel",  isIGL:true,  yearsActive:3, titles:["Nenhum"] },

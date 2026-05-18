@@ -126,6 +126,13 @@ COUNTRY_MAP = {
     "in": ("Índia",            "IN"),
     "pk": ("Paquistão",        "PK"),
     "ch": ("Suíça",            "CH"),
+    "cz": ("República Tcheca", "CZ"),
+    "lt": ("Lituânia",        "LT"),
+    "md": ("Moldávia",         "MD"),
+    "eg": ("Egito",            "EG"),
+    "sa": ("Arábia Saudita",   "SA"),
+    "kh": ("Camboja",          "KH"),
+    "bm": ("Bermudas",         "BM"),
     "mn": ("Mongólia",         "MN"),
 }
 
@@ -315,6 +322,8 @@ for vid, pinfo in vlr_id_map.items():
                 "country":     country_pt,
                 "countryCode": country_code,
             }
+        elif raw_country:
+            print(f"  ⚠ unknown country code '{raw_country}' for {pinfo['name']} (vlrId {vid})")
 
         # ── Agent stats (for role detection fallback) ──────────────────────────
         agents_raw = seg.get("agent_stats") or []
@@ -663,7 +672,7 @@ output_path = os.path.normpath(
 with open(output_path, "w", encoding="utf-8") as f:
     json.dump(player_data, f, ensure_ascii=False, indent=2)
 
-vlrid_entries = sum(1 for k in player_data if k.isdigit())
+vlrid_entries = sum(1 for k in player_data if k in {str(v) for v in vlr_id_map})
 name_entries  = len(player_data) - vlrid_entries
 
 print(f"[Done] Wrote {len(player_data)} entries to org-map.json")
