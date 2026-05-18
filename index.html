@@ -643,7 +643,7 @@
 (function () {
   "use strict";
   const LS_KEY  = "valorandle_tut_v1";
-  const lang    = (function(){ try{return localStorage.getItem("valorandle_lang")||"pt-BR";}catch{return"pt-BR";} })();
+  const lang    = (function(){ try{ if(window.location.pathname.startsWith('/en'))return"en"; return localStorage.getItem("valorandle_lang")||"pt-BR"; }catch{return"pt-BR";} })();
   const isPT    = lang === "pt-BR";
 
   const STEPS = [
