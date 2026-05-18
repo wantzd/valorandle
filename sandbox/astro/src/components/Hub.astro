@@ -1,0 +1,119 @@
+---
+/**
+ * Hub.astro — Orchestrates the full hub page.
+ * Receives `lang` and passes it down to every component.
+ * This is the only file that changes between / (pt-BR) and /en/.
+ */
+import { useTranslations, type Lang } from '../i18n/ui';
+import HubHero   from './HubHero.astro';
+import ModeRow   from './ModeRow.astro';
+import StatsGrid from './StatsGrid.astro';
+import Countdown from './Countdown.astro';
+import Footer    from './Footer.astro';
+
+interface Props { lang: Lang; }
+const { lang } = Astro.props;
+const t = useTranslations(lang);
+
+// SVG icons as constants — defined once, reused across all mode rows
+const ICONS = {
+  agents: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+    <circle cx="12" cy="8" r="3"/><path d="M5 21v-1a7 7 0 0 1 14 0v1"/>
+  </svg>`,
+  maps: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M3 6l6-2 6 2 6-2v14l-6 2-6-2-6 2z"/><path d="M9 4v16M15 6v16"/>
+  </svg>`,
+  skins: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M3 13h11l3-4 4 1-1 3-5 3H3z"/><circle cx="17" cy="14" r="1" fill="currentColor" stroke="none"/>
+  </svg>`,
+  abilities: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M13 2L4 14h7l-1 8 9-12h-7z"/>
+  </svg>`,
+};
+
+const isPT = lang === 'pt-BR';
+---
+
+<div class="hub">
+
+  <nav class="topbar">
+    <a class="topbar-logo" href={isPT ? '/' : '/en/'}>VALOR<span>ANDLE</span></a>
+    <div class="topbar-right">
+      <span class="streak-chip" id="streak-chip" style="display:none">
+        🔥 <span id="streak-num">0</span>
+      </span>
+      <!-- Lang switcher: links to the other locale, no JS needed -->
+      <a class:list={['lang-btn', { active: isPT }]}
+         href="/" aria-label="Português">
+        <span class="fi fi-br"></span> PT
+      </a>
+      <a class:list={['lang-btn', { active: !isPT }]}
+         href="/en/" aria-label="English">
+        <span class="fi fi-us"></span> EN
+      </a>
+    </div>
+  </nav>
+
+  <div class="hub-content">
+
+    <HubHero lang={lang} />
+
+    <div class="section-label">{t('section.other')}</div>
+
+    <div class="mode-list">
+      <ModeRow
+        href="#"
+        name={t('mode.agents.name')}
+        desc={t('mode.agents.desc')}
+        tag="new"
+        tagLabel={t('tag.new')}
+        icon={ICONS.agents}
+        disabled
+      />
+      <ModeRow
+        href="/maps.html?mode=daily"
+        name={t('mode.maps.name')}
+        desc={t('mode.maps.desc')}
+        tag="new"
+        tagLabel={t('tag.new')}
+        icon={ICONS.maps}
+      />
+      <ModeRow
+        href="#"
+        name={t('mode.skins.name')}
+        desc={t('mode.skins.desc')}
+        tag="beta"
+        tagLabel={t('tag.beta')}
+        icon={ICONS.skins}
+        disabled
+      />
+      <ModeRow
+        href="#"
+        name={t('mode.abil.name')}
+        desc={t('mode.abil.desc')}
+        tag="soon"
+        tagLabel={t('tag.soon')}
+        icon={ICONS.abilities}
+        disabled
+      />
+    </div>
+
+    <StatsGrid lang={lang} />
+    <Countdown lang={lang} />
+    <Footer    lang={lang} />
+
+  </div>
+</div>
+
+<!-- Streak chip: populated after game-logic.js loads -->
+<script is:inline>
+(function () {
+  if (typeof loadStats === 'undefined') return;
+  const stats  = loadStats();
+  const chipEl = document.getElementById('streak-chip');
+  if (chipEl && stats.streak > 0) {
+    document.getElementById('streak-num').textContent = stats.streak;
+    chipEl.style.display = 'flex';
+  }
+})();
+</script>

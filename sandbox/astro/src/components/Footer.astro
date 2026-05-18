@@ -1,0 +1,19 @@
+---
+import { useTranslations, type Lang } from '../i18n/ui';
+
+interface Props { lang: Lang; }
+const { lang } = Astro.props;
+const t = useTranslations(lang);
+---
+
+<footer class="hub-footer">
+  <span>
+    {t('footer.fanmade')} <a href="https://playvalorant.com" target="_blank" rel="noopener">Riot Games</a>.
+  </span>
+  <span class="footer-sep">·</span>
+  <span>
+    {t('footer.liq')}:
+    <a href="https://liquipedia.net/valorant" target="_blank" rel="noopener">Liquipedia</a>
+    (<a href="https://liquipedia.net/commons/Liquipedia:Copyrights" target="_blank" rel="noopener">{t('footer.liq.license')}</a>)
+  </span>
+</footer>

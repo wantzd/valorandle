@@ -1,0 +1,97 @@
+---
+import { useTranslations, type Lang } from '../i18n/ui';
+
+interface Props { lang: Lang; }
+const { lang } = Astro.props;
+const t = useTranslations(lang);
+---
+
+<div class="hub-hero">
+  <div class="hub-hero-inner">
+    <div class="hub-hero-top">
+      <div>
+        <div class="hub-hero-meta" id="hero-meta">{t('hero.meta.new')}</div>
+        <div class="hub-hero-title">Pro Players</div>
+        <div class="hub-hero-desc">{t('hero.desc')}</div>
+      </div>
+      <div class="hub-status new" id="hub-status">
+        <span class="dot"></span>
+        <span id="status-text">{t('status.new')}</span>
+      </div>
+    </div>
+
+    <div class="hub-pips">
+      {Array.from({ length: 5 }, (_, i) => (
+        <div class="hub-pip" id={`pip-${i}`} />
+      ))}
+    </div>
+
+    <div class="hub-cta-row">
+      <a class="btn primary" id="btn-continue" href="/league-select.html?mode=daily">
+        {t('cta.play')}
+      </a>
+      <a class="btn ghost" id="btn-free" href="/league-select.html?mode=free">
+        {t('cta.free')}
+      </a>
+    </div>
+  </div>
+</div>
+
+<script is:inline data-lang={lang}>
+(function () {
+  // Wait for game-logic.js to be available
+  if (typeof getDailyDateKey === 'undefined') return;
+
+  const lang     = document.currentScript?.dataset.lang || 'pt-BR';
+  const isPT     = lang === 'pt-BR';
+  const key      = 'valorandle_daily_americas_' + getDailyDateKey();
+  let   state    = null;
+  try { state = JSON.parse(localStorage.getItem(key) || 'null'); } catch {}
+
+  const results  = (state && state.roundResults) || [];
+  const current  = state ? (state.currentRound || 0) : 0;
+  const finished = !!(state && state.dailyDone);
+  const started  = results.length > 0 || !!(state && state.guesses && state.guesses.length > 0);
+
+  // Pips
+  for (let i = 0; i < 5; i++) {
+    const pip = document.getElementById('pip-' + i);
+    if (!pip) continue;
+    if (results[i])                                 pip.classList.add('done');
+    else if (i === current && started && !finished) pip.classList.add('active');
+  }
+
+  // Meta label
+  const metaEl = document.getElementById('hero-meta');
+  if (metaEl) {
+    if (finished) {
+      const wins = results.filter(r => r.won).length;
+      metaEl.textContent = isPT ? `Daily completo · ${wins}/5` : `Daily complete · ${wins}/5`;
+    } else if (started) {
+      metaEl.textContent = isPT
+        ? `Daily de hoje · Round ${current + 1} de 5`
+        : `Today's Daily · Round ${current + 1} of 5`;
+    }
+  }
+
+  // Status badge
+  const statusEl  = document.getElementById('hub-status');
+  const statusTxt = document.getElementById('status-text');
+  if (statusEl && statusTxt) {
+    if (finished) {
+      statusEl.className    = 'hub-status done';
+      statusTxt.textContent = isPT ? '✓ Completo' : '✓ Complete';
+    } else if (started) {
+      statusEl.className    = 'hub-status';
+      statusTxt.textContent = isPT ? 'Em progresso' : 'In progress';
+    }
+  }
+
+  // Primary CTA label
+  const btnEl = document.getElementById('btn-continue');
+  if (btnEl) {
+    if (finished)     btnEl.textContent = isPT ? 'Ver resultado →' : 'View result →';
+    else if (started) btnEl.textContent = isPT ? 'Continuar →'     : 'Continue →';
+  }
+})();
+</script>
