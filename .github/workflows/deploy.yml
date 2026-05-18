@@ -9,6 +9,7 @@ on:
       - 'README.md'
       - '.gitignore'
       - 'sandbox/**'
+  workflow_dispatch:
 
 jobs:
   deploy:
