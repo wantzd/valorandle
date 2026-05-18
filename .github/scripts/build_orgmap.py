@@ -499,7 +499,7 @@ else:
         candidates = [pname.title(), pname] if pname.title() != pname else [pname]
         for i, candidate in enumerate(candidates):
             if i > 0:
-                time.sleep(1.1)  # rate limit: only between candidates, not after the last one
+                time.sleep(2.2)  # rate limit: 1 req/2s (free tier) — only between candidates
             try:
                 r = httpx.get(
                     "https://api.liquipedia.net/api/v3/player",
@@ -537,7 +537,7 @@ else:
                 liq_errors += 1
                 if liq_errors <= 5:
                     print(f"  ✗ {candidate}: {e}")
-        time.sleep(1.1)  # rate limit: 1 req/s between players
+        time.sleep(2.2)  # rate limit: 1 req/2s (free tier)
 
     print(f"  ✓ {liq_ok} ages fetched, {liq_igl} IGLs detected "
           f"({liq_errors} errors, {len(all_names)-liq_ok} not found)\n")
