@@ -1,4 +1,4 @@
-// game-logic.js
+// game-logic.js v2
 const I18N = {
   "pt-BR": {
     correct: "Correto!",
