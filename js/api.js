@@ -44,10 +44,9 @@
       const updates = {};
 
       if (byVlrId && isObj) {
-        // vlrId match: trust teamFull and country data from per-player API fetch
-        if (entry.teamFull    && entry.teamFull    !== p.team)        updates.team        = entry.teamFull;
-        if (entry.country     && entry.country     !== p.country)     updates.country     = entry.country;
-        if (entry.countryCode && entry.countryCode !== p.countryCode) updates.countryCode = entry.countryCode;
+        // vlrId match: update team name from per-player API fetch
+        // (country/countryCode intentionally kept from players.js — vlrgg data unreliable)
+        if (entry.teamFull && entry.teamFull !== p.team) updates.team = entry.teamFull;
       }
 
       // age and role applied for both vlrId and name matches

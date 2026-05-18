@@ -209,7 +209,7 @@ except Exception as e:
 
 
 # ── Step 1: Fallback data from vlrgg /v2/stats ────────────────────────────────
-REGIONS = ["na", "eu", "ap", "la-s", "la-n", "br", "kr", "cn"]
+REGIONS = ["na", "eu", "ap", "br", "kr", "cn", "jp", "gc"]
 
 org_map      = {}   # name.lower() → abbreviated team (internal only)
 name_regions = defaultdict(list)
@@ -296,64 +296,36 @@ for vid, pinfo in vlr_id_map.items():
             follow_redirects=True,
         )
         r.raise_for_status()
-        data = r.json().get("data", {})
+        # API returns { "data": { "segments": [ <player_obj> ] } }
+        seg = (r.json().get("data", {}).get("segments") or [{}])[0]
 
         # ── Team full name ─────────────────────────────────────────────────────
-        # Try several field paths used by different vlrgg API versions
-        team_obj = (
-            data.get("team") or
-            data.get("current_team") or
-            (data.get("player") or {}).get("team") or
-            (data.get("player") or {}).get("current_team") or
-            {}
-        )
-        team_name = (
-            team_obj.get("name") or
-            team_obj.get("full_name") or
-            team_obj.get("tag") or
-            ""
-        ).strip()
+        team_name = (seg.get("current_team") or {}).get("name", "").strip()
+        # Strip "joined in ..." suffix that sometimes leaks in from vlrgg scraping
+        team_name = re.sub(r'\s*joined\s+in\s+.+$', '', team_name, flags=re.IGNORECASE).strip()
         if team_name:
             player_teamfull[pname] = team_name
 
-        # ── Country ────────────────────────────────────────────────────────────
-        player_obj = data.get("player") or data
-        raw_country = (
-            player_obj.get("country") or
-            player_obj.get("country_code") or
-            data.get("country") or
-            ""
-        ).strip()
-        country_pt, country_code = country_from_code(raw_country)
-        if country_pt:
-            player_country[pname] = {
-                "country":     country_pt,
-                "countryCode": country_code,
-            }
+        # NOTE: country/countryCode are intentionally NOT read from the vlrgg API.
+        # The vlrgg API country data is frequently inaccurate (player-set flags,
+        # dual nationalities, mismatched data).  Country in players.js is manually
+        # curated and is the authoritative source — no auto-override.
 
         # ── Agent stats (for role detection fallback) ──────────────────────────
-        agents_raw = (
-            player_obj.get("agent_stats") or
-            player_obj.get("agents") or
-            data.get("agent_stats") or
-            data.get("agents") or
-            []
-        )
+        agents_raw = seg.get("agent_stats") or []
         if agents_raw:
-            # Sort by usage_count / usage / rounds_played descending
+            # usage_count comes as a string ("9") — cast to int for sorting
             def usage_key(a):
-                return (
-                    a.get("usage_count") or
-                    a.get("usage") or
-                    a.get("rounds_played") or
-                    a.get("games_played") or 0
-                )
+                try:
+                    return int(a.get("usage_count") or 0)
+                except (ValueError, TypeError):
+                    return 0
             agents_sorted = sorted(agents_raw, key=usage_key, reverse=True)
             agent_names = [
-                (a.get("agent") or a.get("agent_name") or a.get("name") or "").strip()
+                (a.get("agent") or "").strip()
                 for a in agents_sorted
+                if a.get("agent")
             ]
-            agent_names = [a for a in agent_names if a]
             if agent_names:
                 player_agents_p[pname] = agent_names
                 vlrid_role_source[vid] = agent_names
@@ -575,11 +547,12 @@ else:
         # Primary: match by vlrId
         row = liq_by_vlrid.get(vid) if vid else None
 
-        # Fallback: match by pagename (title-case then exact)
+        # Fallback: match by pagename — try several case variants
         if row is None:
             row = (
-                liq_by_name.get(pname.title().lower()) or
-                liq_by_name.get(pname)
+                liq_by_name.get(pname) or                   # already lowercased
+                liq_by_name.get(pname.title().lower()) or   # "babybay" → "babybay"
+                liq_by_name.get(pname.upper().lower())       # safety
             )
 
         if row is None:
@@ -630,10 +603,8 @@ for vid, pinfo in vlr_id_map.items():
     if tf:
         entry["teamFull"] = tf
 
-    pc = player_country.get(pname)
-    if pc:
-        entry["country"]     = pc["country"]
-        entry["countryCode"] = pc["countryCode"]
+    # country/countryCode intentionally omitted — vlrgg API data is unreliable
+    # for nationality; players.js is the authoritative source for country.
 
     # Liquipedia IGL overrides agent-detected role
     if igl_map.get(pname):
