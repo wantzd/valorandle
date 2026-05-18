@@ -50,9 +50,11 @@
         if (entry.countryCode && entry.countryCode !== p.countryCode) updates.countryCode = entry.countryCode;
       }
 
-      // age and role applied for both vlrId and name matches
-      if (isObj && entry.age  && entry.age  !== p.age)  updates.age  = entry.age;
-      if (isObj && entry.role && entry.role !== p.role) updates.role = entry.role;
+      // age, role and titles applied for both vlrId and name matches
+      if (isObj && entry.age    && entry.age    !== p.age)   updates.age    = entry.age;
+      if (isObj && entry.role   && entry.role   !== p.role)  updates.role   = entry.role;
+      if (isObj && Array.isArray(entry.titles) && entry.titles.length)
+        updates.titles = entry.titles;
 
       return Object.keys(updates).length ? { ...p, ...updates } : p;
     });
