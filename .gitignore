@@ -18,10 +18,8 @@ sandbox/logos/
 sandbox/maps-logic.js
 sandbox/org-map.json
 
-# Astro build artifacts
-sandbox/astro/dist/
-sandbox/astro/.astro/
-sandbox/astro/node_modules/
+# Astro sandbox (local only)
+sandbox/astro/
 .vscode/
 .idea/
 *.tmp
