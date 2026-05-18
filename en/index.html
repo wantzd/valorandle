@@ -1,22 +1,24 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Valorandle — Adivinhe o Pro Player de VALORANT</title>
-  <meta name="description" content="Valorandle é o Wordle de VALORANT: adivinhe o pro player do VCT com até 8 tentativas. Novo desafio todo dia com jogadores das 4 ligas globais." />
-  <link rel="canonical" href="https://valorandle.com/" />
+  <base href="/" />
+  <title>Valorandle — Guess the VALORANT Pro Player</title>
+  <meta name="description" content="Valorandle is the VALORANT Wordle: guess the VCT pro player in up to 8 attempts. New challenge every day across all 4 global leagues." />
+  <link rel="canonical" href="https://valorandle.com/en/" />
   <link rel="alternate" hreflang="pt-BR" href="https://valorandle.com/" />
   <link rel="alternate" hreflang="en" href="https://valorandle.com/en/" />
   <link rel="alternate" hreflang="x-default" href="https://valorandle.com/" />
-  <meta name="keywords" content="valorandle, valdle, valorant wordle, vct pro player, adivinhe o jogador valorant, valorant quiz, vct wordle, wordle valorant, valorant game, valdle valorant" />
+  <meta name="keywords" content="valorandle, valdle, valorant wordle, vct pro player, guess the valorant player, valorant quiz, vct wordle, wordle valorant, valorant game, valdle valorant" />
   <meta name="robots" content="index, follow" />
   <meta name="author" content="Valorandle" />
   <meta property="og:site_name" content="Valorandle" />
-  <meta property="og:locale" content="pt_BR" />
+  <meta property="og:locale" content="en_US" />
+  <meta property="og:locale:alternate" content="pt_BR" />
   <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:title" content="Valorandle — Adivinhe o Pro Player de VALORANT" />
-  <meta name="twitter:description" content="Valorandle é o Wordle de VALORANT: adivinhe o pro player do VCT com até 8 tentativas. Novo desafio todo dia." />
+  <meta name="twitter:title" content="Valorandle — Guess the VALORANT Pro Player" />
+  <meta name="twitter:description" content="Valorandle is the VALORANT Wordle: guess the VCT pro player in up to 8 attempts. New challenge every day." />
   <meta name="twitter:image" content="https://valorandle.com/assets/icons/app-icon-512.png" />
   <meta name="theme-color" content="#FF4655" />
   <!-- Favicon -->
@@ -27,9 +29,9 @@
   <link rel="manifest" href="/manifest.json" />
   <!-- Open Graph -->
   <meta property="og:type" content="website" />
-  <meta property="og:url" content="https://valorandle.com/" />
-  <meta property="og:title" content="Valorandle — Adivinhe o Pro Player de VALORANT" />
-  <meta property="og:description" content="Valorandle é o Wordle de VALORANT: adivinhe o pro player do VCT com até 8 tentativas. Novo desafio todo dia com jogadores das 4 ligas globais." />
+  <meta property="og:url" content="https://valorandle.com/en/" />
+  <meta property="og:title" content="Valorandle — Guess the VALORANT Pro Player" />
+  <meta property="og:description" content="Valorandle is the VALORANT Wordle: guess the VCT pro player in up to 8 attempts. New challenge every day across all 4 global leagues." />
   <meta property="og:image" content="https://valorandle.com/assets/icons/app-icon-512.png" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -41,14 +43,14 @@
   "@type": "WebApplication",
   "name": "Valorandle",
   "alternateName": ["Valorant Wordle", "Valdle"],
-  "description": "Valorandle é o Wordle de VALORANT: adivinhe o pro player do VCT com até 8 tentativas. Novo desafio todo dia com jogadores das Americas, EMEA, Pacific e China.",
-  "url": "https://valorandle.com",
+  "description": "Valorandle is the VALORANT Wordle: guess the VCT pro player in up to 8 attempts. New challenge every day across the Americas, EMEA, Pacific and China leagues.",
+  "url": "https://valorandle.com/en/",
   "applicationCategory": "GameApplication",
   "genre": "Puzzle",
   "operatingSystem": "Web",
-  "inLanguage": ["pt-BR", "en"],
+  "inLanguage": ["en", "pt-BR"],
   "isAccessibleForFree": true,
-  "offers": { "@type": "Offer", "price": "0", "priceCurrency": "BRL" },
+  "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
   "image": "https://valorandle.com/assets/icons/app-icon-512.png"
 }
   </script>
@@ -763,7 +765,6 @@
     const step = STEPS[idx];
     const wrap = document.getElementById("tut-body-wrap");
 
-    // Build step HTML
     const div = document.createElement("div");
     div.className = "tut-step";
 
@@ -788,7 +789,6 @@
       div.appendChild(colorsEl.firstElementChild);
     }
 
-    // Transition out old
     const old = wrap.querySelector(".tut-step");
     if (old) {
       old.style.transition = "opacity 0.2s ease, transform 0.2s ease";
@@ -814,7 +814,6 @@
     buildDots();
     updateBar();
 
-    // Update next button
     const nextBtn = document.getElementById("tut-next");
     if (step.last) {
       nextBtn.textContent = isPT ? "Começar →" : "Let's go →";
@@ -836,7 +835,6 @@
     });
     document.getElementById("tut-skip").addEventListener("click", dismiss);
 
-    // Keyboard
     document.addEventListener("keydown", (e) => {
       if (overlay.style.display === "none") return;
       if (e.key === "ArrowRight" || e.key === "Enter") {

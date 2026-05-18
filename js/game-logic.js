@@ -395,6 +395,8 @@ function loadLang() {
   } catch {}
   const ck = getCookie("valorandle_lang");
   if (ck) return ck;
+  // Default to English when visiting /en/ path (before falling back to browser language)
+  if (window.location.pathname.startsWith("/en")) return "en";
   const nav = (navigator.language || "").toLowerCase();
   return nav.startsWith("pt") ? "pt-BR" : "en";
 }
