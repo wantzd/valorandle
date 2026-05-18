@@ -538,6 +538,13 @@ else:
     print(f"  Indexed: {len(liq_by_vlrid)} by vlrId, {len(liq_by_name)} by name")
 
     # ── 4c. Match against our players ─────────────────────────────────────────
+    # vlrId → Liquipedia pagename override for players whose in-game name
+    # differs from their Liquipedia page title.
+    LIQUIPEDIA_PAGE_OVERRIDES = {
+        4712: "HeiB",   # heybay
+        4885: "Whz",    # whzy / whz
+    }
+
     liq_ok = liq_igl = liq_no_match = 0
 
     all_known_players = list(set(
@@ -548,8 +555,13 @@ else:
     for pname in all_known_players:
         vid = name_to_vlrid.get(pname)
 
-        # Primary: match by vlrId
+        # Primary: match by vlrId (direct link in Liquipedia)
         row = liq_by_vlrid.get(vid) if vid else None
+
+        # Secondary: manual pagename override for name-mismatch players
+        if row is None and vid and vid in LIQUIPEDIA_PAGE_OVERRIDES:
+            override_page = LIQUIPEDIA_PAGE_OVERRIDES[vid].lower()
+            row = liq_by_name.get(override_page)
 
         # Fallback: match by pagename — try several case variants
         if row is None:

@@ -145,7 +145,7 @@ var PLAYERS_DB = [
   { id:"Wo0t",      vlrId:21328, name:"Wo0t",      displayName:"Wo0t",      country:"Finlândia",       countryCode:"FI", team:"Team Heretics", league:"VCT EMEA", leagueId:"emea", age:23, role:"Controller", isIGL:true,  yearsActive:3, titles:["Nenhum"] },
   { id:"riens",     vlrId:10971, name:"RieNs",     displayName:"RieNs",     country:"França",          countryCode:"FR", team:"Team Heretics", league:"VCT EMEA", leagueId:"emea", age:21, role:"Initiator",              yearsActive:3, titles:["Nenhum"] },
   { id:"Koshmaras", vlrId:23365, name:"Koshmaras", displayName:"Koshmaras", country:"Polônia",         countryCode:"PL", team:"Team Heretics", league:"VCT EMEA", leagueId:"emea", age:22, role:"Initiator",              yearsActive:3, titles:["Nenhum"] },
-  { id:"Boo",       vlrId:24519, name:"Boo",       displayName:"Boo",       country:"França",          countryCode:"FR", team:"Team Heretics", league:"VCT EMEA", leagueId:"emea", age:21, role:"Flex",                   yearsActive:2, titles:["Nenhum"] },
+  { id:"Boo",       vlrId:1144,  name:"Boo",       displayName:"Boo",       country:"França",          countryCode:"FR", team:"Team Heretics", league:"VCT EMEA", leagueId:"emea", age:21, role:"Flex",                   yearsActive:2, titles:["Nenhum"] },
   { id:"benjyfishy",vlrId:29873, name:"benjyfishy",displayName:"benjyfishy",country:"Reino Unido",    countryCode:"GB", team:"Team Heretics", league:"VCT EMEA", leagueId:"emea", age:22, role:"Duelist",                yearsActive:2, titles:["Nenhum"] },
 
   // ── Team Liquid ───────────────────────────────────────────
