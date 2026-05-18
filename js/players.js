@@ -169,19 +169,19 @@ var PLAYERS_DB = [
   { id:"Lar0k",       vlrId:31305, name:"Lar0k",       displayName:"Lar0k",      country:"Turquia",   countryCode:"TR", team:"BBL Esports",   league:"VCT EMEA", leagueId:"emea", age:23, role:"Controller", isIGL:true,  yearsActive:3, titles:["Nenhum"] },
   { id:"Crewen",      vlrId:12795, name:"Crewen",      displayName:"Crewen",     country:"Turquia",   countryCode:"TR", team:"BBL Esports",   league:"VCT EMEA", leagueId:"emea", age:22, role:"Sentinel",               yearsActive:2, titles:["Nenhum"] },
 
-  // ── PACIFIC (Ascension EMEA — ⚠ verificar roster) ────────
-  { id:"seven_pac", name:"seven",     displayName:"seven",     country:"Croácia",      countryCode:"HR", team:"PACIFIC",       league:"VCT EMEA", leagueId:"emea", age:22, role:"Duelist",                yearsActive:2, titles:["Nenhum"] },
-  { id:"qpert",     name:"qpert",     displayName:"qpert",     country:"França",       countryCode:"FR", team:"PACIFIC",       league:"VCT EMEA", leagueId:"emea", age:22, role:"Initiator",              yearsActive:2, titles:["Nenhum"] },
-  { id:"NINJA",     name:"NINJA",     displayName:"NINJA",     country:"Alemanha",     countryCode:"DE", team:"PACIFIC",       league:"VCT EMEA", leagueId:"emea", age:22, role:"Flex",                   yearsActive:2, titles:["Nenhum"] },
-  { id:"cNed",      name:"cNed",      displayName:"cNed",      country:"Turquia",      countryCode:"TR", team:"PACIFIC",       league:"VCT EMEA", leagueId:"emea", age:24, role:"Duelist",                yearsActive:5, titles:["Champions 2021"] },
-  { id:"al0rante",  name:"al0rante",  displayName:"al0rante",  country:"Itália",       countryCode:"IT", team:"PACIFIC",       league:"VCT EMEA", leagueId:"emea", age:22, role:"Controller", isIGL:true,  yearsActive:3, titles:["Nenhum"] },
+  // ── PCIFIC (Ascension EMEA) ──────────────────────────────
+  { id:"seven_pac", vlrId:8376,  name:"seven",     displayName:"seven",     country:"México",       countryCode:"MX", team:"PACIFIC",       league:"VCT EMEA", leagueId:"emea", age:22, role:"Duelist",                yearsActive:2, titles:["Nenhum"] },
+  { id:"qpert",     vlrId:7105,  name:"qpert",     displayName:"qpert",     country:"Sérvia",       countryCode:"RS", team:"PACIFIC",       league:"VCT EMEA", leagueId:"emea", age:22, role:"Initiator",              yearsActive:2, titles:["Nenhum"] },
+  { id:"NINJA",     vlrId:28948, name:"NINJA",     displayName:"NINJA",     country:"Polônia",      countryCode:"PL", team:"PACIFIC",       league:"VCT EMEA", leagueId:"emea", age:22, role:"Flex",                   yearsActive:2, titles:["Nenhum"] },
+  { id:"cNed",      vlrId:573,   name:"cNed",      displayName:"cNed",      country:"Turquia",      countryCode:"TR", team:"PACIFIC",       league:"VCT EMEA", leagueId:"emea", age:24, role:"Duelist",                yearsActive:5, titles:["Champions 2021"] },
+  { id:"al0rante",  vlrId:5292,  name:"al0rante",  displayName:"al0rante",  country:"Alemanha",     countryCode:"DE", team:"PACIFIC",       league:"VCT EMEA", leagueId:"emea", age:22, role:"Controller", isIGL:true,  yearsActive:3, titles:["Nenhum"] },
 
-  // ── Eternal Fire (substituiu ULF — ⚠ verificar roster) ───
-  { id:"Izzy",      name:"Izzy",      displayName:"Izzy",      country:"Turquia",      countryCode:"TR", team:"Eternal Fire",  league:"VCT EMEA", leagueId:"emea", age:22, role:"Duelist",                yearsActive:3, titles:["Nenhum"] },
-  { id:"echo_ef",   name:"echo",      displayName:"echo",      country:"Turquia",      countryCode:"TR", team:"Eternal Fire",  league:"VCT EMEA", leagueId:"emea", age:22, role:"Initiator",              yearsActive:2, titles:["Nenhum"] },
-  { id:"nekky",     name:"nekky",     displayName:"nekky",     country:"Turquia",      countryCode:"TR", team:"Eternal Fire",  league:"VCT EMEA", leagueId:"emea", age:22, role:"Flex",                   yearsActive:2, titles:["Nenhum"] },
-  { id:"audaz",     name:"audaz",     displayName:"audaz",     country:"Turquia",      countryCode:"TR", team:"Eternal Fire",  league:"VCT EMEA", leagueId:"emea", age:22, role:"Controller", isIGL:true,  yearsActive:3, titles:["Nenhum"] },
-  { id:"Favian",    name:"Favian",    displayName:"Favian",    country:"Turquia",      countryCode:"TR", team:"Eternal Fire",  league:"VCT EMEA", leagueId:"emea", age:22, role:"Sentinel",               yearsActive:2, titles:["Nenhum"] },
+  // ── Eternal Fire ─────────────────────────────────────────
+  { id:"Izzy",      vlrId:10160, name:"Izzy",      displayName:"Izzy",      country:"Turquia",      countryCode:"TR", team:"Eternal Fire",  league:"VCT EMEA", leagueId:"emea", age:22, role:"Duelist",                yearsActive:3, titles:["Nenhum"] },
+  { id:"echo_ef",   vlrId:49346, name:"echo",      displayName:"echo",      country:"Turquia",      countryCode:"TR", team:"Eternal Fire",  league:"VCT EMEA", leagueId:"emea", age:22, role:"Initiator",              yearsActive:2, titles:["Nenhum"] },
+  { id:"nekky",     vlrId:12670, name:"nekky",     displayName:"nekky",     country:"Turquia",      countryCode:"TR", team:"Eternal Fire",  league:"VCT EMEA", leagueId:"emea", age:22, role:"Flex",                   yearsActive:2, titles:["Nenhum"] },
+  { id:"audaz",     vlrId:40843, name:"audaz",     displayName:"audaz",     country:"Turquia",      countryCode:"TR", team:"Eternal Fire",  league:"VCT EMEA", leagueId:"emea", age:22, role:"Controller", isIGL:true,  yearsActive:3, titles:["Nenhum"] },
+  { id:"Favian",    vlrId:41720, name:"Favian",    displayName:"Favian",    country:"Turquia",      countryCode:"TR", team:"Eternal Fire",  league:"VCT EMEA", leagueId:"emea", age:22, role:"Sentinel",               yearsActive:2, titles:["Nenhum"] },
 
   // ══════════════════════════════════════════════════════════
   // VCT PACIFIC (12 times)
@@ -322,7 +322,7 @@ var PLAYERS_DB = [
   { id:"Akeman",    vlrId:52904, name:"Akeman",    displayName:"Akeman",    country:"China",        countryCode:"CN", team:"Dragon Ranger", league:"VCT China", leagueId:"china", age:22, role:"Sentinel",               yearsActive:2, titles:["Nenhum"] },
   { id:"Flex1n",    vlrId:4705,  name:"Flex1n",    displayName:"Flex1n",    country:"China",        countryCode:"CN", team:"Dragon Ranger", league:"VCT China", leagueId:"china", age:23, role:"Controller", isIGL:true,  yearsActive:3, titles:["Nenhum"] },
 
-  // ── JD Gaming ─────────────────────────────────────────────
+  // ── JDG Esports ─────────────────────────────────────────────
   { id:"stew",      vlrId:16924, name:"stew",      displayName:"stew",      country:"China",        countryCode:"CN", team:"JD Gaming",     league:"VCT China", leagueId:"china", age:22, role:"Flex",                   yearsActive:2, titles:["Nenhum"] },
   { id:"jkuro",     vlrId:3519,  name:"jkuro",     displayName:"jkuro",     country:"China",        countryCode:"CN", team:"JD Gaming",     league:"VCT China", leagueId:"china", age:23, role:"Controller", isIGL:true,  yearsActive:3, titles:["Nenhum"] },
   { id:"zhe",       vlrId:49476, name:"zhe",       displayName:"zhe",       country:"China",        countryCode:"CN", team:"JD Gaming",     league:"VCT China", leagueId:"china", age:23, role:"Duelist",                yearsActive:2, titles:["Nenhum"] },
@@ -333,7 +333,7 @@ var PLAYERS_DB = [
   { id:"OBONE",     vlrId:36670, name:"OBONE",     displayName:"OBONE",     country:"China",        countryCode:"CN", team:"Nova Esports",  league:"VCT China", leagueId:"china", age:22, role:"Duelist",                yearsActive:2, titles:["Nenhum"] },
   { id:"Ezeir",     vlrId:46460, name:"Ezeir",     displayName:"Ezeir",     country:"China",        countryCode:"CN", team:"Nova Esports",  league:"VCT China", leagueId:"china", age:22, role:"Flex",                   yearsActive:2, titles:["Nenhum"] },
   { id:"GREEN_nov", vlrId:34181, name:"GREEN",     displayName:"GREEN",     country:"China",        countryCode:"CN", team:"Nova Esports",  league:"VCT China", leagueId:"china", age:22, role:"Sentinel",               yearsActive:2, titles:["Nenhum"] },
-  { id:"heybay",    vlrId:4712,  name:"heybay",    displayName:"heybay",    country:"China",        countryCode:"CN", team:"Nova Esports",  league:"VCT China", leagueId:"china", age:23, role:"Controller", isIGL:true,  yearsActive:3, titles:["Nenhum"] },
+
   { id:"GuanG",     vlrId:41054, name:"GuanG",     displayName:"GuanG",     country:"China",        countryCode:"CN", team:"Nova Esports",  league:"VCT China", leagueId:"china", age:22, role:"Initiator",              yearsActive:2, titles:["Nenhum"] },
 
   // ── Titan Esports Club ────────────────────────────────────
