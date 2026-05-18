@@ -352,7 +352,7 @@ var PLAYERS_DB = [
 
   // ── Wolves Esports ────────────────────────────────────────
   { id:"SiuFatBB",  vlrId:7849,  name:"SiuFatBB",  displayName:"SiuFatBB",  country:"China",        countryCode:"CN", team:"Wolves",        league:"VCT China", leagueId:"china", age:22, role:"Initiator",              yearsActive:2, titles:["Nenhum"] },
-  { id:"R1ckLee",   vlrId:4410,  name:"R1ckLee",   displayName:"R1ckLee",   country:"China",        countryCode:"CN", team:"Wolves",        league:"VCT China", leagueId:"china", age:23, role:"Controller", isIGL:true,  yearsActive:4, titles:["Nenhum"] },
+  { id:"glacier",   vlrId:49973, name:"glacier",   displayName:"glacier",   country:"Taiwan",       countryCode:"TW", team:"Wolves",        league:"VCT China", leagueId:"china", age:21, role:"Duelist",                yearsActive:1, titles:["Nenhum"] },
   { id:"jowa",      vlrId:19292, name:"jowa",      displayName:"jowa",      country:"China",        countryCode:"CN", team:"Wolves",        league:"VCT China", leagueId:"china", age:22, role:"Flex",                   yearsActive:2, titles:["Nenhum"] },
   { id:"yosemite",  vlrId:6022,  name:"yosemite",  displayName:"yosemite",  country:"China",        countryCode:"CN", team:"Wolves",        league:"VCT China", leagueId:"china", age:22, role:"Duelist",                yearsActive:2, titles:["Nenhum"] },
   { id:"Spring",    vlrId:14125, name:"Spring",    displayName:"Spring",    country:"China",        countryCode:"CN", team:"Wolves",        league:"VCT China", leagueId:"china", age:22, role:"Sentinel",               yearsActive:3, titles:["Nenhum"] },
