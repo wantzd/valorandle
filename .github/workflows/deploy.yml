@@ -1,0 +1,46 @@
+name: Deploy to Hostinger
+
+on:
+  push:
+    branches: [main]
+    paths-ignore:
+      - 'data/org-map.json'   # handled by update-players.yml
+      - '.github/**'
+      - 'README.md'
+      - '.gitignore'
+      - 'sandbox/**'
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Deploy via FTP
+        env:
+          FTP_HOST: ${{ secrets.FTP_HOST }}
+          FTP_USER: ${{ secrets.FTP_USER }}
+          FTP_PASS: ${{ secrets.FTP_PASS }}
+          FTP_PATH: ${{ secrets.FTP_PATH }}
+        run: |
+          sudo apt-get install -y lftp
+
+          cat > /tmp/deploy.lftp << EOF
+          open -p 21 -u $FTP_USER,$FTP_PASS $FTP_HOST
+          set ftp:ssl-allow no
+          set net:timeout 60
+          set net:max-retries 3
+          mirror --reverse --delete --verbose \
+            --exclude-glob .git \
+            --exclude-glob .github \
+            --exclude-glob .gitignore \
+            --exclude-glob README.md \
+            --exclude-glob sandbox \
+            --exclude-glob data/org-map.json \
+            . $FTP_PATH
+          bye
+          EOF
+
+          lftp -f /tmp/deploy.lftp
