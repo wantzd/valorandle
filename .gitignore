@@ -1,6 +1,5 @@
 .claude/
 uploads/
-sandbox/
 **/.DS_Store
 Thumbs.db
 __pycache__/
@@ -8,6 +7,21 @@ __pycache__/
 .env
 *.log
 node_modules/
+
+# Sandbox plain-HTML prototype (local only)
+sandbox/*.html
+sandbox/*.js
+sandbox/*.json
+sandbox/.htaccess
+sandbox/icons/
+sandbox/logos/
+sandbox/maps-logic.js
+sandbox/org-map.json
+
+# Astro build artifacts
+sandbox/astro/dist/
+sandbox/astro/.astro/
+sandbox/astro/node_modules/
 .vscode/
 .idea/
 *.tmp

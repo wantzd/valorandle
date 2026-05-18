@@ -1,0 +1,50 @@
+---
+import { useTranslations, type Lang } from '../i18n/ui';
+
+interface Props { lang: Lang; }
+const { lang } = Astro.props;
+const t = useTranslations(lang);
+---
+
+<div class="qstats-row">
+  <div class="qstat">
+    <span class="qstat-num" id="stat-today">0</span>
+    <div class="qstat-lbl">{t('stats.today')}</div>
+  </div>
+  <div class="qstat">
+    <span class="qstat-num" id="stat-streak">0</span>
+    <div class="qstat-lbl">{t('stats.streak')}</div>
+  </div>
+  <div class="qstat">
+    <span class="qstat-num" id="stat-winrate">—</span>
+    <div class="qstat-lbl">{t('stats.winrate')}</div>
+  </div>
+</div>
+
+<script is:inline>
+(function () {
+  if (typeof loadStats === 'undefined' || typeof getDailyDateKey === 'undefined') return;
+
+  const stats = loadStats();
+
+  document.getElementById('stat-streak').textContent  = stats.streak;
+  document.getElementById('stat-winrate').textContent = stats.played > 0
+    ? Math.round((stats.wins / stats.played) * 100) + '%'
+    : '—';
+
+  // Count modes played today
+  const today = getDailyDateKey();
+  let count = 0;
+  try {
+    for (let i = 0; i < localStorage.length; i++) {
+      const k = localStorage.key(i);
+      if (!k || !k.startsWith('valorandle_daily_') || !k.endsWith('_' + today)) continue;
+      const s = JSON.parse(localStorage.getItem(k) || 'null');
+      if (s && ((s.guesses && s.guesses.length > 0) || (s.roundResults && s.roundResults.length > 0))) {
+        count++;
+      }
+    }
+  } catch {}
+  document.getElementById('stat-today').textContent = count;
+})();
+</script>
