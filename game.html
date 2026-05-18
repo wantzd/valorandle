@@ -720,9 +720,7 @@
   // ── Cell building ─────────────────────────────────────
   function cellValue(fb, player) {
     if (fb.attr === "role") {
-      const isFlex = fb.value.includes(" (Flex)");
-      const base   = fb.value.replace(" (Flex)", "");
-      return (t.roles[base] || base) + (isFlex ? " (Flex)" : "");
+      return translateRole(fb.value, t.roles);
     }
     if (fb.attr === "yearsActive")                        return `${fb.value} ${t.years}`;
     if (fb.attr === "titles" && fb.value === "Nenhum")    return t.noTitles;
@@ -801,7 +799,7 @@
     return `<span class="tip-title">${p.displayName}</span>` +
       `<span class="tip-row">${flagHtml(p.countryCode)} ${p.country}</span>` +
       `<span class="tip-row">${p.team} · ${p.league}</span>` +
-      `<span class="tip-row">${(()=>{ const iF=p.role?.includes(" (Flex)"); const b=(p.role||"").replace(" (Flex)",""); return (t.roles[b]||b)+(iF?" (Flex)":""); })()} · ${p.age} ${t.years}</span>` +
+      `<span class="tip-row">${translateRole(p.role||"", t.roles)} · ${p.age} ${t.years}</span>` +
       `<span class="tip-row">${p.yearsActive} ${t.years} ${lang==="pt-BR"?"ativo":"active"}</span>`;
   }
 
@@ -828,10 +826,7 @@
         h += `<span class="tip-row ${cl?"mid":"bad"}">${cl?(isPT?"Quase!":"Close!"):(isPT?"Longe!":"Far!")}</span>`;
       }
     } else if (fb.attr === "role") {
-      const isFlex = fb.value.includes(" (Flex)");
-      const base   = fb.value.replace(" (Flex)", "");
-      const disp   = (t.roles[base] || base) + (isFlex ? " (Flex)" : "");
-      h += `<span class="tip-row">${disp}</span>`;
+      h += `<span class="tip-row">${translateRole(fb.value, t.roles)}</span>`;
       if (ok)       h += `<span class="tip-row ok">${isPT?"Correto!":"Correct!"}</span>`;
       else if (mid) h += `<span class="tip-row mid">${isPT?"Mesmo grupo":"Same group"}</span>`;
       else          h += `<span class="tip-row bad">${isPT?"Grupo diferente":"Different group"}</span>`;
@@ -1037,7 +1032,7 @@
 
     document.getElementById("result-flag").innerHTML = flagHtml(target.countryCode);
     document.getElementById("result-name").textContent = target.displayName;
-    document.getElementById("result-sub").textContent  = `${target.team} · ${t.roles[target.role]||target.role} · ${target.age} ${t.years} · ${target.yearsActive} ${t.years} ${lang==="pt-BR"?"ativo":"active"}`;
+    document.getElementById("result-sub").textContent  = `${target.team} · ${translateRole(target.role||"", t.roles)} · ${target.age} ${t.years} · ${target.yearsActive} ${t.years} ${lang==="pt-BR"?"ativo":"active"}`;
 
     // Attempt graph
     const graphDiv = document.getElementById("result-graph");

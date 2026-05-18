@@ -37,7 +37,8 @@ const I18N = {
       Initiator: "Iniciador",
       Controller: "Controlador",
       Sentinel: "Sentinela",
-      Flex: "Flex"
+      Flex: "Flex",
+      IGL: "IGL"
     }
   },
   "en": {
@@ -78,7 +79,8 @@ const I18N = {
       Initiator: "Initiator",
       Controller: "Controller",
       Sentinel: "Sentinel",
-      Flex: "Flex"
+      Flex: "Flex",
+      IGL: "IGL"
     }
   }
 };
@@ -153,6 +155,7 @@ const ROLE_GROUPS = {
   Controller: ["Controller"],
   Sentinel:   ["Sentinel", "Flex"],
   Flex:       ["Initiator", "Sentinel", "Flex"],
+  // IGL is handled structurally in compareRole — no group entry needed
 };
 
 const TITLE_TIERS = {
@@ -212,18 +215,55 @@ function compareAge(guess, target) {
   return { attr: "age", value: guess.age, status, hint };
 }
 
+// Parse "IGL/Controller (Flex)" → { isIGL:true, base:"Controller", isFlex:true }
+// Parse "Duelist (Flex)"        → { isIGL:false, base:"Duelist",    isFlex:true }
+// Parse "IGL"                   → { isIGL:true,  base:null,         isFlex:false }
+function _parseRole(r) {
+  const isFlex = r.includes(" (Flex)");
+  const clean  = r.replace(" (Flex)", "");
+  const si     = clean.indexOf("/");
+  const isIGL  = si !== -1 ? clean.slice(0, si) === "IGL" : clean === "IGL";
+  const base   = si !== -1 ? clean.slice(si + 1) : (isIGL ? null : clean);
+  return { isIGL, base, isFlex };
+}
+
 function compareRole(guess, target) {
-  const gr = guess.role, tr = target.role;
+  const gr = guess.role || "", tr = target.role || "";
   if (gr === tr) return { attr: "role", value: gr, status: "correct", hint: null };
 
-  const gBase = gr.replace(" (Flex)", "");
-  const tBase = tr.replace(" (Flex)", "");
+  const g  = _parseRole(gr);
+  const tg = _parseRole(tr);
 
-  if (gBase === tBase) return { attr: "role", value: gr, status: "close", hint: null };
+  // Same underlying base role (differs only in IGL prefix or Flex suffix)
+  if (g.base && tg.base && g.base === tg.base)
+    return { attr: "role", value: gr, status: "close", hint: null };
 
+  // Both are IGL (even if base roles differ or are unknown)
+  if (g.isIGL && tg.isIGL)
+    return { attr: "role", value: gr, status: "close", hint: null };
+
+  // Fall back to ROLE_GROUPS using the effective base role
+  const gBase = g.base  || (g.isIGL  ? "IGL"  : gr.replace(" (Flex)", ""));
+  const tBase = tg.base || (tg.isIGL ? "IGL"  : tr.replace(" (Flex)", ""));
   const sameGroup = (ROLE_GROUPS[gBase] || []).includes(tBase) ||
                     (ROLE_GROUPS[tBase] || []).includes(gBase);
   return { attr: "role", value: gr, status: sameGroup ? "close" : "wrong", hint: null };
+}
+
+// Translate any role string (including "IGL/Controller", "Duelist (Flex)", etc.)
+// rolesDict: I18N[lang].roles
+function translateRole(roleStr, rolesDict) {
+  if (!roleStr) return "";
+  const isFlex   = roleStr.includes(" (Flex)");
+  const clean    = roleStr.replace(" (Flex)", "");
+  const slashIdx = clean.indexOf("/");
+  if (slashIdx !== -1) {
+    // Compound: "IGL/Controller" → "IGL/" + translated base
+    const prefix = clean.slice(0, slashIdx + 1);          // "IGL/"
+    const base   = clean.slice(slashIdx + 1);              // "Controller"
+    return prefix + (rolesDict[base] || base) + (isFlex ? " (Flex)" : "");
+  }
+  return (rolesDict[clean] || clean) + (isFlex ? " (Flex)" : "");
 }
 
 function compareTitles(guess, target) {
