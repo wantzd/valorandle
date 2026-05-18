@@ -125,6 +125,7 @@ COUNTRY_MAP = {
     "nz": ("Nova Zelândia",    "NZ"),
     "in": ("Índia",            "IN"),
     "pk": ("Paquistão",        "PK"),
+    "ch": ("Suíça",            "CH"),
     "mn": ("Mongólia",         "MN"),
 }
 
