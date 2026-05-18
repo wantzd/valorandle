@@ -288,8 +288,41 @@ print(f"\n  30d coverage: {len(agents_30d)} players\n")
 player_teamfull  = {}   # name.lower() → full team name
 player_country   = {}   # name.lower() → {"country": "...", "countryCode": "..."}
 player_agents_p  = {}   # name.lower() → [agent, ...] from player endpoint
+player_titles    = {}   # name.lower() → [title, ...] from event_placements
 
 vlrid_role_source  = {}   # vlrId (int) → agent list (for role detection)
+
+# ── Title detection helpers ────────────────────────────────────────────────────
+def _is_official_vct_event(event_name):
+    name = event_name.lower()
+    patterns = [
+        r'valorant champions \d+',
+        r'valorant masters \w+ \d+',
+        r'valorant champions tour stage \d+: masters',
+        r'(vct|champions tour) \d+: (americas|emea|pacific|china)',
+    ]
+    return any(re.search(p, name) for p in patterns)
+
+def _format_vct_title(event_name, year):
+    """Convert vlrgg event name to a short display title."""
+    # World championship
+    m = re.search(r'Valorant Champions (\d+)', event_name)
+    if m:
+        return f'Champions {m.group(1)}'
+    # International Masters
+    m = re.search(r'Masters (\w+) (\d+)', event_name)
+    if m:
+        return f'Masters {m.group(1)} {m.group(2)}'
+    # Regional: extract sub-stage (Kickoff, Stage 1, Stage 2, Split N…)
+    m = re.search(r'(?:VCT|Champions Tour) \d+: (Americas|EMEA|Pacific|China)(.*)', event_name)
+    if m:
+        region = m.group(1)
+        rest   = m.group(2).strip()
+        stage  = re.search(r'(Stage \d+|Kickoff|Split \d+)', rest)
+        if stage:
+            return f'VCT {region} {stage.group(1)} {year}'
+        return f'VCT {region} {year}'   # old single-stage format
+    return event_name
 
 print(f"[Step 1c] Fetching per-player data via vlrId ({len(vlr_id_map)} players)...\n")
 
@@ -343,6 +376,17 @@ for vid, pinfo in vlr_id_map.items():
             if agent_names:
                 player_agents_p[pname] = agent_names
                 vlrid_role_source[vid] = agent_names
+
+        # ── Titles from event_placements ───────────────────────────────────────
+        placements = seg.get("event_placements") or []
+        titles = []
+        for placement in placements:
+            if placement.get("placement") == "1st" and _is_official_vct_event(placement.get("event", "")):
+                title = _format_vct_title(placement["event"], placement.get("date", ""))
+                if title not in titles:
+                    titles.append(title)
+        if titles:
+            player_titles[pname] = titles
 
         ok_count += 1
         if ok_count % 20 == 0:
@@ -645,6 +689,10 @@ for vid, pinfo in vlr_id_map.items():
     age = age_map.get(pname)
     if age:
         entry["age"] = age
+
+    titles = player_titles.get(pname)
+    if titles:
+        entry["titles"] = titles
 
     if entry:
         player_data[str(vid)] = entry
