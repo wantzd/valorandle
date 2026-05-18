@@ -306,10 +306,14 @@ for vid, pinfo in vlr_id_map.items():
         if team_name:
             player_teamfull[pname] = team_name
 
-        # NOTE: country/countryCode are intentionally NOT read from the vlrgg API.
-        # The vlrgg API country data is frequently inaccurate (player-set flags,
-        # dual nationalities, mismatched data).  Country in players.js is manually
-        # curated and is the authoritative source — no auto-override.
+        # ── Country ────────────────────────────────────────────────────────────
+        raw_country = (seg.get("country") or "").strip()
+        country_pt, country_code = country_from_code(raw_country)
+        if country_pt:
+            player_country[pname] = {
+                "country":     country_pt,
+                "countryCode": country_code,
+            }
 
         # ── Agent stats (for role detection fallback) ──────────────────────────
         agents_raw = seg.get("agent_stats") or []
@@ -603,8 +607,10 @@ for vid, pinfo in vlr_id_map.items():
     if tf:
         entry["teamFull"] = tf
 
-    # country/countryCode intentionally omitted — vlrgg API data is unreliable
-    # for nationality; players.js is the authoritative source for country.
+    pc = player_country.get(pname)
+    if pc:
+        entry["country"]     = pc["country"]
+        entry["countryCode"] = pc["countryCode"]
 
     # Liquipedia IGL overrides agent-detected role
     if igl_map.get(pname):
