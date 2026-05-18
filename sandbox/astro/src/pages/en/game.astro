@@ -1,0 +1,14 @@
+---
+import Base from '../../layouts/Base.astro';
+import ProPlayersGame from '../../components/game/ProPlayersGame.svelte';
+---
+<Base
+  lang="en"
+  canonical="https://valorandle.com/en/game"
+  altHref="https://valorandle.com/game"
+>
+  <ProPlayersGame lang="en" client:load />
+
+  <!-- api.js merges org-map data (team, age, role) into PLAYERS_DB -->
+  <script is:inline src="/js/api.js" slot="scripts"></script>
+</Base>

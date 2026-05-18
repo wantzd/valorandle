@@ -86,5 +86,6 @@ const enUrl = lang === 'en'    ? canonical : altHref;
   <!-- Game logic scripts (vanilla JS, unchanged from original) -->
   <script is:inline src="/js/players.js"></script>
   <script is:inline src="/js/game-logic.js"></script>
+  <slot name="scripts" />
 </body>
 </html>

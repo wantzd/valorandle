@@ -4,6 +4,7 @@ import { useTranslations, type Lang } from '../i18n/ui';
 interface Props { lang: Lang; }
 const { lang } = Astro.props;
 const t = useTranslations(lang);
+const isPT = lang === 'pt-BR';
 ---
 
 <div class="hub-hero">
@@ -27,10 +28,12 @@ const t = useTranslations(lang);
     </div>
 
     <div class="hub-cta-row">
-      <a class="btn primary" id="btn-continue" href="/league-select.html?mode=daily">
+      <a class="btn primary" id="btn-continue"
+         href={isPT ? '/league-select?mode=daily' : '/en/league-select?mode=daily'}>
         {t('cta.play')}
       </a>
-      <a class="btn ghost" id="btn-free" href="/league-select.html?mode=free">
+      <a class="btn ghost" id="btn-free"
+         href={isPT ? '/league-select?mode=free' : '/en/league-select?mode=free'}>
         {t('cta.free')}
       </a>
     </div>

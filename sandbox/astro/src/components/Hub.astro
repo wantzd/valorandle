@@ -71,7 +71,7 @@ const isPT = lang === 'pt-BR';
         disabled
       />
       <ModeRow
-        href="/maps.html?mode=daily"
+        href={isPT ? '/maps?mode=daily' : '/en/maps?mode=daily'}
         name={t('mode.maps.name')}
         desc={t('mode.maps.desc')}
         tag="new"
