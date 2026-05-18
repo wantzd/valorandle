@@ -8,7 +8,8 @@ Sources:
   2. vlrgg /v2/player?id=X — per-player: teamFull, country, agent_stats (primary)
   3. vlrgg /v2/match?q=results + /v2/match/details — agent picks from last 5 VCT
      matches per player (most accurate role source)
-  4. Liquipedia API — birthdate → age (activates when LIQUIPEDIA_API_KEY is set)
+  4. Liquipedia API — bulk fetch (1–3 requests) → birthdate + IGL role
+        Matches players via links.vlr → vlrId. Free tier: 60 req/hr.
 
 Output format (org-map.json):
   - Players with vlrId: keyed by vlrId string
@@ -471,76 +472,142 @@ print(f"[Step 3] {len(role_map)} roles detected:")
 print(f"  VCT matches: {t1} | player endpoint: {t2} | 30d stats: {t3} | all-time: {t4}\n")
 
 
-# ── Step 4: Liquipedia API — birthdate → age ──────────────────────────────────
+# ── Step 4: Liquipedia API — birthdate → age (bulk fetch) ────────────────────
+#
+# Free tier: 60 req/hour (~1 req/min).  Per-player loops are impossible at this
+# rate with 200+ players.  Instead we fetch ALL Valorant players in 1–3 paginated
+# requests (limit=1000 each) and match locally by vlrId extracted from links.vlr.
+#
+# Endpoint:  GET https://api.liquipedia.net/api/v3/player
+# Fields:    pagename, birthdate, extradata, links
+# Matching:  links.vlr == "https://www.vlr.gg/player/<vlrId>"  (primary)
+#            pagename.lower() == pname                          (fallback)
+
 from datetime import date as _date
 
 age_map = {}
+igl_map = {}  # pname → True when Liquipedia confirms IGL role
 LIQUIPEDIA_KEY = os.environ.get("LIQUIPEDIA_API_KEY", "").strip()
 
 if not LIQUIPEDIA_KEY:
     print("[Step 4] LIQUIPEDIA_API_KEY not set — age and IGL stay hardcoded in players.js\n")
 else:
-    print("[Step 4] Fetching player data from Liquipedia (birthdate + IGL role)...")
+    print("[Step 4] Bulk-fetching Valorant players from Liquipedia (birthdate + IGL)...")
     today = _date.today()
     liq_headers = {
         "Authorization": f"Apikey {LIQUIPEDIA_KEY}",
         "Accept":        "application/json",
     }
-    liq_ok = liq_igl = liq_errors = 0
 
-    all_names = list(set(
+    # ── 4a. Paginated bulk fetch ───────────────────────────────────────────────
+    LIQ_FIELDS    = "pagename,birthdate,extradata,links"
+    LIQ_PAGE_SIZE = 1000
+    LIQ_BASE_URL  = "https://api.liquipedia.net/api/v3/player"
+
+    all_liq_rows = []   # raw Liquipedia player records
+    offset        = 0
+    page_num      = 0
+    liq_fetch_err = 0
+
+    while True:
+        page_num += 1
+        if page_num > 1:
+            time.sleep(3)   # only needed between paginated requests (≤3 total)
+        try:
+            r = httpx.get(
+                LIQ_BASE_URL,
+                params={
+                    "wiki":   "valorant",
+                    "fields": LIQ_FIELDS,
+                    "limit":  LIQ_PAGE_SIZE,
+                    "offset": offset,
+                },
+                headers=liq_headers,
+                timeout=30,
+                follow_redirects=True,
+            )
+            r.raise_for_status()
+            result = r.json().get("result", [])
+            all_liq_rows.extend(result)
+            print(f"  Page {page_num}: {len(result)} records (total so far: {len(all_liq_rows)})")
+            if len(result) < LIQ_PAGE_SIZE:
+                break   # last page
+            offset += LIQ_PAGE_SIZE
+        except Exception as e:
+            liq_fetch_err += 1
+            print(f"  ✗ Liquipedia page {page_num}: {e}")
+            break
+
+    print(f"  Fetched {len(all_liq_rows)} Liquipedia player records in {page_num} request(s)\n")
+
+    # ── 4b. Build lookup dicts ─────────────────────────────────────────────────
+    # vlrId (int) → Liquipedia row
+    liq_by_vlrid  = {}
+    # pagename.lower() → Liquipedia row  (fallback when vlr link absent)
+    liq_by_name   = {}
+
+    VLR_PLAYER_RE = re.compile(r'vlr\.gg/player/(\d+)', re.IGNORECASE)
+
+    for row in all_liq_rows:
+        pagename = (row.get("pagename") or "").strip()
+        if pagename:
+            liq_by_name[pagename.lower()] = row
+
+        links = row.get("links") or {}
+        vlr_url = links.get("vlr") or links.get("vlrgg") or ""
+        m = VLR_PLAYER_RE.search(vlr_url)
+        if m:
+            liq_by_vlrid[int(m.group(1))] = row
+
+    print(f"  Indexed: {len(liq_by_vlrid)} by vlrId, {len(liq_by_name)} by name")
+
+    # ── 4c. Match against our players ─────────────────────────────────────────
+    liq_ok = liq_igl = liq_no_match = 0
+
+    all_known_players = list(set(
         list(org_map.keys()) +
         [vlr_id_map[v]["name"].lower() for v in vlr_id_map]
     ))
 
-    igl_map = {}  # pname → True when Liquipedia confirms IGL role
+    for pname in all_known_players:
+        vid = name_to_vlrid.get(pname)
 
-    for pname in all_names:
-        candidates = [pname.title(), pname] if pname.title() != pname else [pname]
-        for i, candidate in enumerate(candidates):
-            if i > 0:
-                time.sleep(2.2)  # rate limit: 1 req/2s (free tier) — only between candidates
+        # Primary: match by vlrId
+        row = liq_by_vlrid.get(vid) if vid else None
+
+        # Fallback: match by pagename (title-case then exact)
+        if row is None:
+            row = (
+                liq_by_name.get(pname.title().lower()) or
+                liq_by_name.get(pname)
+            )
+
+        if row is None:
+            liq_no_match += 1
+            continue
+
+        # Birthdate → age
+        bd_raw = row.get("birthdate", "")
+        if bd_raw and bd_raw not in ("0000-01-01", ""):
             try:
-                r = httpx.get(
-                    "https://api.liquipedia.net/api/v3/player",
-                    params={"wiki": "valorant",
-                            "conditions": f"[[pagename::{candidate}]]",
-                            "fields": "id,birthdate,extradata"},
-                    headers=liq_headers,
-                    timeout=15,
-                    follow_redirects=True,
+                bd  = _date.fromisoformat(bd_raw[:10])
+                age = today.year - bd.year - (
+                    (today.month, today.day) < (bd.month, bd.day)
                 )
-                r.raise_for_status()
-                result = r.json().get("result", [])
-                if result:
-                    row = result[0]
+                if 14 <= age <= 50:   # sanity-check range
+                    age_map[pname] = age
+                    liq_ok += 1
+            except ValueError:
+                pass
 
-                    # Birthdate → age
-                    bd_raw = row.get("birthdate", "")
-                    if bd_raw and bd_raw != "0000-01-01":
-                        try:
-                            bd  = _date.fromisoformat(bd_raw)
-                            age = today.year - bd.year - ((today.month, today.day) < (bd.month, bd.day))
-                            age_map[pname] = age
-                            liq_ok += 1
-                        except ValueError:
-                            pass
+        # IGL detection via extradata.role
+        extradata = row.get("extradata") or {}
+        if str(extradata.get("role", "")).lower() == "igl":
+            igl_map[pname] = True
+            liq_igl += 1
 
-                    # IGL detection via extradata.role
-                    extradata = row.get("extradata") or {}
-                    if extradata.get("role", "").lower() == "igl":
-                        igl_map[pname] = True
-                        liq_igl += 1
-
-                    break  # found on Liquipedia — stop trying candidates
-            except Exception as e:
-                liq_errors += 1
-                if liq_errors <= 5:
-                    print(f"  ✗ {candidate}: {e}")
-        time.sleep(2.2)  # rate limit: 1 req/2s (free tier)
-
-    print(f"  ✓ {liq_ok} ages fetched, {liq_igl} IGLs detected "
-          f"({liq_errors} errors, {len(all_names)-liq_ok} not found)\n")
+    print(f"  ✓ {liq_ok} ages resolved, {liq_igl} IGLs detected "
+          f"({liq_no_match} players not matched on Liquipedia)\n")
 
 
 # ── Step 5: Build org-map.json ────────────────────────────────────────────────
