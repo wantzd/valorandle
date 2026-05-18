@@ -173,7 +173,7 @@ def country_from_code(code):
 
 # ── Step 0: Parse players.js for vlrId mapping ────────────────────────────────
 PLAYERS_JS_PATH = os.path.normpath(
-    os.path.join(os.path.dirname(__file__), "..", "..", "players.js")
+    os.path.join(os.path.dirname(__file__), "..", "..", "js", "players.js")
 )
 
 # vlrId (int) → { "id": str, "name": str }
@@ -478,51 +478,68 @@ age_map = {}
 LIQUIPEDIA_KEY = os.environ.get("LIQUIPEDIA_API_KEY", "").strip()
 
 if not LIQUIPEDIA_KEY:
-    print("[Step 4] LIQUIPEDIA_API_KEY not set — age stays hardcoded in players.js\n")
+    print("[Step 4] LIQUIPEDIA_API_KEY not set — age and IGL stay hardcoded in players.js\n")
 else:
-    print("[Step 4] Fetching player birthdates from Liquipedia...")
+    print("[Step 4] Fetching player data from Liquipedia (birthdate + IGL role)...")
     today = _date.today()
     liq_headers = {
         "Authorization": f"Apikey {LIQUIPEDIA_KEY}",
         "Accept":        "application/json",
     }
-    liq_ok = liq_errors = 0
+    liq_ok = liq_igl = liq_errors = 0
 
     all_names = list(set(
         list(org_map.keys()) +
         [vlr_id_map[v]["name"].lower() for v in vlr_id_map]
     ))
 
+    igl_map = {}  # pname → True when Liquipedia confirms IGL role
+
     for pname in all_names:
         candidates = [pname.title(), pname] if pname.title() != pname else [pname]
-        found = False
         for candidate in candidates:
             try:
                 r = httpx.get(
                     "https://api.liquipedia.net/api/v3/player",
                     params={"wiki": "valorant",
                             "conditions": f"[[pagename::{candidate}]]",
-                            "fields": "id,birthdate"},
+                            "fields": "id,birthdate,extradata"},
                     headers=liq_headers,
                     timeout=15,
                     follow_redirects=True,
                 )
+                r.raise_for_status()
                 result = r.json().get("result", [])
-                if result and result[0].get("birthdate"):
-                    bd  = _date.fromisoformat(result[0]["birthdate"])
-                    age = today.year - bd.year - ((today.month, today.day) < (bd.month, bd.day))
-                    age_map[pname] = age
-                    liq_ok += 1
-                    found = True
-                    break
+                if result:
+                    row = result[0]
+
+                    # Birthdate → age
+                    bd_raw = row.get("birthdate", "")
+                    if bd_raw and bd_raw != "0000-01-01":
+                        try:
+                            bd  = _date.fromisoformat(bd_raw)
+                            age = today.year - bd.year - ((today.month, today.day) < (bd.month, bd.day))
+                            age_map[pname] = age
+                            liq_ok += 1
+                        except ValueError:
+                            pass
+
+                    # IGL detection via extradata.role
+                    extradata = row.get("extradata") or {}
+                    if extradata.get("role", "").lower() == "igl":
+                        igl_map[pname] = True
+                        liq_igl += 1
+
+                    break  # found on Liquipedia — stop trying candidates
             except Exception as e:
                 liq_errors += 1
                 if liq_errors <= 5:
                     print(f"  ✗ {candidate}: {e}")
-            time.sleep(1.1)
+            finally:
+                time.sleep(1.1)  # sempre dorme após cada request, mesmo após break
 
-    print(f"  ✓ {liq_ok} ages fetched ({liq_errors} errors, "
-          f"{len(all_names)-liq_ok} not found)\n")
+    print(f"  ✓ {liq_ok} ages fetched, {liq_igl} IGLs detected "
+          f"({liq_errors} errors, {len(all_names)-liq_ok} not found)\n")
 
 
 # ── Step 5: Build org-map.json ────────────────────────────────────────────────
@@ -550,9 +567,13 @@ for vid, pinfo in vlr_id_map.items():
         entry["country"]     = pc["country"]
         entry["countryCode"] = pc["countryCode"]
 
-    role = role_map.get(pname)
-    if role:
-        entry["role"] = role
+    # Liquipedia IGL overrides agent-detected role
+    if igl_map.get(pname):
+        detected = role_map.get(pname)
+        # Compound: "IGL/Duelist", "IGL/Controller", etc.
+        entry["role"] = f"IGL/{detected}" if detected else "IGL"
+    elif role_map.get(pname):
+        entry["role"] = role_map[pname]
 
     age = age_map.get(pname)
     if age:
@@ -569,7 +590,10 @@ for pname in org_map:
     entry = {}
     if pname in age_map:
         entry["age"] = age_map[pname]
-    if pname in role_map:
+    if igl_map.get(pname):
+        detected = role_map.get(pname)
+        entry["role"] = f"IGL/{detected}" if detected else "IGL"
+    elif pname in role_map:
         entry["role"] = role_map[pname]
     if entry:
         player_data[pname] = entry

@@ -181,7 +181,6 @@ function compareGuess(guess, target) {
   ];
 }
 
-// PAÍS — Verde ou Vermelho
 function compareCountry(guess, target) {
   return {
     attr: "country",
@@ -191,7 +190,6 @@ function compareCountry(guess, target) {
   };
 }
 
-// TIME — Verde ou Vermelho
 function compareTeam(guess, target) {
   return {
     attr: "team",
@@ -201,7 +199,6 @@ function compareTeam(guess, target) {
   };
 }
 
-// IDADE — Verde exato, Amarelo ±3, Vermelho >3 (com seta)
 function compareAge(guess, target) {
   const diff = target.age - guess.age;
   let status, hint;
@@ -215,46 +212,34 @@ function compareAge(guess, target) {
   return { attr: "age", value: guess.age, status, hint };
 }
 
-// ROLE — Verde exato, Amarelo se mesmo grupo ou mesma base, Vermelho senão
-// Suporta roles compostas tipo "Duelist (Flex)":
-//   - Mesma string exata → verde
-//   - Mesma base (ex: "Duelist" vs "Duelist (Flex)") → amarelo
-//   - Grupos existentes (Flex↔Initiator/Sentinel, etc.) usando base → amarelo
 function compareRole(guess, target) {
   const gr = guess.role, tr = target.role;
   if (gr === tr) return { attr: "role", value: gr, status: "correct", hint: null };
 
-  // Extrai base: "Duelist (Flex)" → "Duelist"
   const gBase = gr.replace(" (Flex)", "");
   const tBase = tr.replace(" (Flex)", "");
 
-  // Mesma base → amarelo (ex: "Duelist" vs "Duelist (Flex)")
   if (gBase === tBase) return { attr: "role", value: gr, status: "close", hint: null };
 
-  // Grupos existentes usando a base de cada role
   const sameGroup = (ROLE_GROUPS[gBase] || []).includes(tBase) ||
                     (ROLE_GROUPS[tBase] || []).includes(gBase);
   return { attr: "role", value: gr, status: sameGroup ? "close" : "wrong", hint: null };
 }
 
-// TÍTULOS — APENAS Verde (idêntico) ou Vermelho (diferente)
 function compareTitles(guess, target) {
   const gTitles = guess.titles.filter(t => t !== "Nenhum").sort();
   const tTitles = target.titles.filter(t => t !== "Nenhum").sort();
 
-  // Ambos sem títulos = verde
   if (gTitles.length === 0 && tTitles.length === 0) {
     return { attr: "titles", value: "Nenhum", status: "correct", hint: null, fullList: [] };
   }
 
-  // Listas idênticas = verde
   const identical = gTitles.length === tTitles.length &&
                     gTitles.every((t, i) => t === tTitles[i]);
   if (identical) {
     return { attr: "titles", value: formatTitles(gTitles), status: "correct", hint: null, fullList: gTitles };
   }
 
-  // Qualquer diferença = vermelho
   return {
     attr: "titles",
     value: gTitles.length === 0 ? "Nenhum" : formatTitles(gTitles),
@@ -264,7 +249,6 @@ function compareTitles(guess, target) {
   };
 }
 
-// ANOS ATIVO — Verde exato, Amarelo ±1, Vermelho >1 (com seta)
 function compareYearsActive(guess, target) {
   const gYears = guess.yearsActive || 0;
   const tYears = target.yearsActive || 0;
@@ -309,7 +293,6 @@ function seededRandom(seed) {
 function getDailyPlayers(players) {
   const dateKey = getDailyDateKey();
   const rng = seededRandom(`valorandle-${dateKey}`);
-  // Fisher-Yates shuffle with seeded RNG
   const arr = [...players];
   for (let i = arr.length - 1; i > 0; i--) {
     const j = Math.floor(rng() * (i + 1));
@@ -341,7 +324,6 @@ function formatCountdown(ms) {
   return `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
 }
 
-// Cookies work on file:// unlike localStorage in some browsers with strict settings
 function setCookie(name, value, days) {
   let expires = "";
   if (days) {
@@ -406,7 +388,6 @@ function cleanOldDailyStates() {
   } catch {}
 }
 
-// Lang: saved in BOTH localStorage AND cookie for maximum compatibility
 function loadLang() {
   try {
     const ls = localStorage.getItem(LS_KEYS.lang);
@@ -414,7 +395,6 @@ function loadLang() {
   } catch {}
   const ck = getCookie("valorandle_lang");
   if (ck) return ck;
-  // Auto-detect browser language; default to English if not Portuguese
   const nav = (navigator.language || "").toLowerCase();
   return nav.startsWith("pt") ? "pt-BR" : "en";
 }
@@ -424,7 +404,6 @@ function saveLang(lang) {
   setCookie("valorandle_lang", lang, 365);
 }
 
-// Share text generator
 function generateShareText(dailyDate, roundResults, lang) {
   const emojiMap = { correct: "🟩", close: "🟨", wrong: "🟥" };
   let text = `Valorandle Daily ${dailyDate}\n\n`;
