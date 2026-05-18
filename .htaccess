@@ -53,11 +53,9 @@ Options -Indexes -MultiViews
 RewriteCond %{REQUEST_URI} \.\.
 RewriteRule .* - [F,L]
 
-SetEnvIfNoCase User-Agent "Googlebot|Googlebot-Image|Bingbot|Slurp|DuckDuckBot|facebookexternalhit|Twitterbot|LinkedInBot|WhatsApp|Applebot" crawler
-
 RewriteCond %{HTTP_REFERER} !^$
 RewriteCond %{HTTP_REFERER} !^https?://(www\.)?valorandle\.com [NC]
-RewriteCond %{ENV:crawler} !1
+RewriteCond %{HTTP_USER_AGENT} !(Googlebot|Googlebot-Image|Bingbot|Slurp|DuckDuckBot|facebookexternalhit|Twitterbot|LinkedInBot|WhatsApp|Applebot) [NC]
 RewriteRule \.(jpg|jpeg|png|gif|svg|webp)$ - [F,L]
 
 # Targets known scrapers and security scanners.

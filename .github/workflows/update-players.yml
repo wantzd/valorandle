@@ -24,21 +24,21 @@ jobs:
       - name: Install dependencies
         run: pip install httpx
 
-      - name: Build org-map.json
+      - name: Build data/org-map.json
         run: python .github/scripts/build_orgmap.py
         env:
           VLRGG_API_URL: ${{ secrets.VLRGG_API_URL }}
           LIQUIPEDIA_API_KEY: ${{ secrets.LIQUIPEDIA_API_KEY }}
 
-      - name: Commit org-map.json to repository
+      - name: Commit data/org-map.json to repository
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add org-map.json
-          git diff --staged --quiet && echo "No changes to org-map.json" || \
-            git commit -m "chore: update org-map.json" && git push
+          git add data/org-map.json
+          git diff --staged --quiet && echo "No changes to data/org-map.json" || \
+            git commit -m "chore: update data/org-map.json" && git push
 
-      - name: Upload org-map.json to Hostinger via FTP
+      - name: Upload data/org-map.json to Hostinger via FTP
         env:
           FTP_HOST: ${{ secrets.FTP_HOST }}
           FTP_USER: ${{ secrets.FTP_USER }}
@@ -52,7 +52,7 @@ jobs:
           set ftp:ssl-allow no
           set net:timeout 60
           set net:max-retries 3
-          put org-map.json -o $FTP_PATH/org-map.json
+          put data/org-map.json -o $FTP_PATH/data/org-map.json
           bye
           EOF
 
