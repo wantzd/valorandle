@@ -599,7 +599,7 @@ for pname in org_map:
         player_data[pname] = entry
 
 output_path = os.path.normpath(
-    os.path.join(os.path.dirname(__file__), "..", "..", "org-map.json")
+    os.path.join(os.path.dirname(__file__), "..", "..", "data", "org-map.json")
 )
 
 with open(output_path, "w", encoding="utf-8") as f:
