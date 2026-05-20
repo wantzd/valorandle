@@ -386,11 +386,6 @@
                 class:close={cell.status === 'close'}
                 class:wrong={cell.status === 'wrong'}
               >
-                {#if cell.attr === 'origin' && cell.flag}
-                  <span class="cell-flag">
-                    <span class="fi fi-{cell.flag}"></span>
-                  </span>
-                {/if}
                 <span class="cell-value">{cell.value}</span>
                 {#if cell.hint}
                   <span class="cell-hint">{cell.hint}</span>
