@@ -66,8 +66,8 @@ export const MAPS_HINTS = {
 // ── i18n ───────────────────────────────────────────────────────────────────────
 export const MAPS_I18N = {
   'pt-BR': {
-    back:'← Hub', modeTag:'Mapas', showMap:'🗺️ Ver mapa', hideMap:'✕ Ocultar mapa',
-    selectMapHint:'Selecione um mapa abaixo', hintBtn:'💡 Dica',
+    back:'← Hub', modeTag:'Mapas', modeFree:'Modo livre', showMap:'🗺️ Ver mapa', hideMap:'✕ Ocultar mapa',
+    selectMapHint:'Selecione um mapa acima', hintBtn:'💡 Dica',
     hintLeft: n => `${n} restante${n===1?'':'s'}`, noHints:'Sem mais dicas',
     attempts: (n,max) => `${n}/${max} tentativas`,
     headers:{ map:'Mapa', callout:'Callout', area:'Área' },
@@ -91,8 +91,8 @@ export const MAPS_I18N = {
     ],
   },
   'en': {
-    back:'← Hub', modeTag:'Maps', showMap:'🗺️ Show map', hideMap:'✕ Hide map',
-    selectMapHint:'Select a map below', hintBtn:'💡 Hint',
+    back:'← Hub', modeTag:'Maps', modeFree:'Free mode', showMap:'🗺️ Show map', hideMap:'✕ Hide map',
+    selectMapHint:'Select a map above', hintBtn:'💡 Hint',
     hintLeft: n => `${n} left`, noHints:'No more hints',
     attempts: (n,max) => `${n}/${max} attempts`,
     headers:{ map:'Map', callout:'Callout', area:'Area' },
@@ -184,6 +184,7 @@ export async function loadMapsFromAPI() {
         uuid: mapPT.uuid, name: mapPT.displayName, sites,
         releaseYear: stat.releaseYear ?? null, country: stat.country ?? null,
         displayIcon: mapPT.displayIcon, splash: mapPT.splash,
+        listViewIcon: mapPT.listViewIcon || null,
         rotation: MAPS_ROTATION[id] ?? 270,
       };
 
@@ -220,7 +221,7 @@ export function getCalloutImgPath(mapId, calloutId) {
 
   const key = `${mapId}|${calloutId}`;
   if (key in IMG_OVERRIDES) {
-    return IMG_OVERRIDES[key] === null ? null : `maps/${mapName}/${IMG_OVERRIDES[key]}.png`;
+    return IMG_OVERRIDES[key] === null ? null : `/maps/${mapName}/${IMG_OVERRIDES[key]}.png`;
   }
 
   const callout = (MAPS_CALLOUTS[mapId] || []).find(c => c.id === calloutId);
@@ -231,9 +232,9 @@ export function getCalloutImgPath(mapId, calloutId) {
     ['Attacker Side ','_Attacker Side'], ['Defender Side ','_Defender Side'],
     ['Mid ','_Mid'], ['A ','_A'], ['B ','_B'], ['C ','_C'],
   ]) {
-    if (name.startsWith(pfx)) return `maps/${mapName}/${name.slice(pfx.length)}${sfx}.png`;
+    if (name.startsWith(pfx)) return `/maps/${mapName}/${name.slice(pfx.length)}${sfx}.png`;
   }
-  return `maps/${mapName}/${name}.png`;
+  return `/maps/${mapName}/${name}.png`;
 }
 
 // ── Target selection ───────────────────────────────────────────────────────────
@@ -268,13 +269,21 @@ export function compareMapGuess(guessMapId, guessCalloutId, target, lang = 'pt-B
   const tc = (MAPS_CALLOUTS[target.mapId] || []).find(c => c.id === target.calloutId);
   const gc = (MAPS_CALLOUTS[guessMapId]  || []).find(c => c.id === guessCalloutId);
 
+  if (!gc) {
+    return [
+      { attr:'map',     value: MAPS_DB[guessMapId]?.name || guessMapId, status: 'wrong' },
+      { attr:'callout', value: guessCalloutId,                           status: 'wrong' },
+      { attr:'area',    value: '?',                                      status: 'wrong' },
+    ];
+  }
+
   const mapOk     = guessMapId === target.mapId;
   const calloutOk = mapOk && guessCalloutId === target.calloutId;
-  const areaOk    = mapOk && !!gc && !!tc && gc.area === tc.area;
+  const areaOk    = mapOk && !!tc && gc.area === tc.area;
 
   return [
-    { attr:'map',     value: MAPS_DB[guessMapId]?.name || guessMapId,                 status: mapOk     ? 'correct' : 'wrong' },
-    { attr:'callout', value: gc?.names[l] || gc?.names['en'] || guessCalloutId,       status: calloutOk ? 'correct' : 'wrong' },
-    { attr:'area',    value: gc?.area || '?',                                          status: areaOk    ? 'correct' : 'wrong' },
+    { attr:'map',     value: MAPS_DB[guessMapId]?.name || guessMapId,           status: mapOk     ? 'correct' : 'wrong' },
+    { attr:'callout', value: gc.names[l] || gc.names['en'] || guessCalloutId,   status: calloutOk ? 'correct' : 'wrong' },
+    { attr:'area',    value: gc.area,                                            status: areaOk    ? 'correct' : 'wrong' },
   ];
 }

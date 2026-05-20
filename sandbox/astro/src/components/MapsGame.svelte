@@ -1,4 +1,4 @@
-<script>
+﻿<script>
   import { onMount, onDestroy, tick } from 'svelte';
   import {
     MAPS_I18N, MAPS_HINTS, MAPS_DB, MAPS_CALLOUTS,
@@ -41,7 +41,6 @@
   let selectedCallout   = $state(null);   // { id, name }
 
   // ── Zoom ─────────────────────────────────────────────────────────────────────
-  let mounted    = $state(false);  // true after first render → enables transitions
   let revealed   = $state(false);  // true when game is won → scale 1
   let wrongCount = $derived(
     guesses.filter(g => !g.feedback.every(f => f.status === 'correct')).length
@@ -55,6 +54,7 @@
   // ── Minimap canvas ───────────────────────────────────────────────────────────
   let canvasEl         = $state(null);
   let minimapWrapperEl = $state(null);
+  let feedbackGridEl   = $state(null);
   let canvasReady      = $state(false);
   let canvasOffset     = $state(null); // { ox, oy, rw, rh, cw, ch }
 
@@ -74,7 +74,8 @@
   // Mount
   // ─────────────────────────────────────────────────────────────────────────────
   onMount(async () => {
-    lang = loadLang();
+    lang = window.location.pathname.startsWith('/en') ? 'en' : 'pt-BR';
+    saveLang(lang);
 
     const P      = new URLSearchParams(location.search);
     const mParam = P.get('mode');
@@ -157,7 +158,6 @@
     screenshotSrc   = null;
     screenshotReady = false;
     canvasReady     = false;
-    mounted         = false;
 
     target = mode === 'daily' ? getDailyMapTarget() : getFreeMapTarget();
     if (!target) { apiError = true; return; }
@@ -179,8 +179,6 @@
 
     if (finished && mode === 'daily') startCountdown();
 
-    // Enable transitions after first render tick
-    tick().then(() => { mounted = true; });
   }
 
   // ─────────────────────────────────────────────────────────────────────────────
@@ -241,10 +239,12 @@
   }
 
   function btnStyle(c) {
-    if (!canvasOffset) return `left:${c.x}%;top:${c.y}%`;
+    const cx = Math.max(0, Math.min(100, c.x));
+    const cy = Math.max(0, Math.min(100, c.y));
+    if (!canvasOffset) return `left:${cx}%;top:${cy}%`;
     const { ox, oy, rw, rh, cw, ch } = canvasOffset;
-    const px = ox + (c.x / 100) * rw;
-    const py = oy + (c.y / 100) * rh;
+    const px = ox + (cx / 100) * rw;
+    const py = oy + (cy / 100) * rh;
     return `left:${(px / cw * 100).toFixed(3)}%;top:${(py / ch * 100).toFixed(3)}%`;
   }
 
@@ -263,9 +263,11 @@
     if (mode === 'daily') saveDailyState({ guesses, hintsUsed, finished, won });
     if (finished && mode === 'daily') startCountdown();
 
-    selectedMapId   = '';
     selectedCallout = null;
-    view            = 'screenshot';
+
+    tick().then(() => {
+      feedbackGridEl?.lastElementChild?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    });
   }
 
   // ─────────────────────────────────────────────────────────────────────────────
@@ -328,7 +330,8 @@
     const text  = won
       ? `${t.shareHeader}\n${t.shareWin(guesses.length)}\n\n${rows}`
       : `${t.shareHeader}\n${t.shareLose}\n\n${rows}`;
-    navigator.clipboard.writeText(text + '\n\nhttps://valorandle.com/maps').then(showToast);
+    const url = window.location.origin + (lang === 'en' ? '/en' : '') + '/maps';
+    navigator.clipboard.writeText(text + '\n\n' + url).then(showToast);
   }
 
   function showToast() {
@@ -351,7 +354,7 @@
   function areaLabel(area) { return t.areas[area] || area; }
 
   let mapList = $derived(
-    Object.entries(MAPS_DB).map(([id, m]) => ({ id, name: m.name }))
+    Object.entries(MAPS_DB).map(([id, m]) => ({ id, name: m.name, listIcon: m.listViewIcon || m.displayIcon }))
       .sort((a, b) => a.name.localeCompare(b.name))
   );
 
@@ -395,7 +398,7 @@
           <path d="M21 13v2a4 4 0 0 1-4 4H3"/>
         </svg>
         <div class="mpo-label">
-          <span class="mpo-name">{lang === 'pt-BR' ? 'Livre' : 'Free'}</span>
+          <span class="mpo-name">{t.modeFree}</span>
           <span class="mpo-desc">{t.modeFreeDesc}</span>
         </div>
         <span class="mpo-arrow">→</span>
@@ -442,20 +445,25 @@
   <!-- Header -->
   <header class="game-header">
     <div class="header-left">
-      <a href="/" class="back-btn">{t.back}</a>
-      <span class="mode-tag">{t.modeTag}{mode === 'free' ? ' · Free' : ''}</span>
+      <a href={lang === 'pt-BR' ? '/' : '/en'} class="back-btn">{t.back}</a>
+      <span class="mode-tag">{t.modeTag}{mode === 'free' ? ' · ' + t.modeFree : ''}</span>
     </div>
     <div class="header-center">
       <span class="wordmark">VALOR<span>ANDLE</span></span>
     </div>
-    <div class="header-right">
-      <button class="lang-btn" class:active={lang==='pt-BR'} onclick={() => setLang('pt-BR')}>🇧🇷 PT</button>
-      <button class="lang-btn" class:active={lang==='en'}    onclick={() => setLang('en')}>EN</button>
-    </div>
+    <div class="header-right"></div>
   </header>
 
   {#if apiError}
-    <div class="api-error">{t.apiError}</div>
+    <div class="api-error">
+      <span>{t.apiError}</span>
+      <button class="retry-btn" onclick={async () => {
+        apiError = false;
+        const ok = await loadMapsFromAPI();
+        if (!ok || !Object.keys(MAPS_DB).length) { apiError = true; return; }
+        startGame();
+      }}>{lang === 'en' ? 'Retry' : 'Tentar novamente'}</button>
+    </div>
   {:else}
 
   <!-- Offline banner -->
@@ -463,16 +471,35 @@
     <div class="offline-banner">{t.offlineWarn}</div>
   {/if}
 
+  <!-- Map grid — acima da screenshot -->
+  {#if !finished}
+    <div class="map-grid">
+      {#each mapList as m}
+        <button
+          class="map-card"
+          class:active={selectedMapId === m.id}
+          onclick={() => { selectedMapId = m.id; selectedCallout = null; view = 'map'; }}
+        >
+          <div class="map-card-img">
+            {#if m.listIcon}
+              <img src={m.listIcon} alt={m.name} loading="lazy" />
+            {/if}
+          </div>
+          <span class="map-card-name">{m.name}</span>
+        </button>
+      {/each}
+    </div>
+  {/if}
+
   <!-- Screenshot zone -->
   <div class="screenshot-zone">
-    <!-- ss-wrapper: position:relative anchor for the map overlay -->
     <div class="ss-wrapper">
       <div class="screenshot-frame">
         <div
           class="screenshot-inner"
           style:transform="scale({mapScale})"
           style:filter={view === 'map' ? 'blur(5px) brightness(0.35)' : 'none'}
-          style:transition={mounted ? 'transform 0.9s ease, filter 0.2s ease' : 'none'}
+          style:transition={wrongCount > 0 || revealed ? 'transform 0.9s ease, filter 0.2s ease' : 'none'}
         >
           {#if screenshotSrc}
             <img
@@ -491,7 +518,7 @@
         </div>
       </div>
 
-      <!-- Map overlay — absolutely positioned over the screenshot frame -->
+      <!-- Map overlay -->
       {#if view === 'map' && !finished}
         <div class="map-overlay" bind:this={minimapWrapperEl}>
           <canvas
@@ -521,44 +548,53 @@
           {/if}
         </div>
       {/if}
+
+      <!-- Ícones no canto da screenshot -->
+      {#if !finished}
+        <div class="ss-corner-btns">
+          <button
+            class="ss-icon-btn"
+            class:active={view === 'map'}
+            onclick={() => { view = view === 'map' ? 'screenshot' : 'map'; }}
+            title={view === 'map' ? t.hideMap : t.showMap}
+          >
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"/>
+              <line x1="8" y1="2" x2="8" y2="18"/>
+              <line x1="16" y1="6" x2="16" y2="22"/>
+            </svg>
+          </button>
+          <button
+            class="ss-icon-btn"
+            class:active={hintsUsed > 0}
+            disabled={!canHint}
+            onclick={revealHint}
+            title={hintCountLabel()}
+          >
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M9 18h6M10 22h4M12 2a7 7 0 0 1 7 7c0 2.7-1.5 5.1-3.5 6.4V17H8.5v-1.6C6.5 14.1 5 11.7 5 9a7 7 0 0 1 7-7z"/>
+            </svg>
+            {#if canHint}
+              <span class="hint-badge">{Math.min(4, hintsAvailable.length) - hintsUsed}</span>
+            {/if}
+          </button>
+        </div>
+      {/if}
     </div>
 
-    <!-- Map controls: single toggle + map chips + confirm -->
-    {#if !finished}
-      <div class="map-controls">
-        <button
-          class="toggle-map-btn"
-          class:active={view === 'map'}
-          onclick={() => { view = view === 'map' ? 'screenshot' : 'map'; }}
-        >{view === 'map' ? t.hideMap : t.showMap}</button>
-
-        <div class="map-chips">
-          {#each mapList as m}
-            <button
-              class="map-chip"
-              class:active={selectedMapId === m.id}
-              onclick={() => { selectedMapId = m.id; selectedCallout = null; view = 'map'; }}
-            >{m.name}</button>
-          {/each}
-        </div>
-
-        {#if selectedCallout}
-          <div class="confirm-row">
-            <span class="confirm-label">{selectedCallout.name}</span>
-            <button class="confirm-btn" onclick={submitGuess}>{t.confirmGuess}</button>
-          </div>
-        {/if}
+    <!-- Confirm row -->
+    {#if selectedCallout && !finished}
+      <div class="confirm-row">
+        <span class="confirm-label">{selectedCallout.name}</span>
+        <button class="confirm-btn" onclick={submitGuess}>{t.confirmGuess}</button>
       </div>
     {/if}
   </div>
 
-  <!-- Attempts + Hint -->
+  <!-- Attempts -->
   {#if !finished}
     <div class="guess-meta">
       <span class="attempts-label">{attemptsLabel}</span>
-      <button class="hint-btn" disabled={!canHint} onclick={revealHint}>
-        {hintCountLabel()}
-      </button>
     </div>
   {/if}
 
@@ -573,7 +609,7 @@
 
   <!-- Feedback grid -->
   {#if guesses.length > 0}
-    <div class="feedback-grid">
+    <div class="feedback-grid" bind:this={feedbackGridEl}>
       <div class="fb-headers">
         <span>{t.headers.map}</span>
         <span>{t.headers.callout}</span>
@@ -613,7 +649,7 @@
         </div>
         <div class="result-actions">
           <button class="result-btn primary" onclick={share}>{t.shareBtn}</button>
-          <a class="result-btn ghost" href="/maps">{t.playFree}</a>
+          <a class="result-btn ghost" href={lang === 'pt-BR' ? '/maps?mode=free' : '/en/maps?mode=free'}>{t.playFree}</a>
         </div>
       {:else}
         <div class="result-actions">
@@ -641,8 +677,8 @@
     --red:#FF4655; --red-dim:rgba(255,70,85,0.08); --red-bd:rgba(255,70,85,0.32);
     --text:#eeeef5; --text-dim:#50536a; --text-mid:#8a8da8;
     --green:#34d47e; --green-bg:rgba(52,212,126,0.10); --green-bd:rgba(52,212,126,0.45);
-    --font-display:'Russo One',sans-serif; --font-ui:'Space Grotesk',sans-serif;
-    --font-mono:'Space Mono',monospace;
+    --font-display:'Russo One',sans-serif; --font-ui:'Outfit',sans-serif;
+    --font-mono:'Outfit',sans-serif;
   }
   :global(*, *::before, *::after) { box-sizing:border-box; margin:0; padding:0; }
   :global(html,body) { min-height:100vh; background:var(--bg); color:var(--text); font-family:var(--font-ui); }
@@ -670,19 +706,19 @@
   .header-right { display:flex; align-items:center; gap:0.5rem; justify-content:flex-end; }
   .back-btn {
     font-family:var(--font-mono); font-size:0.68rem; color:var(--text-dim);
-    text-decoration:none; letter-spacing:0.06em;
+    text-decoration:none; letter-spacing:0.02em;
     transition:color 0.15s;
   }
   .back-btn:hover { color:var(--text); }
   .mode-tag {
-    font-family:var(--font-mono); font-size:0.6rem; letter-spacing:0.18em;
+    font-family:var(--font-mono); font-size:0.6rem; letter-spacing:0.02em;
     text-transform:uppercase; color:var(--red); border:1px solid var(--red-bd);
     padding:0.18rem 0.5rem; border-radius:3px;
   }
   .wordmark { font-family:var(--font-display); font-size:1.1rem; text-transform:uppercase; color:var(--text); }
   .wordmark span { color:var(--red); }
   .lang-btn {
-    font-family:var(--font-mono); font-size:0.65rem; letter-spacing:0.06em;
+    font-family:var(--font-mono); font-size:0.65rem; letter-spacing:0.02em;
     background:none; border:1px solid var(--border2); color:var(--text-dim);
     padding:0.22rem 0.5rem; border-radius:4px; cursor:pointer; transition:all 0.15s;
   }
@@ -693,7 +729,8 @@
   .screenshot-zone { display:flex; flex-direction:column; gap:0.75rem; }
   .ss-wrapper { position:relative; width:100%; }
   .screenshot-frame {
-    width:100%; aspect-ratio:16/9;
+    width:100%;
+    height:clamp(200px, calc(100vh - 420px), 560px);
     background:var(--surface); border:1px solid var(--border);
     border-radius:8px; overflow:hidden;
     display:flex; align-items:center; justify-content:center;
@@ -711,37 +748,67 @@
   }
   .screenshot-img {
     width:100%; height:100%; object-fit:cover;
-    opacity:0; transition:opacity 0.3s;
+    opacity:0; transition:opacity 0.3s 0.15s;
   }
   .screenshot-img.ready { opacity:1; }
   .screenshot-ph {
     position:absolute; inset:0;
     display:flex; align-items:center; justify-content:center;
     font-family:var(--font-mono); font-size:0.72rem; color:var(--text-dim);
-    letter-spacing:0.08em;
+    letter-spacing:0.02em;
   }
-  /* ── Map controls (toggle + chips + confirm) ─────────────────────────────── */
-  .map-controls { display:flex; flex-direction:column; gap:0.6rem; }
-  .toggle-map-btn {
-    font-family:var(--font-mono); font-size:0.72rem; letter-spacing:0.1em;
-    background:var(--surface); border:1px solid var(--border2);
-    color:var(--text-dim); padding:0.45rem 1.2rem; border-radius:5px;
-    cursor:pointer; transition:all 0.15s; align-self:center;
+  /* ── Ícones no canto da screenshot ──────────────────────────────────────── */
+  .ss-corner-btns {
+    position:absolute; bottom:0.6rem; right:0.6rem;
+    display:flex; gap:0.4rem; z-index:10;
   }
-  .toggle-map-btn.active { color:var(--text); border-color:var(--red-bd); background:var(--red-dim); }
-  .toggle-map-btn:hover  { color:var(--text); border-color:var(--border2); }
-  .map-chips {
-    display:flex; flex-wrap:wrap; gap:0.4rem; justify-content:center;
+  .ss-icon-btn {
+    width:36px; height:36px; position:relative;
+    background:rgba(8,9,13,0.82); border:1px solid rgba(255,255,255,0.12);
+    border-radius:5px; display:flex; align-items:center; justify-content:center;
+    cursor:pointer; backdrop-filter:blur(4px); color:var(--text-mid);
+    transition:all 0.15s; flex-shrink:0;
   }
-  .map-chip {
-    font-family:var(--font-mono); font-size:0.62rem; letter-spacing:0.1em;
-    text-transform:uppercase;
-    background:var(--surface); border:1px solid var(--border2);
-    color:var(--text-dim); padding:0.32rem 0.7rem; border-radius:4px;
-    cursor:pointer; transition:all 0.12s;
+  .ss-icon-btn svg { width:15px; height:15px; }
+  .ss-icon-btn:hover { color:var(--text); border-color:rgba(255,255,255,0.22); background:rgba(20,22,32,0.92); }
+  .ss-icon-btn.active { color:var(--red); border-color:var(--red-bd); background:var(--red-dim); }
+  .ss-icon-btn:disabled { opacity:0.3; cursor:default; }
+  .hint-badge {
+    position:absolute; top:-5px; right:-5px;
+    background:var(--red); color:#fff;
+    font-family:var(--font-ui); font-size:0.52rem; font-weight:700;
+    width:14px; height:14px; border-radius:50%;
+    display:flex; align-items:center; justify-content:center;
+    border:1px solid var(--bg);
   }
-  .map-chip:hover  { color:var(--text); border-color:var(--red-bd); }
-  .map-chip.active { color:var(--red); border-color:var(--red-bd); background:var(--red-dim); }
+  .map-grid {
+    display:grid; grid-template-columns:repeat(6,1fr); gap:0.35rem;
+  }
+  .map-card {
+    display:flex; flex-direction:column; align-items:center; gap:0.28rem;
+    background:var(--surface2); border:1px solid var(--border2);
+    border-radius:6px; padding:0.32rem 0.25rem 0.38rem;
+    cursor:pointer; transition:all 0.15s;
+  }
+  .map-card:hover { background:var(--surface); border-color:var(--border2); }
+  .map-card.active {
+    border-color:var(--red-bd); background:var(--red-dim);
+    box-shadow:0 0 0 1px var(--red-bd), 0 4px 16px rgba(255,70,85,0.2);
+  }
+  .map-card-img {
+    width:100%; aspect-ratio:16/10; border-radius:4px;
+    background:var(--border); overflow:hidden;
+    border:1px solid rgba(255,255,255,0.06);
+  }
+  .map-card-img img { width:100%; height:100%; object-fit:cover; display:block; transform:scale(1.08); }
+  .map-card.active .map-card-img { border-color:var(--red-bd); }
+  .map-card-name {
+    font-family:var(--font-ui); font-size:0.6rem; font-weight:700;
+    letter-spacing:0.04em; text-transform:uppercase;
+    color:var(--text-dim); text-align:center; white-space:nowrap;
+  }
+  .map-card.active .map-card-name { color:var(--red); }
+  @media (max-width:600px) { .map-grid { grid-template-columns:repeat(4,1fr); } }
 
   /* ── Minimap (inside overlay) ────────────────────────────────────────────── */
   .minimap-canvas {
@@ -758,14 +825,23 @@
   .callout-btn {
     position:absolute;
     transform:translate(-50%, -50%);
-    background:rgba(8,9,13,0.78); border:1px solid var(--border2);
-    color:var(--text-mid); font-family:var(--font-mono); font-size:0.58rem;
-    letter-spacing:0.04em; padding:0.22rem 0.4rem; border-radius:3px;
+    background:rgba(8,9,13,0.88); border:1px solid rgba(255,255,255,0.12);
+    color:rgba(238,238,245,0.8); font-family:var(--font-mono); font-size:0.7rem;
+    font-weight:700; letter-spacing:0.02em; padding:0.3rem 0.55rem; border-radius:3px;
     cursor:pointer; white-space:nowrap;
+    backdrop-filter:blur(4px);
     transition:all 0.12s; z-index:2;
+    box-shadow:0 1px 4px rgba(0,0,0,0.5);
   }
-  .callout-btn:hover   { background:var(--surface2); color:var(--text); border-color:var(--red-bd); }
-  .callout-btn.selected { background:var(--red); color:#fff; border-color:var(--red); }
+  .callout-btn:hover {
+    background:rgba(20,22,32,0.95); color:#fff;
+    border-color:var(--red-bd);
+    box-shadow:0 0 10px rgba(255,70,85,0.25), 0 1px 4px rgba(0,0,0,0.5);
+  }
+  .callout-btn.selected {
+    background:var(--red); color:#fff; border-color:var(--red);
+    box-shadow:0 0 14px rgba(255,70,85,0.5), 0 1px 4px rgba(0,0,0,0.5);
+  }
 
   /* ── Confirm row ─────────────────────────────────────────────────────────── */
   .confirm-row {
@@ -776,34 +852,23 @@
   .confirm-label { font-size:0.82rem; color:var(--text-mid); font-family:var(--font-mono); }
   .confirm-btn {
     background:var(--red); color:#fff; border:none;
-    font-family:var(--font-mono); font-size:0.72rem; letter-spacing:0.1em;
+    font-family:var(--font-mono); font-size:0.72rem; letter-spacing:0.03em;
     font-weight:700; padding:0.4rem 1rem; border-radius:5px;
     cursor:pointer; transition:opacity 0.15s;
   }
   .confirm-btn:hover { opacity:0.88; }
 
   /* ── Guess meta ──────────────────────────────────────────────────────────── */
-  .guess-meta {
-    display:flex; align-items:center; justify-content:space-between;
-    gap:0.75rem;
-  }
+  .guess-meta { display:flex; align-items:center; }
   .attempts-label {
-    font-family:var(--font-mono); font-size:0.72rem;
-    color:var(--text-dim); letter-spacing:0.06em;
+    font-family:var(--font-mono); font-size:0.82rem;
+    color:var(--text-dim); letter-spacing:0.02em;
   }
-  .hint-btn {
-    font-family:var(--font-mono); font-size:0.72rem; letter-spacing:0.06em;
-    background:var(--surface); border:1px solid var(--border2);
-    color:var(--text-mid); padding:0.35rem 0.8rem; border-radius:5px;
-    cursor:pointer; transition:all 0.15s;
-  }
-  .hint-btn:hover:not(:disabled) { border-color:var(--red-bd); color:var(--text); }
-  .hint-btn:disabled { opacity:0.4; cursor:default; }
 
   /* ── Hint chips ──────────────────────────────────────────────────────────── */
   .hints-row { display:flex; flex-wrap:wrap; gap:0.5rem; }
   .hint-chip {
-    font-family:var(--font-mono); font-size:0.68rem; letter-spacing:0.04em;
+    font-family:var(--font-mono); font-size:0.78rem; letter-spacing:0;
     color:var(--text-mid); background:var(--surface);
     border:1px solid var(--border2); border-radius:4px;
     padding:0.28rem 0.65rem;
@@ -816,13 +881,13 @@
     text-align:center;
   }
   .fb-headers span {
-    font-family:var(--font-mono); font-size:0.6rem; letter-spacing:0.14em;
+    font-family:var(--font-mono); font-size:0.72rem; letter-spacing:0;
     text-transform:uppercase; color:var(--text-dim);
   }
   .fb-row { display:grid; grid-template-columns:repeat(3,1fr); gap:0.4rem; }
   .fb-cell {
     padding:0.5rem 0.4rem; border-radius:5px; text-align:center;
-    font-family:var(--font-ui); font-size:0.78rem; font-weight:600;
+    font-family:var(--font-ui); font-size:0.88rem; font-weight:600;
     overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
     border:1px solid transparent;
   }
@@ -842,11 +907,11 @@
   .result-status.lost { color:var(--red); }
   .result-sub { font-size:0.8rem; color:var(--text-mid); }
   .result-countdown { display:flex; flex-direction:column; align-items:center; gap:0.2rem; }
-  .cd-label { font-family:var(--font-mono); font-size:0.6rem; letter-spacing:0.14em; text-transform:uppercase; color:var(--text-dim); }
-  .cd-timer { font-family:var(--font-mono); font-size:1.4rem; color:var(--text); letter-spacing:0.08em; }
+  .cd-label { font-family:var(--font-mono); font-size:0.6rem; letter-spacing:0; text-transform:uppercase; color:var(--text-dim); }
+  .cd-timer { font-family:var(--font-mono); font-size:1.4rem; color:var(--text); letter-spacing:0.02em; }
   .result-actions { display:flex; gap:0.75rem; flex-wrap:wrap; justify-content:center; }
   .result-btn {
-    font-family:var(--font-mono); font-size:0.78rem; letter-spacing:0.1em; font-weight:700;
+    font-family:var(--font-mono); font-size:0.78rem; letter-spacing:0.03em; font-weight:700;
     padding:0.55rem 1.2rem; border-radius:6px; cursor:pointer; border:none;
     text-decoration:none; transition:opacity 0.15s;
   }
@@ -867,7 +932,7 @@
     width:100%; max-width:420px;
   }
   .mpo-eyebrow {
-    font-family:var(--font-mono); font-size:0.6rem; letter-spacing:0.22em;
+    font-family:var(--font-mono); font-size:0.6rem; letter-spacing:0.07em;
     text-transform:uppercase; color:var(--text-dim);
   }
   .mpo-title {
@@ -877,12 +942,12 @@
   .mpo-wordmark { color:var(--text); }
   .mpo-wordmark span { color:var(--red); }
   .mpo-mode-tag {
-    font-size:0.65rem; font-family:var(--font-mono); letter-spacing:0.14em;
+    font-size:0.65rem; font-family:var(--font-mono); letter-spacing:0;
     text-transform:uppercase; color:var(--red);
     border:1px solid var(--red-bd); padding:0.2rem 0.5rem; border-radius:3px;
     align-self:center; font-display:block;
   }
-  .mpo-sub { font-family:var(--font-mono); font-size:0.72rem; color:var(--text-dim); letter-spacing:0.08em; }
+  .mpo-sub { font-family:var(--font-mono); font-size:0.72rem; color:var(--text-dim); letter-spacing:0.02em; }
   .mpo-options { display:flex; flex-direction:column; gap:0.6rem; width:100%; }
   .mpo-option {
     display:flex; align-items:center; gap:1rem;
@@ -895,7 +960,7 @@
   .mpo-option:hover .mpo-icon { color:var(--red); }
   .mpo-label { display:flex; flex-direction:column; gap:0.15rem; flex:1; }
   .mpo-name  { font-family:var(--font-display); font-size:0.95rem; text-transform:uppercase; }
-  .mpo-desc  { font-family:var(--font-mono); font-size:0.62rem; color:var(--text-dim); letter-spacing:0.06em; }
+  .mpo-desc  { font-family:var(--font-mono); font-size:0.62rem; color:var(--text-dim); letter-spacing:0.02em; }
   .mpo-arrow { font-size:1.1rem; color:var(--text-dim); }
 
   /* ── Tutorial overlay ────────────────────────────────────────────────────── */
@@ -906,7 +971,7 @@
     width:100%; max-width:480px;
   }
   .tut-eyebrow {
-    font-family:var(--font-mono); font-size:0.6rem; letter-spacing:0.22em;
+    font-family:var(--font-mono); font-size:0.6rem; letter-spacing:0.07em;
     text-transform:uppercase; color:var(--text-dim);
   }
   .tut-title {
@@ -923,7 +988,7 @@
   :global(.tut-text b) { color:var(--text); font-weight:600; }
   .tut-btn {
     background:var(--red); color:#fff; border:none;
-    font-family:var(--font-mono); font-size:0.78rem; font-weight:700; letter-spacing:0.12em;
+    font-family:var(--font-mono); font-size:0.78rem; font-weight:700; letter-spacing:0;
     padding:0.6rem 1.8rem; border-radius:6px; cursor:pointer; transition:opacity 0.18s;
   }
   .tut-btn:hover { opacity:0.88; }
@@ -944,18 +1009,25 @@
 
   /* ── Banners / errors ────────────────────────────────────────────────────── */
   .api-error, .offline-banner {
-    font-family:var(--font-mono); font-size:0.72rem; letter-spacing:0.06em;
+    font-family:var(--font-mono); font-size:0.72rem; letter-spacing:0.02em;
     padding:0.6rem 1rem; border-radius:6px; text-align:center;
+    display:flex; align-items:center; justify-content:center; gap:0.75rem;
   }
   .api-error    { color:#FF6670; background:rgba(255,70,85,0.08); border:1px solid rgba(255,70,85,0.25); }
   .offline-banner { color:var(--text-dim); background:var(--surface); border:1px solid var(--border2); }
+  .retry-btn {
+    font-family:var(--font-mono); font-size:0.68rem; font-weight:700; letter-spacing:0.02em;
+    background:rgba(255,70,85,0.15); border:1px solid rgba(255,70,85,0.4); color:#FF6670;
+    padding:0.28rem 0.7rem; border-radius:4px; cursor:pointer; transition:opacity 0.15s; white-space:nowrap;
+  }
+  .retry-btn:hover { opacity:0.8; }
 
   /* ── Toast ───────────────────────────────────────────────────────────────── */
   .toast {
     position:fixed; bottom:1.8rem; left:50%; transform:translateX(-50%);
     background:var(--surface2); border:1px solid var(--border2);
     color:var(--text); font-family:var(--font-mono); font-size:0.75rem;
-    letter-spacing:0.08em; padding:0.5rem 1.2rem; border-radius:6px;
+    letter-spacing:0.02em; padding:0.5rem 1.2rem; border-radius:6px;
     z-index:300; pointer-events:none;
   }
 
