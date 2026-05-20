@@ -1,23 +1,24 @@
 ---
+import Base from '../layouts/Base.astro';
 import MapsGame from '../components/MapsGame.svelte';
----
 
-<!doctype html>
-<html lang="pt-BR">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Valorandle — Mapas</title>
-  <meta name="description" content="Adivinhe o callout do mapa de VALORANT com base em uma screenshot com zoom progressivo." />
-  <link rel="icon" type="image/png" href="/icons/icon-32.png" />
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link
-    href="https://fonts.googleapis.com/css2?family=Russo+One&family=Space+Grotesk:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap"
-    rel="stylesheet"
-  />
-</head>
-<body>
+const css = `
+:root {
+  --font-display:'Russo One', sans-serif; --font-ui:'Outfit', sans-serif; --font-mono:'Outfit', sans-serif;
+  --map-blur:14px; --map-scale:2.2;
+}
+`;
+---
+<Base
+  title="Valorandle — Mapas"
+  description="Adivinhe o callout do mapa de VALORANT com base em uma screenshot com zoom progressivo."
+  lang="pt-BR"
+  path="/maps"
+  extraCss={css}
+  noindex={true}
+>
+  <script is:inline src="/js/players.js"></script>
+  <script is:inline src="/js/game-logic.js"></script>
+  <script is:inline src="/js/maps-logic.js"></script>
   <MapsGame client:load />
-</body>
-</html>
+</Base>

@@ -500,7 +500,7 @@ import ProPlayersGame from '../components/ProPlayersGame.svelte';
         const badge = document.createElement("span");
         badge.id = "result-hard-badge";
         badge.textContent = "HARD";
-        badge.style.cssText = "display:inline-block;margin-left:0.5rem;padding:0.15rem 0.45rem;background:#FF4655;color:#fff;font-size:0.6rem;font-weight:700;letter-spacing:0.1em;border-radius:3px;vertical-align:middle;";
+        badge.style.cssText = "display:inline-block;margin-left:0.5rem;padding:0.15rem 0.45rem;background:#FF4655;color:#fff;font-size:0.6rem;font-weight:700;letter-spacing:0.03em;border-radius:3px;vertical-align:middle;";
         document.getElementById("banner-title").insertAdjacentElement("afterend", badge);
       }
 
@@ -648,7 +648,7 @@ import ProPlayersGame from '../components/ProPlayersGame.svelte';
       ctx.font="bold 18px 'Russo One',sans-serif"; ctx.fillStyle="#eeeef5";
       ctx.fillText("VALOR",PAD,PAD+18); ctx.fillStyle="#FF4655";
       ctx.fillText("ANDLE",PAD+ctx.measureText("VALOR").width,PAD+18);
-      ctx.font="10px 'Space Mono',monospace"; ctx.fillStyle="#50536a";
+      ctx.font="10px 'Outfit',sans-serif"; ctx.fillStyle="#50536a";
       ctx.fillText(`${getDailyDateKey()} · ${(LEAGUE_CONFIG[LEAGUE]||{label:"All"}).label}`,PAD,PAD+36);
       ctx.strokeStyle="#1c1f2e"; ctx.lineWidth=1;
       ctx.beginPath(); ctx.moveTo(PAD,PAD+46); ctx.lineTo(W-PAD,PAD+46); ctx.stroke();
@@ -662,7 +662,7 @@ import ProPlayersGame from '../components/ProPlayersGame.svelte';
           ctx.beginPath(); ctx.roundRect(gx,gy,CELL,CELL,2); ctx.fill(); ctx.stroke();
         });
       });
-      ctx.font="9px 'Space Mono',monospace"; ctx.fillStyle="#252838";
+      ctx.font="9px 'Outfit',sans-serif"; ctx.fillStyle="#252838";
       ctx.fillText("valorandle.com",PAD,H-7);
       canvas.toBlob(blob => {
         if (navigator.share&&navigator.canShare&&navigator.canShare({files:[new File([blob],"result.png",{type:"image/png"})]})) {

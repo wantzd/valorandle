@@ -1,4 +1,4 @@
-<script>
+﻿<script>
   import { onMount } from 'svelte';
   import { loadLang, saveLang, getDailyDateKey } from '../lib/game-utils.js';
 
@@ -10,7 +10,8 @@
   let cardsReady  = $state(false);
 
   onMount(async () => {
-    lang = loadLang();
+    lang = window.location.pathname.startsWith('/en') ? 'en' : 'pt-BR';
+    saveLang(lang);
     const params = new URLSearchParams(window.location.search);
     mode = params.get('mode') === 'free' ? 'free' : 'daily';
 
@@ -138,7 +139,7 @@
   :global(:root) {
     --bg:#08090d; --surface:#0e1018; --surface2:#141620; --border:#1c1f2e; --border2:#252838;
     --red:#FF4655; --text:#eeeef5; --text-dim:#50536a; --text-mid:#8a8da8;
-    --font-display:'Russo One', sans-serif; --font-ui:'Space Grotesk', sans-serif; --font-mono:'Space Mono', monospace;
+    --font-display:'Russo One', sans-serif; --font-ui:'Outfit', sans-serif; --font-mono:'Outfit', sans-serif;
     --col-americas:#FF5400; --col-emea:#C4FF00; --col-pacific:#00DCFF; --col-china:#FF1675; --col-all:#E5C96A;
   }
   :global(html, body) { min-height:100vh; background:var(--bg); color:var(--text); font-family:var(--font-ui); }
@@ -146,14 +147,14 @@
 
   .page { position:relative; z-index:1; min-height:100vh; display:flex; flex-direction:column; align-items:center; padding:1.5rem 1.5rem 4rem; animation:fadeUp 0.38s ease both; }
   .header { width:100%; max-width:900px; display:flex; align-items:center; gap:1rem; padding-bottom:1.5rem; border-bottom:1px solid var(--border); margin-bottom:2.5rem; }
-  .back-btn { background:transparent; border:1px solid var(--border2); color:var(--text-dim); font-family:var(--font-mono); font-size:0.65rem; letter-spacing:0.1em; padding:0.4rem 0.85rem; cursor:pointer; border-radius:3px; transition:all 0.2s; text-decoration:none; }
+  .back-btn { background:transparent; border:1px solid var(--border2); color:var(--text-dim); font-family:var(--font-mono); font-size:0.65rem; letter-spacing:0.03em; padding:0.4rem 0.85rem; cursor:pointer; border-radius:3px; transition:all 0.2s; text-decoration:none; }
   .back-btn:hover { border-color:var(--red); color:var(--red); }
   .header-logo { font-family:var(--font-display); font-size:1.3rem; color:var(--text); text-transform:uppercase; }
   .header-logo span { color:var(--red); }
-  .mode-pill { margin-left:auto; font-family:var(--font-mono); font-size:0.6rem; font-weight:700; letter-spacing:0.15em; text-transform:uppercase; background:var(--surface2); border:1px solid var(--border2); color:var(--text-dim); padding:0.3rem 0.7rem; border-radius:2px; }
+  .mode-pill { margin-left:auto; font-family:var(--font-mono); font-size:0.6rem; font-weight:700; letter-spacing:0.05em; text-transform:uppercase; background:var(--surface2); border:1px solid var(--border2); color:var(--text-dim); padding:0.3rem 0.7rem; border-radius:2px; }
 
   .hero { text-align:center; margin-bottom:2.5rem; animation:fadeUp 0.38s ease both; }
-  .hero-eyebrow { font-family:var(--font-mono); font-size:0.65rem; letter-spacing:0.25em; text-transform:uppercase; color:var(--red); margin-bottom:0.75rem; opacity:0.85; }
+  .hero-eyebrow { font-family:var(--font-mono); font-size:0.65rem; letter-spacing:0.02em; text-transform:uppercase; color:var(--red); margin-bottom:0.75rem; opacity:0.85; }
   .hero-title { font-family:var(--font-display); font-size:clamp(2rem,6vw,3.2rem); text-transform:uppercase; color:var(--text); line-height:1; }
   .hero-sub { margin-top:0.7rem; font-size:0.8rem; color:var(--text-dim); font-weight:400; }
 
@@ -170,7 +171,7 @@
   .league-icon-wrap img { width:100%; height:100%; object-fit:contain; }
   .league-icon { width:60px; height:60px; }
   .league-name { font-family:var(--font-display); font-size:0.88rem; text-transform:uppercase; text-align:center; color:var(--text); transition:color 0.2s; line-height:1.2; }
-  .league-region { font-family:var(--font-mono); font-size:0.56rem; letter-spacing:0.1em; text-transform:uppercase; text-align:center; color:var(--text-dim); }
+  .league-region { font-family:var(--font-mono); font-size:0.56rem; letter-spacing:0.03em; text-transform:uppercase; text-align:center; color:var(--text-dim); }
   .league-count { font-family:var(--font-mono); font-size:0.62rem; color:var(--lc,var(--text-dim)); border:1px solid var(--lc,var(--border)); background:var(--surface2); padding:0.18rem 0.65rem; border-radius:2px; margin-top:auto; transition:color 0.2s,border-color 0.2s; opacity:0.7; }
   .league-card:hover .league-count { opacity:1; }
 
@@ -180,7 +181,7 @@
 
   .league-card.soon { filter:grayscale(1) brightness(0.45); cursor:not-allowed !important; pointer-events:none; }
   .league-card.soon::after { display:none !important; }
-  .soon-badge { font-family:var(--font-mono); font-size:0.56rem; font-weight:700; letter-spacing:0.14em; text-transform:uppercase; background:var(--border2); color:var(--text-dim); border:1px solid var(--border2); padding:0.18rem 0.6rem; border-radius:2px; margin-top:2px; width:fit-content; }
+  .soon-badge { font-family:var(--font-mono); font-size:0.56rem; font-weight:700; letter-spacing:0; text-transform:uppercase; background:var(--border2); color:var(--text-dim); border:1px solid var(--border2); padding:0.18rem 0.6rem; border-radius:2px; margin-top:2px; width:fit-content; }
 
   .page-footer { margin-top:2rem; font-family:var(--font-mono); font-size:0.62rem; color:var(--text-dim); text-align:center; animation:fadeUp 0.38s 0.14s ease both; }
 

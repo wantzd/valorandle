@@ -908,7 +908,7 @@
   .result-sub { font-size:0.8rem; color:var(--text-mid); }
   .result-countdown { display:flex; flex-direction:column; align-items:center; gap:0.2rem; }
   .cd-label { font-family:var(--font-mono); font-size:0.6rem; font-weight:700; letter-spacing:0; text-transform:uppercase; color:var(--text-dim); }
-  .cd-timer { font-family:var(--font-mono); font-size:1.4rem; font-weight:700; color:var(--text); letter-spacing:0.02em; }
+  .cd-timer { font-family:var(--font-mono); font-size:1.4rem; font-weight:700; color:var(--text-dim); letter-spacing:0.02em; }
   .result-actions { display:flex; gap:0.75rem; flex-wrap:wrap; justify-content:center; }
   .result-btn {
     font-family:var(--font-mono); font-size:0.78rem; letter-spacing:0.03em; font-weight:700;

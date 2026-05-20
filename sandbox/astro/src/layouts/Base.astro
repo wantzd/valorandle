@@ -81,13 +81,16 @@ const schemaJson = JSON.stringify({
   <!-- Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Russo+One&family=Space+Grotesk:wght@300;400;500;600&family=Space+Mono:wght@700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Russo+One&family=Epilogue:wght@400;600;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flag-icons@7.2.3/css/flag-icons.min.css" />
 
   <!-- Schema.org -->
   <script type="application/ld+json" set:html={schemaJson} />
 
   {extraCss && <style is:global set:html={extraCss} />}
+  <style is:global>
+    :root { --font-ui: 'Epilogue', sans-serif !important; --font-mono: 'Epilogue', sans-serif !important; }
+  </style>
 </head>
 <body>
   <slot />
