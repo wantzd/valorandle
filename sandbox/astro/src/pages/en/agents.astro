@@ -1,0 +1,13 @@
+---
+import Base from '../../layouts/Base.astro';
+import AgentsGame from '../../components/AgentsGame.svelte';
+---
+<Base
+  title="Valorandle — Agents"
+  description="Guess the VALORANT agent by gender, role, origin and release year."
+  lang="en"
+  path="/agents"
+  noindex={true}
+>
+  <AgentsGame client:load />
+</Base>
