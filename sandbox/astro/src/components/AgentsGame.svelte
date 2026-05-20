@@ -364,6 +364,7 @@
         <div class="col-header">{t.headers.role}</div>
         <div class="col-header">{t.headers.origin}</div>
         <div class="col-header">{t.headers.year}</div>
+        <div class="col-header">{t.headers.ult}</div>
       </div>
 
       <div class="guess-grid" bind:this={feedbackGridEl}>
@@ -554,7 +555,7 @@
   .grid-wrapper { overflow-x:auto; -webkit-overflow-scrolling:touch; }
   .grid-headers, .guess-row {
     display:grid;
-    grid-template-columns:180px repeat(4, 1fr);
+    grid-template-columns:180px repeat(5, 1fr);
     gap:3px;
   }
   .grid-headers { margin-bottom:3px; }
@@ -710,12 +711,12 @@
   @media (max-width:600px) {
     .game-header { grid-template-columns:1fr 1fr; }
     .header-center { display:none; }
-    .grid-headers, .guess-row { grid-template-columns:120px repeat(4,1fr); }
+    .grid-headers, .guess-row { grid-template-columns:120px repeat(5,1fr); }
     .agent-name { font-size:0.78rem; }
     .cell-value { font-size:0.78rem; }
     .mpo-card { padding:1.6rem 1.2rem; }
   }
   @media (max-width:420px) {
-    .grid-headers, .guess-row { grid-template-columns:90px repeat(4,1fr); }
+    .grid-headers, .guess-row { grid-template-columns:90px repeat(5,1fr); }
   }
 </style>
