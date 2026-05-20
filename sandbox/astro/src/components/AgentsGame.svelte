@@ -639,7 +639,7 @@
   .result-sub-text { font-size:0.82rem; color:var(--text-mid); }
   .result-countdown { display:flex; flex-direction:column; align-items:flex-start; gap:0.15rem; }
   .cd-label { font-family:var(--font-mono); font-size:0.58rem; font-weight:700; letter-spacing:0; text-transform:uppercase; color:var(--text-dim); }
-  .cd-timer { font-family:var(--font-mono); font-size:1.3rem; color:var(--text); letter-spacing:0.02em; }
+  .cd-timer { font-family:var(--font-mono); font-size:1.3rem; font-weight:700; color:var(--text); letter-spacing:0.02em; }
   .result-actions { display:flex; gap:0.6rem; flex-wrap:wrap; }
   .result-btn {
     font-family:var(--font-mono); font-size:0.75rem; font-weight:700; letter-spacing:0.03em;
