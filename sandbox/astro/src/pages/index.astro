@@ -1,0 +1,12 @@
+---
+import Base from '../layouts/Base.astro';
+import GameHub from '../components/GameHub.svelte';
+---
+<Base
+  title="Valorandle — Adivinhe o Pro Player de VALORANT"
+  description="Adivinhe o pro player de VALORANT com até 8 tentativas. Novo desafio diário com jogadores das 4 ligas VCT globais."
+  lang="pt-BR"
+  path="/"
+>
+  <GameHub client:load />
+</Base>

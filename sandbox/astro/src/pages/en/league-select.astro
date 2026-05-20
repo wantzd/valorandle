@@ -1,0 +1,16 @@
+---
+import Base from '../../layouts/Base.astro';
+import LeagueSelect from '../../components/LeagueSelect.svelte';
+---
+<Base
+  title="Valorandle — Select League"
+  description="Choose the VCT league to play Valorandle — Americas, EMEA, Pacific or China."
+  lang="en"
+  path="/league-select"
+  noindex={true}
+>
+  <script is:inline src="/js/players.js"></script>
+  <script is:inline src="/js/game-logic.js"></script>
+  <script is:inline src="/js/api.js"></script>
+  <LeagueSelect client:load />
+</Base>
