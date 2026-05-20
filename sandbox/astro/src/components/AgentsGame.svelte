@@ -504,10 +504,10 @@
 
   /* ── Input ──────────────────────────────────────────────────────────────── */
   .input-section { position:relative; }
-  .guess-input-wrap { display:flex; }
+  .guess-input-wrap { display:flex; gap:6px; }
   .guess-input {
     flex:1; background:var(--surface); border:1px solid var(--border2);
-    border-right:none; border-radius:4px 0 0 4px;
+    border-radius:4px;
     color:var(--text); font-family:var(--font-ui); font-size:0.95rem;
     padding:0.8rem 1.1rem; outline:none; transition:border-color 0.2s;
   }
@@ -517,7 +517,7 @@
   .guess-btn {
     background:var(--red); border:none; color:#fff;
     font-family:var(--font-mono); font-size:0.8rem; font-weight:700; letter-spacing:0.02em;
-    padding:0.8rem 1.4rem; border-radius:0 4px 4px 0; cursor:pointer; transition:all 0.2s;
+    padding:0.8rem 1.4rem; border-radius:4px; cursor:pointer; transition:all 0.2s; flex-shrink:0;
   }
   .guess-btn:hover:not(:disabled) { background:#e03040; }
   .guess-btn:disabled { background:var(--surface2); color:var(--text-dim); cursor:not-allowed; }
