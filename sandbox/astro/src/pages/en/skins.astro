@@ -1,0 +1,13 @@
+---
+import Base from '../../layouts/Base.astro';
+import SkinsGame from '../../components/SkinsGame.svelte';
+---
+<Base
+  title="Valorandle — Skins"
+  description="Guess the VALORANT skin by its gunshot sound. 6 attempts to find the bundle, weapon and edition."
+  lang="en"
+  path="/skins"
+  noindex={true}
+>
+  <SkinsGame client:load />
+</Base>
