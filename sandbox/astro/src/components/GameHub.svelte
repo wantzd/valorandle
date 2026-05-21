@@ -187,7 +187,7 @@
         <span class="mode-arrow">→</span>
       </a>
 
-      <a class="mode-row disabled" aria-disabled="true" tabindex="-1">
+      <a class="mode-row" href={isPT ? '/skins?mode=daily' : '/en/skins?mode=daily'}>
         <div class="mode-icon">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
             <path d="M3 13h11l3-4 4 1-1 3-5 3H3z"/><circle cx="17" cy="14" r="1" fill="currentColor" stroke="none"/>
@@ -195,9 +195,9 @@
         </div>
         <div class="mode-info">
           <div class="mode-name">Skins</div>
-          <div class="mode-desc">{isPT ? 'Crop da skin · linha, cor, animação, preço' : 'Skin crop · line, color, animation, price'}</div>
+          <div class="mode-desc">{isPT ? 'Ouça o som do tiro · adivinhe bundle, arma e edição' : 'Hear the gunshot · guess bundle, weapon and edition'}</div>
         </div>
-        <span class="mode-tag beta">Beta</span>
+        <span class="mode-tag new">{isPT ? 'Novo' : 'New'}</span>
         <span class="mode-arrow">→</span>
       </a>
 
