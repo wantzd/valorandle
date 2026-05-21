@@ -21,26 +21,25 @@ const LANG = 'language=en-US';
 // Standard / default skins theme – filter out
 const STANDARD_THEME_UUID = '5a629df4-4765-0214-bd40-fbb96542941f';
 
-// Level-item types that carry custom audio, in priority order.
-// Early bundles (e.g. Prime patch 1.0) lock their custom gunshot sound behind
-// the VFX upgrade; picking level[0] for those plays the default weapon sound.
-// Modern skins already ship custom audio at level[0] (levelItem = null), so
-// they fall through to the last branch and use level[0] as before.
-const AUDIO_LEVEL_PRIORITY = [
-  'EEquippableSkinLevelItem::SoundEffects',
-  'EEquippableSkinLevelItem::VFX',
-];
-
 /**
  * Return the best level to use for the audio showcase.
- * Priority: explicit SoundEffects level → VFX level → first level with video.
+ * Goal: max upgrade level in the default color.
+ *
+ * Levels in the API are additive — level[N] has everything from level[N-1]
+ * plus one more effect. The last level with a streamedVideo is therefore the
+ * most complete version of the skin (all VFX + sound + animations active)
+ * while still using the default chroma (color variants live in skin.chromas,
+ * not in skin.levels, so level videos are always the default color).
+ *
+ * Chroma[0] (default color) never has its own streamedVideo in the API —
+ * only variant chromas do, and those would be the wrong color.
  */
 function bestAudioLevel(levels) {
-  for (const type of AUDIO_LEVEL_PRIORITY) {
-    const lv = levels.find(l => l.levelItem === type && l.streamedVideo);
-    if (lv) return lv;
+  // Walk from the end — pick the last level that has a showcase video
+  for (let i = levels.length - 1; i >= 0; i--) {
+    if (levels[i].streamedVideo) return levels[i];
   }
-  return levels.find(l => l.streamedVideo) ?? null;
+  return null;
 }
 
 // Content-tier devName → clean label
