@@ -489,10 +489,14 @@
               >
                 <div class="ac-meta">
                   <span class="ac-name">{skin.displayName}</span>
-                  <span class="ac-bundle">{skin.bundleName}</span>
+                  <span class="ac-sub">{skin.bundleName} · {skin.weapon}</span>
                 </div>
-                <span class="ac-weapon">{skin.weapon}</span>
-                <span class="ac-edition">{skin.edition}</span>
+                {#if editionIcons[skin.edition]}
+                  <img class="ac-edition-icon" src={editionIcons[skin.edition]}
+                    alt={skin.edition} title={skin.edition} />
+                {:else}
+                  <span class="ac-edition-text">{skin.edition}</span>
+                {/if}
               </button>
             {/each}
           </div>
@@ -757,15 +761,14 @@
   .ac-item:last-child { border-bottom:none; }
   .ac-item:hover, .ac-item.highlighted { background:var(--surface); }
   .ac-meta { display:flex; flex-direction:column; flex:1; min-width:0; }
-  .ac-name { font-size:0.88rem; font-weight:600; }
-  .ac-bundle { font-family:var(--font-mono); font-size:0.62rem; color:var(--text-dim); margin-top:1px; }
-  .ac-weapon {
-    font-family:var(--font-mono); font-size:0.65rem; font-weight:700; color:var(--text-mid);
-    letter-spacing:0.02em; white-space:nowrap;
+  .ac-name { font-size:0.88rem; font-weight:600; color:var(--text); }
+  .ac-sub {
+    font-family:var(--font-ui); font-size:0.72rem; color:var(--text-dim);
+    margin-top:2px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
   }
-  .ac-edition {
-    font-family:var(--font-mono); font-size:0.62rem; color:var(--text-dim);
-    white-space:nowrap; margin-left:0.5rem;
+  .ac-edition-icon { width:22px; height:22px; object-fit:contain; flex-shrink:0; }
+  .ac-edition-text {
+    font-family:var(--font-ui); font-size:0.72rem; color:var(--text-dim); flex-shrink:0;
   }
 
   .input-error {
