@@ -18,9 +18,10 @@
   let showPicker = $state(false);
 
   // ── Data (loaded async) ───────────────────────────────────────────────────────
-  let allSkins    = $state([]);   // full list from skins-db.json
-  let dailyPool   = $state([]);   // subset with patch data
-  let patches     = $state({});   // bundleName → patch string
+  let allSkins      = $state([]);   // full list from skins-db.json
+  let dailyPool     = $state([]);   // subset with patch data
+  let patches       = $state({});   // bundleName → patch string
+  let editionIcons  = $state({});   // edition label → icon URL
   let loading     = $state(true);
   let loadError   = $state('');
 
@@ -75,8 +76,9 @@
       const skinsData   = await skinsRes.json();
       const patchesData = await patchesRes.json();
 
-      allSkins  = skinsData.skins ?? [];
-      patches   = patchesData;
+      allSkins     = skinsData.skins ?? [];
+      editionIcons = skinsData.editionIcons ?? {};
+      patches      = patchesData;
       // daily pool = skins whose bundle has a known patch
       dailyPool = allSkins.filter(s => patchesData[s.bundleName] != null);
     } catch {
@@ -528,7 +530,16 @@
                   class:correct={cell.status === 'correct'}
                   class:wrong={cell.status === 'wrong'}
                 >
-                  <span class="cell-value">{cell.value}</span>
+                  {#if cell.attr === 'edition' && editionIcons[cell.value]}
+                    <img
+                      class="edition-icon"
+                      src={editionIcons[cell.value]}
+                      alt={cell.value}
+                      title={cell.value}
+                    />
+                  {:else}
+                    <span class="cell-value">{cell.value}</span>
+                  {/if}
                   {#if cell.hint}
                     <span class="cell-hint">{cell.hint}</span>
                   {/if}
@@ -805,6 +816,7 @@
   .cell-value {
     font-family:var(--font-ui); font-size:0.9rem; font-weight:600; color:var(--text); line-height:1.3;
   }
+  .edition-icon { width:32px; height:32px; object-fit:contain; display:block; }
   .cell-hint {
     font-family:var(--font-mono); font-size:0.9rem; font-weight:700; line-height:1;
   }

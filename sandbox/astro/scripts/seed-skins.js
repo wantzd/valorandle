@@ -48,9 +48,12 @@ async function fetchJSON(url) {
 async function main() {
   console.log('[1/4] Fetching content tiers…');
   const tiers = await fetchJSON(`${BASE}/contenttiers?${LANG}`);
-  const tierMap = {}; // uuid → clean label
+  const tierMap     = {}; // uuid → clean label
+  const editionIcons = {}; // clean label → icon URL
   for (const t of tiers) {
-    tierMap[t.uuid] = cleanEdition(t.devName, t.displayName);
+    const label = cleanEdition(t.devName, t.displayName);
+    tierMap[t.uuid] = label;
+    if (label && t.displayIcon) editionIcons[label] = t.displayIcon;
   }
 
   console.log('[2/4] Fetching themes…');
@@ -110,7 +113,7 @@ async function main() {
   const weaponTypes = [...new Set(skins.map(s => s.weapon))].sort();
 
   mkdirSync(dirname(OUT), { recursive: true });
-  writeFileSync(OUT, JSON.stringify({ skins, bundles, weaponTypes }, null, 2), 'utf-8');
+  writeFileSync(OUT, JSON.stringify({ skins, bundles, weaponTypes, editionIcons }, null, 2), 'utf-8');
 
   console.log(`\n✓ Wrote ${skins.length} skins to ${OUT}`);
   console.log(`  Bundles: ${bundles.length} | Weapon types: ${weaponTypes.length}`);
