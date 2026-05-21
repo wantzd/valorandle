@@ -941,19 +941,19 @@
     width:100%; padding:0.55rem 0.9rem;
     background:none; border:none; border-bottom:1px solid var(--border);
     color:var(--text); cursor:pointer; text-align:left; transition:background 0.1s;
-    font-family:system-ui, -apple-system, 'Segoe UI', sans-serif;
+    font-family:'Montserrat', sans-serif;
   }
   .ac-item:last-child { border-bottom:none; }
   .ac-item:hover, .ac-item.highlighted { background:var(--surface); }
   .ac-meta { display:flex; flex-direction:column; flex:1; min-width:0; }
-  .ac-name { font-size:0.875rem; font-weight:500; color:var(--text); letter-spacing:0; }
+  .ac-name { font-size:0.875rem; font-weight:700; color:var(--text); letter-spacing:0; }
   .ac-sub {
-    font-size:0.72rem; color:var(--text-dim);
+    font-size:0.7rem; font-weight:500; color:var(--text-dim);
     margin-top:2px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
     letter-spacing:0;
   }
   .ac-edition-icon { width:22px; height:22px; object-fit:contain; flex-shrink:0; }
-  .ac-edition-text { font-size:0.72rem; color:var(--text-dim); flex-shrink:0; }
+  .ac-edition-text { font-size:0.7rem; font-weight:500; color:var(--text-dim); flex-shrink:0; }
 
   .input-error {
     font-family:var(--font-mono); font-size:0.7rem; color:var(--red);
