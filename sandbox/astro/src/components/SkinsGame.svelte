@@ -123,7 +123,9 @@
     acResults  = [];
     resetAudio();
 
-    const pool = mode === 'daily' ? dailyPool : allSkins;
+    // Both modes use dailyPool (skins with known patch) so the Patch column is
+    // always resolvable and a win can actually be detected.
+    const pool = dailyPool;
     const skin = mode === 'daily' ? getDailySkinTarget(pool) : getFreeSkinTarget(pool);
     targetUuid = skin?.uuid ?? null;
 
