@@ -73,6 +73,10 @@ async function main() {
       // Skip Standard (default) theme
       if (!skin.themeUuid || skin.themeUuid === STANDARD_THEME_UUID) continue;
 
+      // Skip VCT Classic skins — Select Edition, no unique audio, one per team = unsolvable
+      const bundleNameEarly = themeMap[skin.themeUuid] || '';
+      if (weaponName === 'Classic' && bundleNameEarly.startsWith('VCT')) continue;
+
       // Must have a streamable audio on the base level
       const audioUrl = skin.levels?.[0]?.streamedVideo ?? null;
       if (!audioUrl) continue;
