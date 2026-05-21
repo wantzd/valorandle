@@ -9,10 +9,13 @@
     getDailyDateKey, msUntilNextDaily, formatCountdown,
     loadLang, saveLang,
   } from '../lib/game-utils.js';
+  import { loadSoundPref, saveSoundPref, scheduleFlipSounds } from '../lib/sounds.js';
 
   const MAX_GUESSES = 6;
   const MAX_HINTS   = 4;
   const DAILY_KEY   = () => `valorandle_maps_daily_${getDailyDateKey()}`;
+  // 3 feedback columns (map, callout, area)
+  const ATTR_COLS   = 3;
 
   // ── Lang ─────────────────────────────────────────────────────────────────────
   let lang = $state('pt-BR');
@@ -34,6 +37,12 @@
   let hintsUsed = $state(0);
   let finished  = $state(false);
   let won       = $state(false);
+
+  // ── Animation / input lock ────────────────────────────────────────────────────
+  let inputLocked = $state(false);
+
+  // ── Sound ─────────────────────────────────────────────────────────────────────
+  let soundOn     = $state(true);
 
   // ── UI ───────────────────────────────────────────────────────────────────────
   let view              = $state('screenshot');  // 'screenshot' | 'map'
@@ -74,7 +83,8 @@
   // Mount
   // ─────────────────────────────────────────────────────────────────────────────
   onMount(async () => {
-    lang = window.location.pathname.startsWith('/en') ? 'en' : 'pt-BR';
+    lang    = window.location.pathname.startsWith('/en') ? 'en' : 'pt-BR';
+    soundOn = loadSoundPref();
     saveLang(lang);
 
     const P      = new URLSearchParams(location.search);
@@ -158,6 +168,7 @@
     screenshotSrc   = null;
     screenshotReady = false;
     canvasReady     = false;
+    inputLocked     = false;
 
     target = mode === 'daily' ? getDailyMapTarget() : getFreeMapTarget();
     if (!target) { apiError = true; return; }
@@ -165,7 +176,7 @@
     if (mode === 'daily') {
       const saved = loadDailyState();
       if (saved) {
-        guesses   = saved.guesses   || [];
+        guesses   = (saved.guesses || []).map(g => ({ ...g, isNew: false }));
         hintsUsed = saved.hintsUsed || 0;
         finished  = saved.finished  || false;
         won       = saved.won       || false;
@@ -249,25 +260,49 @@
   }
 
   // ─────────────────────────────────────────────────────────────────────────────
+  // Sound toggle
+  // ─────────────────────────────────────────────────────────────────────────────
+  function toggleSound() {
+    soundOn = !soundOn;
+    saveSoundPref(soundOn);
+  }
+
+  // ─────────────────────────────────────────────────────────────────────────────
   // Guess submission
   // ─────────────────────────────────────────────────────────────────────────────
   function submitGuess() {
-    if (!selectedMapId || !selectedCallout || finished) return;
+    if (!selectedMapId || !selectedCallout || finished || inputLocked) return;
 
-    const fb  = compareMapGuess(selectedMapId, selectedCallout.id, target, lang);
-    guesses   = [...guesses, { mapId: selectedMapId, calloutId: selectedCallout.id, feedback: fb }];
-    won       = fb.every(f => f.status === 'correct');
-    finished  = won || guesses.length >= MAX_GUESSES;
+    const fb   = compareMapGuess(selectedMapId, selectedCallout.id, target, lang);
+    const isWin  = fb.every(f => f.status === 'correct');
+    const isDone = isWin || guesses.length + 1 >= MAX_GUESSES;
+    guesses   = [...guesses, {
+      mapId: selectedMapId, calloutId: selectedCallout.id,
+      feedback: fb, isNew: true,
+    }];
+    won      = isWin;
+    finished = isDone;
 
-    if (won) revealed = true;
-    if (mode === 'daily') saveDailyState({ guesses, hintsUsed, finished, won });
-    if (finished && mode === 'daily') startCountdown();
-
+    if (isWin) revealed = true;
     selectedCallout = null;
 
-    tick().then(() => {
-      feedbackGridEl?.lastElementChild?.scrollIntoView({ behavior: 'smooth', block: 'center' });
-    });
+    // Lock confirm button and schedule flip sounds
+    inputLocked = true;
+    const soundResult = isWin ? 'correct' : 'wrong';
+    const totalMs = scheduleFlipSounds(ATTR_COLS, 115, soundResult, soundOn);
+
+    setTimeout(() => {
+      // Clear isNew on all guesses (inputLocked ensures at most one isNew at a time)
+      guesses = guesses.map(g => g.isNew ? { ...g, isNew: false } : g);
+      inputLocked = false;
+      if (mode === 'daily') {
+        saveDailyState({ guesses: guesses.map(g => ({ ...g, isNew: false })), hintsUsed, finished: isDone, won: isWin });
+      }
+      if (isDone && mode === 'daily') startCountdown();
+      tick().then(() => {
+        feedbackGridEl?.lastElementChild?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      });
+    }, totalMs + 60);
   }
 
   // ─────────────────────────────────────────────────────────────────────────────
@@ -451,7 +486,31 @@
     <div class="header-center">
       <span class="wordmark">VALOR<span>ANDLE</span></span>
     </div>
-    <div class="header-right"></div>
+    <div class="header-right">
+      <button
+        class="sound-btn"
+        class:sound-off={!soundOn}
+        onclick={toggleSound}
+        title={soundOn
+          ? (lang === 'en' ? 'Mute sounds' : 'Silenciar sons')
+          : (lang === 'en' ? 'Enable sounds' : 'Ligar sons')}
+      >
+        {#if soundOn}
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+            stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+            <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/>
+            <path d="M15.54 8.46a5 5 0 0 1 0 7.07"/>
+            <path d="M19.07 4.93a10 10 0 0 1 0 14.14"/>
+          </svg>
+        {:else}
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+            stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+            <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/>
+            <line x1="23" y1="9" x2="17" y2="15"/><line x1="17" y1="9" x2="23" y2="15"/>
+          </svg>
+        {/if}
+      </button>
+    </div>
   </header>
 
   {#if apiError}
@@ -617,9 +676,11 @@
       </div>
       {#each guesses as g}
         <div class="fb-row">
-          {#each g.feedback as cell}
+          {#each g.feedback as cell, ci}
             <div
               class="fb-cell"
+              style="--ci:{ci}"
+              class:flip-new={g.isNew}
               class:correct={cell.status === 'correct'}
               class:wrong={cell.status === 'wrong'}
               title={cell.attr === 'area' ? areaLabel(cell.value) : cell.value}
@@ -874,6 +935,19 @@
     padding:0.28rem 0.65rem;
   }
 
+  /* ── Sound toggle button ─────────────────────────────────────────────────── */
+  .sound-btn {
+    width:30px; height:30px; border-radius:50%;
+    background:none; border:1px solid var(--border2);
+    color:var(--text-dim); cursor:pointer;
+    display:flex; align-items:center; justify-content:center;
+    transition:all 0.15s; flex-shrink:0;
+  }
+  .sound-btn svg { width:14px; height:14px; }
+  .sound-btn:hover { border-color:var(--red); color:var(--red); }
+  .sound-btn.sound-off { opacity:0.5; }
+  .sound-btn.sound-off:hover { opacity:1; border-color:var(--red); color:var(--red); }
+
   /* ── Feedback grid ───────────────────────────────────────────────────────── */
   .feedback-grid { display:flex; flex-direction:column; gap:0.4rem; }
   .fb-headers {
@@ -889,10 +963,24 @@
     padding:0.5rem 0.4rem; border-radius:5px; text-align:center;
     font-family:var(--font-ui); font-size:0.88rem; font-weight:600;
     overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
-    border:1px solid transparent;
+    border:1px solid var(--border); background:var(--surface2);
+    min-height:44px; display:flex; align-items:center; justify-content:center;
   }
   .fb-cell.correct { background:var(--green-bg); border-color:var(--green-bd); color:var(--green); }
   .fb-cell.wrong   { background:rgba(255,70,85,0.08); border-color:rgba(255,70,85,0.25); color:#FF6670; }
+
+  /* ── Cell flip-reveal animation ─────────────────────────────────────────── */
+  .fb-cell.flip-new {
+    animation:flipReveal 340ms cubic-bezier(0.4,0,0.2,1) both;
+    animation-delay:calc(var(--ci, 0) * 115ms);
+    transform-origin:center;
+  }
+  @keyframes flipReveal {
+    0%   { transform:scaleY(1);    background:var(--surface2); border-color:var(--border); color:transparent; }
+    42%  { transform:scaleY(0.02); background:var(--surface2); border-color:var(--border); }
+    58%  { transform:scaleY(0.02); }
+    100% { transform:scaleY(1); }
+  }
 
   /* ── Result panel ────────────────────────────────────────────────────────── */
   .result-panel {

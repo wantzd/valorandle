@@ -8,9 +8,12 @@
     getDailyDateKey, msUntilNextDaily, formatCountdown,
     loadLang, saveLang,
   } from '../lib/game-utils.js';
+  import { loadSoundPref, saveSoundPref, scheduleFlipSounds } from '../lib/sounds.js';
 
   const MAX_GUESSES = 8;
   const DAILY_KEY   = () => `valorandle_agents_daily_${getDailyDateKey()}`;
+  // 5 attribute columns after the agent cell (gender, role, origin, year, ult)
+  const ATTR_COLS   = 5;
 
   // ── Lang ──────────────────────────────────────────────────────────────────────
   let lang = $state('pt-BR');
@@ -21,10 +24,16 @@
   let showPicker = $state(false);
 
   // ── Game state ────────────────────────────────────────────────────────────────
-  let targetId  = $state(null);
-  let guesses   = $state([]);    // [{ agentId, feedback }]
-  let finished  = $state(false);
-  let won       = $state(false);
+  let targetId    = $state(null);
+  let guesses     = $state([]);    // [{ agentId, feedback, isNew }]
+  let finished    = $state(false);
+  let won         = $state(false);
+
+  // ── Animation / input lock ────────────────────────────────────────────────────
+  let inputLocked = $state(false);
+
+  // ── Sound ─────────────────────────────────────────────────────────────────────
+  let soundOn     = $state(true);
 
   // ── Input / autocomplete ──────────────────────────────────────────────────────
   let inputVal      = $state('');
@@ -50,7 +59,8 @@
   // Mount
   // ─────────────────────────────────────────────────────────────────────────────
   onMount(() => {
-    lang = window.location.pathname.startsWith('/en') ? 'en' : 'pt-BR';
+    lang    = window.location.pathname.startsWith('/en') ? 'en' : 'pt-BR';
+    soundOn = loadSoundPref();
     saveLang(lang);
 
     const P = new URLSearchParams(location.search);
@@ -82,19 +92,20 @@
   // Game init
   // ─────────────────────────────────────────────────────────────────────────────
   function startGame() {
-    guesses    = [];
-    finished   = false;
-    won        = false;
-    inputVal   = '';
-    inputError = '';
-    acResults  = [];
+    guesses     = [];
+    finished    = false;
+    won         = false;
+    inputVal    = '';
+    inputError  = '';
+    acResults   = [];
+    inputLocked = false;
 
     targetId = mode === 'daily' ? getDailyAgentTarget() : getFreeAgentTarget();
 
     if (mode === 'daily') {
       const saved = loadDailyState();
       if (saved) {
-        guesses  = saved.guesses  || [];
+        guesses  = (saved.guesses || []).map(g => ({ ...g, isNew: false }));
         finished = saved.finished || false;
         won      = saved.won      || false;
       }
@@ -113,7 +124,16 @@
     acResults   = agentSearch(inputVal).filter(id => !guessedIds.has(id));
   }
 
+  // ─────────────────────────────────────────────────────────────────────────────
+  // Sound toggle
+  // ─────────────────────────────────────────────────────────────────────────────
+  function toggleSound() {
+    soundOn = !soundOn;
+    saveSoundPref(soundOn);
+  }
+
   function onKeydown(e) {
+    if (inputLocked) return;
     if (acResults.length === 0) {
       if (e.key === 'Enter') submitByName();
       return;
@@ -143,6 +163,7 @@
   }
 
   function submitByName() {
+    if (inputLocked) return;
     const q = inputVal.trim().toLowerCase();
     const match = Object.keys(AGENTS_DB).find(id =>
       AGENTS_DB[id].name.toLowerCase() === q
@@ -152,24 +173,37 @@
   }
 
   function submitGuess(agentId) {
-    if (finished) return;
+    if (finished || inputLocked) return;
     if (guessedIds.has(agentId)) { inputError = t.alreadyGuessed; return; }
     if (!AGENTS_DB[agentId])     { inputError = t.notFound; return; }
 
     const feedback = compareAgentGuess(agentId, targetId, lang);
-    guesses    = [...guesses, { agentId, feedback }];
-    won        = feedback.every(f => f.status === 'correct');
-    finished   = won || guesses.length >= MAX_GUESSES;
+    const isWin  = feedback.every(f => f.status === 'correct');
+    const isDone = isWin || guesses.length + 1 >= MAX_GUESSES;
+    guesses    = [...guesses, { agentId, feedback, isNew: true }];
+    won        = isWin;
+    finished   = isDone;
     inputVal   = '';
     acResults  = [];
     inputError = '';
 
-    if (mode === 'daily') saveDailyState({ guesses, finished, won });
-    if (finished && mode === 'daily') startCountdown();
+    // Lock input and schedule flip sounds
+    inputLocked = true;
+    const soundResult = isWin ? 'correct' : 'wrong';
+    const totalMs = scheduleFlipSounds(ATTR_COLS, 115, soundResult, soundOn);
 
-    tick().then(() => {
-      feedbackGridEl?.lastElementChild?.scrollIntoView({ behavior: 'smooth', block: 'center' });
-    });
+    setTimeout(() => {
+      guesses = guesses.map(g => g.agentId === agentId ? { ...g, isNew: false } : g);
+      inputLocked = false;
+      if (mode === 'daily') {
+        saveDailyState({ guesses: guesses.map(g => ({ ...g, isNew: false })), finished: isDone, won: isWin });
+      }
+      if (isDone && mode === 'daily') startCountdown();
+      tick().then(() => {
+        if (!isDone) inputEl?.focus();
+        feedbackGridEl?.lastElementChild?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      });
+    }, totalMs + 60);
   }
 
   // ─────────────────────────────────────────────────────────────────────────────
@@ -304,12 +338,35 @@
     </div>
     <div class="header-right">
       <span class="attempts-chip">{attemptsLabel}</span>
+      <button
+        class="sound-btn"
+        class:sound-off={!soundOn}
+        onclick={toggleSound}
+        title={soundOn
+          ? (lang === 'en' ? 'Mute sounds' : 'Silenciar sons')
+          : (lang === 'en' ? 'Enable sounds' : 'Ligar sons')}
+      >
+        {#if soundOn}
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+            stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+            <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/>
+            <path d="M15.54 8.46a5 5 0 0 1 0 7.07"/>
+            <path d="M19.07 4.93a10 10 0 0 1 0 14.14"/>
+          </svg>
+        {:else}
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+            stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+            <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/>
+            <line x1="23" y1="9" x2="17" y2="15"/><line x1="17" y1="9" x2="23" y2="15"/>
+          </svg>
+        {/if}
+      </button>
     </div>
   </header>
 
   <!-- Input section -->
   {#if !finished}
-    <div class="input-section">
+    <div class="input-section" class:locked={inputLocked}>
       <div class="guess-input-wrap">
         <input
           bind:this={inputEl}
@@ -321,12 +378,12 @@
           placeholder={t.placeholder}
           autocomplete="off"
           spellcheck="false"
-          disabled={finished}
+          disabled={finished || inputLocked}
         />
         <button
           class="guess-btn"
           onclick={submitByName}
-          disabled={!inputVal.trim() || finished}
+          disabled={!inputVal.trim() || finished || inputLocked}
         >{t.confirmBtn}</button>
       </div>
 
@@ -371,17 +428,19 @@
         {#each guesses as g (g.agentId)}
           {@const a = AGENTS_DB[g.agentId]}
           <div class="guess-row">
-            <!-- Agent cell -->
-            <div class="guess-cell cell-agent">
+            <!-- Agent cell — ci=0, no status color -->
+            <div class="guess-cell cell-agent" style="--ci:0" class:flip-new={g.isNew}>
               <div class="agent-avatar" style:--role-color={roleColor(a.role)}>
                 <img src={a.icon} alt={a.name} loading="lazy" />
               </div>
               <span class="agent-name">{a.name}</span>
             </div>
-            <!-- Feedback cells -->
-            {#each g.feedback as cell}
+            <!-- Feedback cells — ci=1..5 with status colors -->
+            {#each g.feedback as cell, ci}
               <div
                 class="guess-cell"
+                style="--ci:{ci + 1}"
+                class:flip-new={g.isNew}
                 class:correct={cell.status === 'correct'}
                 class:close={cell.status === 'close'}
                 class:wrong={cell.status === 'wrong'}
@@ -478,7 +537,7 @@
   }
   .header-left  { display:flex; align-items:center; gap:0.6rem; }
   .header-center { text-align:center; }
-  .header-right { display:flex; justify-content:flex-end; align-items:center; }
+  .header-right { display:flex; justify-content:flex-end; align-items:center; gap:0.6rem; }
   .back-btn {
     background:transparent; border:1px solid var(--border2); color:var(--text-dim);
     font-family:var(--font-mono); font-size:0.65rem; letter-spacing:0.03em;
@@ -497,8 +556,24 @@
     font-family:var(--font-mono); font-size:0.72rem; color:var(--text-dim); letter-spacing:0.02em;
   }
 
+  /* ── Sound toggle button ─────────────────────────────────────────────────── */
+  .sound-btn {
+    width:30px; height:30px; border-radius:50%;
+    background:none; border:1px solid var(--border2);
+    color:var(--text-dim); cursor:pointer;
+    display:flex; align-items:center; justify-content:center;
+    transition:all 0.15s; flex-shrink:0;
+  }
+  .sound-btn svg { width:14px; height:14px; }
+  .sound-btn:hover { border-color:var(--red); color:var(--red); }
+  .sound-btn.sound-off { opacity:0.5; }
+  .sound-btn.sound-off:hover { opacity:1; border-color:var(--red); color:var(--red); }
+
   /* ── Input ──────────────────────────────────────────────────────────────── */
   .input-section { position:relative; }
+  .input-section.locked { pointer-events:none; }
+  .input-section.locked .guess-input,
+  .input-section.locked .guess-btn { opacity:0.45; cursor:not-allowed; }
   .guess-input-wrap { display:flex; gap:6px; }
   .guess-input {
     flex:1; background:var(--surface); border:1px solid var(--border2);
@@ -567,7 +642,7 @@
 
   /* ── Cells ──────────────────────────────────────────────────────────────── */
   .guess-cell {
-    background:var(--surface); border:1px solid var(--border); border-radius:3px;
+    background:var(--surface2); border:1px solid var(--border); border-radius:3px;
     padding:0.5rem 0.4rem; display:flex; flex-direction:column;
     align-items:center; justify-content:center; gap:3px;
     text-align:center; min-height:56px;
@@ -575,6 +650,19 @@
   .guess-cell.correct { background:var(--green-bg); border-color:var(--green-bd); }
   .guess-cell.close   { background:var(--yellow-bg); border-color:var(--yellow-bd); }
   .guess-cell.wrong   { background:var(--red-dim);   border-color:var(--red-bd); }
+
+  /* ── Cell flip-reveal animation ─────────────────────────────────────────── */
+  .guess-cell.flip-new {
+    animation:flipReveal 340ms cubic-bezier(0.4,0,0.2,1) both;
+    animation-delay:calc(var(--ci, 0) * 115ms);
+    transform-origin:center;
+  }
+  @keyframes flipReveal {
+    0%   { transform:scaleY(1);    background:var(--surface2); border-color:var(--border); }
+    42%  { transform:scaleY(0.02); background:var(--surface2); border-color:var(--border); }
+    58%  { transform:scaleY(0.02); }
+    100% { transform:scaleY(1); }
+  }
 
   .cell-agent {
     align-items:flex-start; text-align:left;

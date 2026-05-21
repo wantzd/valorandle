@@ -5,9 +5,18 @@
     getDailySkinTarget, getFreeSkinTarget, skinSearch,
   } from '../lib/skins-data.js';
   import { getDailyDateKey, msUntilNextDaily, formatCountdown } from '../lib/game-utils.js';
+  import { playSound, loadSoundPref, saveSoundPref, scheduleFlipSounds } from '../lib/sounds.js';
 
   const MAX_GUESSES = 6;
   const DAILY_KEY   = () => `valorandle_skins_daily_${getDailyDateKey()}`;
+  // 4 attribute columns after the name cell (bundle, weapon, edition, patch)
+  const ATTR_COLS   = 4;
+
+  // Pre-generated waveform bar heights — deterministic sine pattern
+  const WAVE_BARS = Array.from({ length: 36 }, (_, i) => ({
+    i,
+    h: Math.max(12, Math.round(Math.abs(Math.sin(i * 0.72) * 36 + Math.sin(i * 0.31) * 20) + 14)),
+  }));
 
   // ── Lang ──────────────────────────────────────────────────────────────────────
   let lang = $state('pt-BR');
@@ -18,23 +27,29 @@
   let showPicker = $state(false);
 
   // ── Data (loaded async) ───────────────────────────────────────────────────────
-  let allSkins      = $state([]);   // full list from skins-db.json
-  let dailyPool     = $state([]);   // subset with patch data
-  let patches       = $state({});   // bundleName → patch string
-  let editionIcons  = $state({});   // edition label → icon URL
-  let loading     = $state(true);
-  let loadError   = $state('');
+  let allSkins      = $state([]);
+  let dailyPool     = $state([]);
+  let patches       = $state({});
+  let editionIcons  = $state({});
+  let loading       = $state(true);
+  let loadError     = $state('');
 
   // ── Game state ────────────────────────────────────────────────────────────────
-  let targetUuid  = $state(null);
-  let guesses     = $state([]);   // [{ uuid, displayName, bundleName, weapon, feedback }]
-  let finished    = $state(false);
-  let won         = $state(false);
+  let targetUuid = $state(null);
+  let guesses    = $state([]);   // [{ uuid, displayName, bundleName, weapon, feedback, isNew }]
+  let finished   = $state(false);
+  let won        = $state(false);
 
-  // ── Audio ─────────────────────────────────────────────────────────────────────
+  // ── Animation / input lock ────────────────────────────────────────────────────
+  let inputLocked = $state(false);
+
+  // ── Sound ─────────────────────────────────────────────────────────────────────
+  let soundOn = $state(true);
+
+  // ── Audio player ──────────────────────────────────────────────────────────────
   let audioEl     = $state(null);
   let isPlaying   = $state(false);
-  let progress    = $state(0);     // 0–1
+  let progress    = $state(0);
   let currentSec  = $state(0);
   let durationSec = $state(0);
   let audioReady  = $state(false);
@@ -55,18 +70,23 @@
   let toastTimer   = null;
 
   // ── Derived ───────────────────────────────────────────────────────────────────
-  let guessedUuids = $derived(new Set(guesses.map(g => g.uuid)));
-  let target       = $derived(allSkins.find(s => s.uuid === targetUuid) ?? null);
+  let guessedUuids  = $derived(new Set(guesses.map(g => g.uuid)));
+  let target        = $derived(allSkins.find(s => s.uuid === targetUuid) ?? null);
   let attemptsLabel = $derived(t.attempts(guesses.length, MAX_GUESSES));
-  let poolSize     = $derived(dailyPool.length);
+  let guessLabel    = $derived(
+    guesses.length === 0 ? '' :
+    lang === 'en'
+      ? `${guesses.length} guess${guesses.length !== 1 ? 'es' : ''}`
+      : `${guesses.length} palpite${guesses.length !== 1 ? 's' : ''}`
+  );
 
   // ─────────────────────────────────────────────────────────────────────────────
   // Mount
   // ─────────────────────────────────────────────────────────────────────────────
   onMount(async () => {
-    lang = window.location.pathname.startsWith('/en') ? 'en' : 'pt-BR';
+    lang    = window.location.pathname.startsWith('/en') ? 'en' : 'pt-BR';
+    soundOn = loadSoundPref();
 
-    // Load data
     try {
       const [skinsRes, patchesRes] = await Promise.all([
         fetch('/data/skins-db.json'),
@@ -79,8 +99,7 @@
       allSkins     = skinsData.skins ?? [];
       editionIcons = skinsData.editionIcons ?? {};
       patches      = patchesData;
-      // daily pool = skins whose bundle has a known patch
-      dailyPool = allSkins.filter(s => patchesData[s.bundleName] != null);
+      dailyPool    = allSkins.filter(s => patchesData[s.bundleName] != null);
     } catch {
       loadError = t.loadError;
       loading   = false;
@@ -117,16 +136,15 @@
   // Game init
   // ─────────────────────────────────────────────────────────────────────────────
   function startGame() {
-    guesses    = [];
-    finished   = false;
-    won        = false;
-    inputVal   = '';
-    inputError = '';
-    acResults  = [];
+    guesses     = [];
+    finished    = false;
+    won         = false;
+    inputVal    = '';
+    inputError  = '';
+    acResults   = [];
+    inputLocked = false;
     resetAudio();
 
-    // Both modes use dailyPool (skins with known patch) so the Patch column is
-    // always resolvable and a win can actually be detected.
     const pool = dailyPool;
     const skin = mode === 'daily' ? getDailySkinTarget(pool) : getFreeSkinTarget(pool);
     targetUuid = skin?.uuid ?? null;
@@ -134,7 +152,7 @@
     if (mode === 'daily') {
       const saved = loadDailyState();
       if (saved) {
-        guesses  = saved.guesses  || [];
+        guesses  = (saved.guesses || []).map(g => ({ ...g, isNew: false }));
         finished = saved.finished || false;
         won      = saved.won      || false;
       }
@@ -193,7 +211,7 @@
 
   function seekAudio(e) {
     if (!audioEl || !durationSec) return;
-    const rect = e.currentTarget.getBoundingClientRect();
+    const rect  = e.currentTarget.getBoundingClientRect();
     const ratio = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
     audioEl.currentTime = ratio * durationSec;
     if (!isPlaying) {
@@ -207,6 +225,14 @@
   }
 
   // ─────────────────────────────────────────────────────────────────────────────
+  // Sound toggle
+  // ─────────────────────────────────────────────────────────────────────────────
+  function toggleSound() {
+    soundOn = !soundOn;
+    saveSoundPref(soundOn);
+  }
+
+  // ─────────────────────────────────────────────────────────────────────────────
   // Input / autocomplete
   // ─────────────────────────────────────────────────────────────────────────────
   function onInput() {
@@ -216,6 +242,7 @@
   }
 
   function onKeydown(e) {
+    if (inputLocked) return;
     if (acResults.length === 0) {
       if (e.key === 'Enter') submitByName();
       return;
@@ -243,31 +270,52 @@
   }
 
   function submitByName() {
-    const q = inputVal.trim().toLowerCase();
+    if (inputLocked) return;
+    const q     = inputVal.trim().toLowerCase();
     const match = dailyPool.find(s => s.displayName.toLowerCase() === q);
     if (match) submitGuess(match);
     else inputError = t.notFound;
   }
 
   function submitGuess(skin) {
-    if (finished) return;
+    if (finished || inputLocked) return;
     if (guessedUuids.has(skin.uuid)) { inputError = t.alreadyGuessed; return; }
 
     const feedback = compareSkins(skin, target, patches);
-    guesses    = [...guesses, { uuid: skin.uuid, displayName: skin.displayName,
-                                bundleName: skin.bundleName, weapon: skin.weapon, feedback }];
-    won        = feedback.every(f => f.status === 'correct');
-    finished   = won || guesses.length >= MAX_GUESSES;
-    inputVal   = '';
-    acResults  = [];
+    const newGuess = {
+      uuid: skin.uuid, displayName: skin.displayName,
+      bundleName: skin.bundleName, weapon: skin.weapon,
+      feedback, isNew: true,
+    };
+
+    guesses    = [...guesses, newGuess];
+    const isWin = feedback.every(f => f.status === 'correct');
+    const isDone = isWin || guesses.length >= MAX_GUESSES;
+    won      = isWin;
+    finished = isDone;
+    inputVal  = '';
+    acResults = [];
     inputError = '';
 
-    if (mode === 'daily') saveDailyState({ guesses, finished, won });
-    if (finished && mode === 'daily') startCountdown();
+    // Lock input while flip animation plays + schedule sounds
+    inputLocked = true;
+    const soundResult = isWin ? 'correct' : 'wrong';
+    const totalMs = scheduleFlipSounds(ATTR_COLS, 115, soundResult, soundOn);
+    const capturedUuid = skin.uuid;
 
-    tick().then(() => {
-      feedbackGridEl?.lastElementChild?.scrollIntoView({ behavior: 'smooth', block: 'center' });
-    });
+    setTimeout(() => {
+      // Strip isNew once animation completes
+      guesses = guesses.map(g => g.uuid === capturedUuid ? { ...g, isNew: false } : g);
+      inputLocked = false;
+      if (mode === 'daily') {
+        saveDailyState({ guesses: guesses.map(g => ({ ...g, isNew: false })), finished: isDone, won: isWin });
+      }
+      if (isDone && mode === 'daily') startCountdown();
+      tick().then(() => {
+        if (!isDone) inputEl?.focus();
+        feedbackGridEl?.lastElementChild?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      });
+    }, totalMs + 60);
   }
 
   // ─────────────────────────────────────────────────────────────────────────────
@@ -383,6 +431,31 @@
     </div>
     <div class="header-right">
       <span class="attempts-chip">{attemptsLabel}</span>
+      <button
+        class="sound-btn"
+        class:sound-off={!soundOn}
+        onclick={toggleSound}
+        title={soundOn
+          ? (lang === 'en' ? 'Mute sounds' : 'Silenciar sons')
+          : (lang === 'en' ? 'Enable sounds' : 'Ligar sons')}
+      >
+        {#if soundOn}
+          <!-- Speaker with waves -->
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+            stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+            <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/>
+            <path d="M15.54 8.46a5 5 0 0 1 0 7.07"/>
+            <path d="M19.07 4.93a10 10 0 0 1 0 14.14"/>
+          </svg>
+        {:else}
+          <!-- Speaker muted -->
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+            stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+            <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/>
+            <line x1="23" y1="9" x2="17" y2="15"/><line x1="17" y1="9" x2="23" y2="15"/>
+          </svg>
+        {/if}
+      </button>
     </div>
   </header>
 
@@ -393,71 +466,92 @@
     <div class="load-error">{loadError}</div>
   {:else if target}
 
-    <!-- ── Audio player ──────────────────────────────────────────────────── -->
-    <div class="audio-section">
-      <!-- Hidden audio element -->
-      <!-- svelte-ignore a11y-media-has-caption -->
-      <audio
-        bind:this={audioEl}
-        src={target.audioUrl}
-        onloadedmetadata={onAudioMetadata}
-        ontimeupdate={onAudioTimeUpdate}
-        onended={onAudioEnded}
-        preload="metadata"
-      ></audio>
+    <!-- Hidden audio element -->
+    <!-- svelte-ignore a11y-media-has-caption -->
+    <audio
+      bind:this={audioEl}
+      src={target.audioUrl}
+      onloadedmetadata={onAudioMetadata}
+      ontimeupdate={onAudioTimeUpdate}
+      onended={onAudioEnded}
+      preload="metadata"
+    ></audio>
 
-      <div class="audio-card">
-        <div class="audio-label">
-          {#if !finished}
-            <svg class="audio-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-              stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M9 18V5l12-2v13"/>
-              <circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/>
-            </svg>
-            <span>Qual skin é essa?</span>
-          {:else if won}
-            <span class="audio-reveal-name">{target.displayName}</span>
-          {:else}
-            <span class="audio-reveal-name">{target.displayName}</span>
-          {/if}
-        </div>
+    <!-- ── Audio Hero (Option D) ──────────────────────────────────────────── -->
+    <div class="audio-hero">
 
-        <div class="player-row">
-          <button class="play-btn" onclick={togglePlay} disabled={!audioReady && !target}>
-            {#if isPlaying}
-              <svg viewBox="0 0 24 24" fill="currentColor">
-                <rect x="6" y="4" width="4" height="16"/>
-                <rect x="14" y="4" width="4" height="16"/>
-              </svg>
-            {:else}
-              <svg viewBox="0 0 24 24" fill="currentColor">
-                <polygon points="5,3 19,12 5,21"/>
-              </svg>
-            {/if}
-          </button>
-
-          <!-- svelte-ignore a11y-click-events-have-key-events -->
-          <!-- svelte-ignore a11y-no-static-element-interactions -->
-          <div class="progress-bar-wrap" onclick={seekAudio}>
-            <div class="progress-bar-bg"></div>
-            <div class="progress-bar-fill" style:width="{progress * 100}%"></div>
-            <div class="progress-thumb" style:left="{progress * 100}%"></div>
-          </div>
-
-          <span class="time-label">
-            {formatTime(currentSec)} / {formatTime(durationSec)}
+      <!-- Top row: eyebrow info -->
+      <div class="hero-top">
+        <div class="hero-eyebrow">
+          <span class="hero-watermark">SKINS</span>
+          <span class="hero-desc">
+            {lang === 'en' ? 'Identify the skin by its audio' : 'Identifique a skin pelo áudio'}
           </span>
-
-          <button class="replay-btn" onclick={replayAudio} title="Reiniciar">
-            {t.replayBtn}
-          </button>
         </div>
       </div>
+
+      <!-- Waveform + centered play button -->
+      <div class="hero-waveform" class:playing={isPlaying}>
+        {#each WAVE_BARS.slice(0, 18) as bar}
+          <div class="wave-bar" style="--i:{bar.i}; --h:{bar.h}px"></div>
+        {/each}
+
+        <button
+          class="play-btn-hero"
+          onclick={togglePlay}
+          disabled={!audioReady}
+          title={isPlaying
+            ? (lang === 'en' ? 'Pause' : 'Pausar')
+            : (lang === 'en' ? 'Play' : 'Ouvir')}
+        >
+          {#if isPlaying}
+            <svg viewBox="0 0 24 24" fill="currentColor">
+              <rect x="6" y="4" width="4" height="16" rx="1"/>
+              <rect x="14" y="4" width="4" height="16" rx="1"/>
+            </svg>
+          {:else}
+            <svg viewBox="0 0 24 24" fill="currentColor">
+              <polygon points="6,3 20,12 6,21"/>
+            </svg>
+          {/if}
+        </button>
+
+        {#each WAVE_BARS.slice(18) as bar}
+          <div class="wave-bar" style="--i:{bar.i}; --h:{bar.h}px"></div>
+        {/each}
+      </div>
+
+      <!-- Progress bar row -->
+      <div class="hero-progress-row">
+        <!-- svelte-ignore a11y-click-events-have-key-events -->
+        <!-- svelte-ignore a11y-no-static-element-interactions -->
+        <div class="progress-bar-wrap" onclick={seekAudio}>
+          <div class="progress-bar-bg"></div>
+          <div class="progress-bar-fill" style:width="{progress * 100}%"></div>
+          <div class="progress-thumb" style:left="{progress * 100}%"></div>
+        </div>
+        <span class="time-label">{formatTime(currentSec)} / {formatTime(durationSec)}</span>
+        <button class="replay-btn" onclick={replayAudio}
+          title={lang === 'en' ? 'Restart' : 'Reiniciar'}>
+          {t.replayBtn}
+        </button>
+      </div>
+
+      <!-- Skin name reveal on game end -->
+      {#if finished}
+        <div class="hero-reveal">
+          <span class="hero-reveal-name">{target.displayName}</span>
+          <span class="hero-reveal-sub">
+            {target.bundleName} · {target.weapon} · {target.edition}
+          </span>
+        </div>
+      {/if}
+
     </div>
 
-    <!-- ── Input section ─────────────────────────────────────────────────── -->
+    <!-- ── Input strip ─────────────────────────────────────────────────────── -->
     {#if !finished}
-      <div class="input-section">
+      <div class="input-strip" class:locked={inputLocked}>
         <div class="guess-input-wrap">
           <input
             bind:this={inputEl}
@@ -469,12 +563,12 @@
             placeholder={t.placeholder}
             autocomplete="off"
             spellcheck="false"
-            disabled={finished}
+            disabled={finished || inputLocked}
           />
           <button
             class="guess-btn"
             onclick={submitByName}
-            disabled={!inputVal.trim() || finished}
+            disabled={!inputVal.trim() || finished || inputLocked}
           >{t.confirmBtn}</button>
         </div>
 
@@ -510,47 +604,56 @@
 
     <!-- ── Feedback grid ──────────────────────────────────────────────────── -->
     {#if guesses.length > 0}
-      <div class="grid-wrapper">
-        <div class="grid-headers">
-          <div class="col-header col-skin">{t.headers.skin}</div>
-          <div class="col-header">{t.headers.bundle}</div>
-          <div class="col-header">{t.headers.weapon}</div>
-          <div class="col-header">{t.headers.edition}</div>
-          <div class="col-header">{t.headers.patch}</div>
+      <div class="grid-section">
+        <!-- Section label with trailing line -->
+        <div class="section-label">
+          <span>{guessLabel}</span>
         </div>
 
-        <div class="guess-grid" bind:this={feedbackGridEl}>
-          {#each guesses as g (g.uuid)}
-            <div class="guess-row">
-              <!-- Skin name cell -->
-              <div class="guess-cell cell-skin">
-                <span class="skin-name">{g.displayName}</span>
-                <span class="skin-bundle-sub">{g.bundleName}</span>
-              </div>
-              <!-- Feedback cells -->
-              {#each g.feedback as cell}
-                <div
-                  class="guess-cell"
-                  class:correct={cell.status === 'correct'}
-                  class:wrong={cell.status === 'wrong'}
-                >
-                  {#if cell.attr === 'edition' && editionIcons[cell.value]}
-                    <img
-                      class="edition-icon"
-                      src={editionIcons[cell.value]}
-                      alt={cell.value}
-                      title={cell.value}
-                    />
-                  {:else}
-                    <span class="cell-value">{cell.value}</span>
-                  {/if}
-                  {#if cell.hint}
-                    <span class="cell-hint">{cell.hint}</span>
-                  {/if}
+        <div class="grid-wrapper">
+          <div class="grid-headers">
+            <div class="col-header col-skin">{t.headers.skin}</div>
+            <div class="col-header">{t.headers.bundle}</div>
+            <div class="col-header">{t.headers.weapon}</div>
+            <div class="col-header">{t.headers.edition}</div>
+            <div class="col-header">{t.headers.patch}</div>
+          </div>
+
+          <div class="guess-grid" bind:this={feedbackGridEl}>
+            {#each guesses as g (g.uuid)}
+              <div class="guess-row">
+                <!-- Skin name cell — ci=0, no status color -->
+                <div class="guess-cell cell-skin" style="--ci:0" class:flip-new={g.isNew}>
+                  <span class="skin-name">{g.displayName}</span>
+                  <span class="skin-bundle-sub">{g.bundleName}</span>
                 </div>
-              {/each}
-            </div>
-          {/each}
+                <!-- Attribute cells — ci=1..4 with status colors -->
+                {#each g.feedback as cell, ci}
+                  <div
+                    class="guess-cell"
+                    style="--ci:{ci + 1}"
+                    class:flip-new={g.isNew}
+                    class:correct={cell.status === 'correct'}
+                    class:wrong={cell.status === 'wrong'}
+                  >
+                    {#if cell.attr === 'edition' && editionIcons[cell.value]}
+                      <img
+                        class="edition-icon"
+                        src={editionIcons[cell.value]}
+                        alt={cell.value}
+                        title={cell.value}
+                      />
+                    {:else}
+                      <span class="cell-value">{cell.value}</span>
+                    {/if}
+                    {#if cell.hint}
+                      <span class="cell-hint">{cell.hint}</span>
+                    {/if}
+                  </div>
+                {/each}
+              </div>
+            {/each}
+          </div>
         </div>
       </div>
     {/if}
@@ -642,7 +745,8 @@
   }
   .header-left  { display:flex; align-items:center; gap:0.6rem; }
   .header-center { text-align:center; }
-  .header-right { display:flex; justify-content:flex-end; align-items:center; }
+  .header-right { display:flex; justify-content:flex-end; align-items:center; gap:0.6rem; }
+
   .back-btn {
     background:transparent; border:1px solid var(--border2); color:var(--text-dim);
     font-family:var(--font-mono); font-size:0.65rem; letter-spacing:0.03em;
@@ -659,46 +763,99 @@
   .wordmark span { color:var(--red); }
   .attempts-chip { font-family:var(--font-mono); font-size:0.72rem; color:var(--text-dim); }
 
-  /* ── Audio player ────────────────────────────────────────────────────────── */
-  .audio-section { display:flex; flex-direction:column; gap:0.5rem; }
+  /* ── Sound toggle button ─────────────────────────────────────────────────── */
+  .sound-btn {
+    width:30px; height:30px; border-radius:50%;
+    background:none; border:1px solid var(--border2);
+    color:var(--text-dim); cursor:pointer;
+    display:flex; align-items:center; justify-content:center;
+    transition:all 0.15s; flex-shrink:0;
+  }
+  .sound-btn svg { width:14px; height:14px; }
+  .sound-btn:hover { border-color:var(--red); color:var(--red); }
+  .sound-btn.sound-off { opacity:0.5; }
+  .sound-btn.sound-off:hover { opacity:1; border-color:var(--red); color:var(--red); }
 
-  .audio-card {
-    background:var(--surface); border:1px solid var(--border2); border-radius:8px;
-    padding:1.1rem 1.25rem; display:flex; flex-direction:column; gap:0.85rem;
+  /* ── Audio Hero ──────────────────────────────────────────────────────────── */
+  .audio-hero {
+    position:relative; overflow:hidden;
+    background:linear-gradient(140deg, #0c0f1a 0%, #130810 55%, #1a0a10 100%);
+    border:1px solid var(--border2); border-radius:10px;
+    padding:1.4rem 1.5rem 1.25rem;
+    display:flex; flex-direction:column; gap:1.1rem;
+  }
+  /* Red radial glow — top-right corner */
+  .audio-hero::before {
+    content:''; position:absolute; top:-40px; right:-40px;
+    width:260px; height:260px; pointer-events:none;
+    background:radial-gradient(circle, rgba(255,70,85,0.13) 0%, transparent 65%);
   }
 
-  .audio-label {
-    display:flex; align-items:center; gap:0.55rem;
-    font-family:var(--font-mono); font-size:0.78rem; font-weight:700;
-    letter-spacing:0.03em; color:var(--text-dim); text-transform:uppercase;
+  .hero-top { position:relative; z-index:1; }
+  .hero-eyebrow { display:flex; flex-direction:column; gap:0.2rem; }
+
+  .hero-watermark {
+    font-family:var(--font-display); font-size:0.68rem; letter-spacing:0.2em;
+    text-transform:uppercase; color:var(--text-dim); opacity:0.55;
   }
-  .audio-icon { width:16px; height:16px; flex-shrink:0; }
-  .audio-reveal-name {
-    font-family:var(--font-ui); font-size:1.05rem; font-weight:700;
-    color:var(--text); letter-spacing:0; text-transform:none;
+  .hero-desc {
+    font-family:var(--font-mono); font-size:0.74rem; color:var(--text-mid);
+    letter-spacing:0.01em;
   }
 
-  .player-row {
-    display:flex; align-items:center; gap:0.85rem;
+  /* ── Waveform ───────────────────────────────────────────────────────────── */
+  .hero-waveform {
+    position:relative; z-index:1;
+    display:flex; align-items:center; justify-content:center;
+    gap:4px; height:84px; padding:0 4px;
   }
 
-  .play-btn {
-    width:44px; height:44px; border-radius:50%; flex-shrink:0;
+  .wave-bar {
+    flex-shrink:0; width:3px; height:var(--h,30px); max-height:72px;
+    background:var(--red); border-radius:2px;
+    transform:scaleY(0.18); transform-origin:center;
+    opacity:0.35; transition:opacity 0.3s ease;
+  }
+
+  /* When playing, bars animate with staggered pulses */
+  .hero-waveform.playing .wave-bar {
+    animation:wavePulse 0.65s ease-in-out infinite alternate;
+    animation-delay:calc(var(--i) * 28ms);
+    opacity:0.8;
+  }
+  @keyframes wavePulse {
+    0%   { transform:scaleY(0.12); }
+    100% { transform:scaleY(1); }
+  }
+
+  /* ── Play button (hero) ─────────────────────────────────────────────────── */
+  .play-btn-hero {
+    flex-shrink:0; width:52px; height:52px; border-radius:50%;
     background:var(--red); border:none; color:#fff; cursor:pointer;
     display:flex; align-items:center; justify-content:center;
-    transition:all 0.15s;
+    transition:all 0.15s; position:relative; z-index:2;
+    box-shadow:0 0 24px rgba(255,70,85,0.28);
+    margin:0 10px;
   }
-  .play-btn:hover:not(:disabled) { background:#e03040; transform:scale(1.05); }
-  .play-btn:disabled { background:var(--surface2); color:var(--text-dim); cursor:not-allowed; }
-  .play-btn svg { width:18px; height:18px; }
+  .play-btn-hero:hover:not(:disabled) {
+    background:#e03040; transform:scale(1.07);
+    box-shadow:0 0 36px rgba(255,70,85,0.45);
+  }
+  .play-btn-hero:disabled { background:var(--surface2); color:var(--text-dim); cursor:not-allowed; box-shadow:none; }
+  .play-btn-hero svg { width:22px; height:22px; }
+
+  /* ── Progress bar row ───────────────────────────────────────────────────── */
+  .hero-progress-row {
+    position:relative; z-index:1;
+    display:flex; align-items:center; gap:0.85rem;
+  }
 
   .progress-bar-wrap {
     flex:1; height:28px; position:relative; cursor:pointer;
     display:flex; align-items:center;
   }
   .progress-bar-bg {
-    position:absolute; inset-block:0; left:0; right:0;
-    height:4px; top:50%; transform:translateY(-50%);
+    position:absolute; left:0; right:0; height:4px; top:50%; transform:translateY(-50%);
     background:var(--border2); border-radius:2px;
   }
   .progress-bar-fill {
@@ -707,15 +864,15 @@
     pointer-events:none;
   }
   .progress-thumb {
-    position:absolute; top:50%; transform:translate(-50%, -50%);
-    width:12px; height:12px; background:var(--red); border-radius:50%;
-    pointer-events:none; transition:left 0.05s linear;
+    position:absolute; top:50%; transform:translate(-50%,-50%);
+    width:13px; height:13px; background:#fff; border-radius:50%;
+    border:2px solid var(--red); pointer-events:none; transition:left 0.05s linear;
   }
-  .progress-bar-wrap:hover .progress-thumb { transform:translate(-50%,-50%) scale(1.2); }
+  .progress-bar-wrap:hover .progress-thumb { transform:translate(-50%,-50%) scale(1.15); }
 
   .time-label {
     font-family:var(--font-mono); font-size:0.68rem; color:var(--text-dim);
-    white-space:nowrap; min-width:70px; text-align:right;
+    white-space:nowrap; min-width:72px; text-align:right;
   }
 
   .replay-btn {
@@ -727,8 +884,34 @@
   }
   .replay-btn:hover { border-color:var(--red); color:var(--red); }
 
-  /* ── Input ──────────────────────────────────────────────────────────────── */
-  .input-section { position:relative; }
+  /* ── Hero reveal ────────────────────────────────────────────────────────── */
+  .hero-reveal {
+    position:relative; z-index:1;
+    display:flex; flex-direction:column; gap:0.25rem;
+    padding-top:0.85rem; border-top:1px solid var(--border2);
+    animation:fadeUp 0.38s ease both;
+  }
+  @keyframes fadeUp {
+    from { opacity:0; transform:translateY(6px); }
+    to   { opacity:1; transform:translateY(0); }
+  }
+  .hero-reveal-name {
+    font-family:var(--font-ui); font-size:1.1rem; font-weight:700; color:var(--text);
+  }
+  .hero-reveal-sub {
+    font-family:var(--font-mono); font-size:0.7rem; color:var(--text-dim); letter-spacing:0.02em;
+  }
+
+  /* ── Input strip ────────────────────────────────────────────────────────── */
+  .input-strip {
+    position:relative;
+    padding-bottom:0.7rem;
+    border-bottom:1px solid var(--border);
+  }
+  .input-strip.locked { pointer-events:none; }
+  .input-strip.locked .guess-input,
+  .input-strip.locked .guess-btn { opacity:0.45; cursor:not-allowed; }
+
   .guess-input-wrap { display:flex; gap:6px; }
   .guess-input {
     flex:1; background:var(--surface); border:1px solid var(--border2);
@@ -738,6 +921,7 @@
   .guess-input:focus { border-color:var(--red); }
   .guess-input::placeholder { color:var(--text-dim); }
   .guess-input:disabled { opacity:0.4; cursor:not-allowed; }
+
   .guess-btn {
     background:var(--red); border:none; color:#fff;
     font-family:var(--font-mono); font-size:0.8rem; font-weight:700; letter-spacing:0.02em;
@@ -748,9 +932,9 @@
 
   /* ── Autocomplete ───────────────────────────────────────────────────────── */
   .autocomplete-list {
-    position:absolute; top:calc(100% + 4px); left:0; right:0;
+    position:absolute; top:calc(100% - 0.7rem + 4px); left:0; right:0;
     background:var(--surface2); border:1px solid var(--border2); border-radius:4px;
-    z-index:100; overflow:hidden; box-shadow:0 12px 32px rgba(0,0,0,.5);
+    z-index:100; overflow:hidden; box-shadow:0 12px 32px rgba(0,0,0,.55);
   }
   .ac-item {
     display:flex; align-items:center; gap:0.75rem;
@@ -767,16 +951,25 @@
     margin-top:2px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
   }
   .ac-edition-icon { width:22px; height:22px; object-fit:contain; flex-shrink:0; }
-  .ac-edition-text {
-    font-family:var(--font-ui); font-size:0.72rem; color:var(--text-dim); flex-shrink:0;
-  }
+  .ac-edition-text { font-family:var(--font-ui); font-size:0.72rem; color:var(--text-dim); flex-shrink:0; }
 
   .input-error {
     font-family:var(--font-mono); font-size:0.7rem; color:var(--red);
     margin-top:0.45rem; padding-left:0.25rem;
   }
 
-  /* ── Grid ───────────────────────────────────────────────────────────────── */
+  /* ── Grid section ───────────────────────────────────────────────────────── */
+  .grid-section { display:flex; flex-direction:column; gap:0.5rem; }
+
+  .section-label {
+    display:flex; align-items:center; gap:0.7rem;
+    font-family:var(--font-mono); font-size:0.64rem;
+    letter-spacing:0.1em; text-transform:uppercase; color:var(--text-dim);
+  }
+  .section-label::after {
+    content:''; flex:1; height:1px; background:var(--border);
+  }
+
   .grid-wrapper { overflow-x:auto; -webkit-overflow-scrolling:touch; }
   .grid-headers, .guess-row {
     display:grid;
@@ -788,22 +981,40 @@
     font-family:var(--font-mono); font-size:0.7rem; font-weight:700;
     letter-spacing:0.05em; text-transform:uppercase; color:var(--text-dim);
     text-align:center; padding:0.45rem 0.25rem;
-    background:var(--surface); border:1px solid var(--border); border-radius:3px;
+    background:var(--surface2); border:1px solid var(--border); border-radius:3px;
   }
   .col-header.col-skin { text-align:left; padding-left:0.75rem; }
   .guess-grid { display:flex; flex-direction:column; gap:3px; }
-  .guess-row { animation:rowReveal 0.28s ease both; }
-  @keyframes rowReveal { from{opacity:0;transform:translateY(-6px)} to{opacity:1;transform:translateY(0)} }
 
   /* ── Cells ──────────────────────────────────────────────────────────────── */
   .guess-cell {
-    background:var(--surface); border:1px solid var(--border); border-radius:3px;
+    background:var(--surface2); border:1px solid var(--border); border-radius:3px;
     padding:0.5rem 0.4rem; display:flex; flex-direction:column;
     align-items:center; justify-content:center; gap:3px;
     text-align:center; min-height:56px;
   }
   .guess-cell.correct { background:var(--green-bg); border-color:var(--green-bd); }
   .guess-cell.wrong   { background:var(--red-dim);  border-color:var(--red-bd); }
+
+  /* ── Cell flip-reveal animation ─────────────────────────────────────────── */
+  /*
+   * Cells start as --surface2 (neutral), fold to scaleY≈0, then unfold
+   * revealing the color from .correct / .wrong classes.
+   * The 0%–42% keyframes override background to neutral while visible.
+   * At 58%+ no background is set → cascade hands control back to the
+   * status classes, so the color shows when the cell unfolds.
+   */
+  .guess-cell.flip-new {
+    animation:flipReveal 340ms cubic-bezier(0.4,0,0.2,1) both;
+    animation-delay:calc(var(--ci, 0) * 115ms);
+    transform-origin:center;
+  }
+  @keyframes flipReveal {
+    0%   { transform:scaleY(1);    background:var(--surface2); border-color:var(--border); }
+    42%  { transform:scaleY(0.02); background:var(--surface2); border-color:var(--border); }
+    58%  { transform:scaleY(0.02); }
+    100% { transform:scaleY(1); }
+  }
 
   .cell-skin {
     align-items:flex-start; text-align:left;
@@ -812,17 +1023,11 @@
   .skin-name {
     font-family:var(--font-ui); font-size:0.85rem; font-weight:600; color:var(--text); line-height:1.3;
   }
-  .skin-bundle-sub {
-    font-family:var(--font-mono); font-size:0.62rem; color:var(--text-dim);
-  }
+  .skin-bundle-sub { font-family:var(--font-mono); font-size:0.62rem; color:var(--text-dim); }
 
-  .cell-value {
-    font-family:var(--font-ui); font-size:0.9rem; font-weight:600; color:var(--text); line-height:1.3;
-  }
+  .cell-value { font-family:var(--font-ui); font-size:0.9rem; font-weight:600; color:var(--text); line-height:1.3; }
   .edition-icon { width:32px; height:32px; object-fit:contain; display:block; }
-  .cell-hint {
-    font-family:var(--font-mono); font-size:0.9rem; font-weight:700; line-height:1;
-  }
+  .cell-hint { font-family:var(--font-mono); font-size:0.9rem; font-weight:700; line-height:1; }
   .correct .cell-hint { color:var(--green); }
   .wrong   .cell-hint { color:var(--red); }
 
@@ -839,38 +1044,24 @@
   }
   .won  .result-status { background:var(--green-bg); color:var(--green); }
   .lost .result-status { background:var(--red-dim);  color:var(--red); }
-  .result-body {
-    padding:1.25rem; display:flex; flex-direction:column; gap:1rem;
-  }
+  .result-body { padding:1.25rem; display:flex; flex-direction:column; gap:1rem; }
   .result-skin-info { display:flex; flex-direction:column; gap:0.25rem; }
-  .result-name {
-    font-family:var(--font-ui); font-size:1.15rem; font-weight:700; color:var(--text);
-  }
-  .result-sub {
-    font-family:var(--font-mono); font-size:0.72rem; color:var(--text-mid); letter-spacing:0.02em;
-  }
-  .result-patch {
-    font-family:var(--font-mono); font-size:0.68rem; color:var(--text-dim);
-  }
-  .result-sub-text {
-    font-family:var(--font-mono); font-size:0.78rem; color:var(--text-dim);
-  }
-  .result-countdown {
-    display:flex; flex-direction:column; gap:0.2rem;
-  }
+  .result-name { font-family:var(--font-ui); font-size:1.15rem; font-weight:700; color:var(--text); }
+  .result-sub  { font-family:var(--font-mono); font-size:0.72rem; color:var(--text-mid); letter-spacing:0.02em; }
+  .result-patch { font-family:var(--font-mono); font-size:0.68rem; color:var(--text-dim); }
+  .result-sub-text { font-family:var(--font-mono); font-size:0.78rem; color:var(--text-dim); }
+  .result-countdown { display:flex; flex-direction:column; gap:0.2rem; }
   .cd-label {
     font-family:var(--font-mono); font-size:0.7rem; font-weight:700;
     letter-spacing:0.04em; text-transform:uppercase; color:var(--text-dim);
   }
-  .cd-timer {
-    font-family:var(--font-mono); font-size:1.4rem; font-weight:700;
-    color:var(--text-dim); letter-spacing:0.02em;
-  }
+  .cd-timer { font-family:var(--font-mono); font-size:1.4rem; font-weight:700; color:var(--text-dim); }
   .result-actions { display:flex; gap:0.75rem; flex-wrap:wrap; }
   .result-btn {
-    padding:0.7rem 1.35rem; border-radius:4px; cursor:pointer; font-family:var(--font-mono);
-    font-size:0.8rem; font-weight:700; letter-spacing:0.02em; text-decoration:none;
-    display:inline-flex; align-items:center; justify-content:center; transition:all 0.2s;
+    padding:0.7rem 1.35rem; border-radius:4px; cursor:pointer;
+    font-family:var(--font-mono); font-size:0.8rem; font-weight:700; letter-spacing:0.02em;
+    text-decoration:none; display:inline-flex; align-items:center; justify-content:center;
+    transition:all 0.2s;
   }
   .result-btn.primary { background:var(--red); border:none; color:#fff; }
   .result-btn.primary:hover { background:#e03040; }
@@ -924,12 +1115,20 @@
     padding:0.6rem 1.25rem; border-radius:4px; z-index:300;
     animation:toastIn 0.22s ease both;
   }
-  @keyframes toastIn { from{opacity:0;transform:translateX(-50%) translateY(6px)} to{opacity:1;transform:translateX(-50%) translateY(0)} }
+  @keyframes toastIn {
+    from{opacity:0;transform:translateX(-50%) translateY(6px)}
+    to{opacity:1;transform:translateX(-50%) translateY(0)}
+  }
 
   /* ── Responsive ──────────────────────────────────────────────────────────── */
-  @media (max-width:500px) {
-    .player-row { flex-wrap:wrap; }
+  @media (max-width:600px) {
+    .audio-hero { padding:1.1rem 1rem 1rem; }
+    .hero-waveform { gap:3px; }
+    .wave-bar { width:2px; }
+    .play-btn-hero { width:44px; height:44px; margin:0 6px; }
+    .play-btn-hero svg { width:18px; height:18px; }
+    .hero-progress-row { gap:0.6rem; }
     .time-label { min-width:auto; }
-    .grid-headers, .guess-row { grid-template-columns:140px repeat(4, 1fr); }
+    .grid-headers, .guess-row { grid-template-columns:130px repeat(4, 1fr); min-width:460px; }
   }
 </style>
