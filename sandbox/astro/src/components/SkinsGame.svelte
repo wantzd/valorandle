@@ -210,7 +210,7 @@
   function onInput() {
     inputError  = '';
     acHighlight = -1;
-    acResults   = skinSearch(allSkins, inputVal, guessedUuids);
+    acResults   = skinSearch(dailyPool, inputVal, guessedUuids);
   }
 
   function onKeydown(e) {
@@ -242,7 +242,7 @@
 
   function submitByName() {
     const q = inputVal.trim().toLowerCase();
-    const match = allSkins.find(s => s.displayName.toLowerCase() === q);
+    const match = dailyPool.find(s => s.displayName.toLowerCase() === q);
     if (match) submitGuess(match);
     else inputError = t.notFound;
   }
