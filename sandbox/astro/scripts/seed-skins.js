@@ -21,6 +21,28 @@ const LANG = 'language=en-US';
 // Standard / default skins theme – filter out
 const STANDARD_THEME_UUID = '5a629df4-4765-0214-bd40-fbb96542941f';
 
+// Level-item types that carry custom audio, in priority order.
+// Early bundles (e.g. Prime patch 1.0) lock their custom gunshot sound behind
+// the VFX upgrade; picking level[0] for those plays the default weapon sound.
+// Modern skins already ship custom audio at level[0] (levelItem = null), so
+// they fall through to the last branch and use level[0] as before.
+const AUDIO_LEVEL_PRIORITY = [
+  'EEquippableSkinLevelItem::SoundEffects',
+  'EEquippableSkinLevelItem::VFX',
+];
+
+/**
+ * Return the best level to use for the audio showcase.
+ * Priority: explicit SoundEffects level → VFX level → first level with video.
+ */
+function bestAudioLevel(levels) {
+  for (const type of AUDIO_LEVEL_PRIORITY) {
+    const lv = levels.find(l => l.levelItem === type && l.streamedVideo);
+    if (lv) return lv;
+  }
+  return levels.find(l => l.streamedVideo) ?? null;
+}
+
 // Content-tier devName → clean label
 function cleanEdition(devName = '', displayName = '') {
   const s = devName || displayName;
@@ -80,8 +102,9 @@ async function main() {
       const bundleNameEarly = themeMap[skin.themeUuid] || '';
       if (weaponName === 'Classic' && bundleNameEarly.startsWith('VCT')) continue;
 
-      // Must have a streamable audio on the base level
-      const audioUrl = skin.levels?.[0]?.streamedVideo ?? null;
+      // Pick the best level for audio (SoundEffects > VFX > level[0])
+      const bestLevel = bestAudioLevel(skin.levels ?? []);
+      const audioUrl  = bestLevel?.streamedVideo ?? null;
       if (!audioUrl) continue;
 
       // Skip skins with no content tier (shouldn't happen but be safe)
