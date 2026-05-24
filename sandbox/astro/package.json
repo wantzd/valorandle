@@ -6,7 +6,10 @@
   "scripts": {
     "dev": "astro dev",
     "build": "astro build",
-    "preview": "astro preview"
+    "preview": "astro preview",
+    "seed:skins": "node scripts/seed-skins.js",
+    "check:skins": "node scripts/check-skins.js",
+    "seed:abilities": "node scripts/seed-abilities.js"
   },
   "dependencies": {
     "@astrojs/svelte": "^8.1.1",

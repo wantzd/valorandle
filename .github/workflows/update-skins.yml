@@ -1,0 +1,81 @@
+name: Update Skins Data
+
+# Runs every Monday at 07:00 UTC — 1 hour after update-players (06:00) to avoid
+# simultaneous pushes to main.
+# Can also be triggered manually via Actions → "Run workflow".
+on:
+  schedule:
+    - cron: '0 7 * * 1'
+  workflow_dispatch:
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Install dependencies
+        working-directory: sandbox/astro
+        run: npm install
+
+      # Fetches valorant-api.com, applies skin-overrides.json, writes skins-db.json.
+      # Exits with code 1 (failing the job) if any bundle has no entry in
+      # bundle-patches.json — this means a new bundle was released and needs a
+      # manual patch entry before data can be updated.
+      #
+      # Fix flow when this step fails:
+      #   1. Check the [MISSING PATCH] lines in the job log
+      #   2. Add the missing bundle(s) to sandbox/astro/public/data/bundle-patches.json
+      #   3. If the bundle is a known wave 2+ (check assetPath in log), also add
+      #      the UUID → bundle name entry in sandbox/astro/public/data/skin-overrides.json
+      #   4. Commit and push — the next scheduled run (or manual dispatch) will succeed
+      - name: Seed skins data
+        working-directory: sandbox/astro
+        run: node scripts/seed-skins.js
+
+      # Only commits if skins-db.json actually changed (new bundles or updated audio URLs).
+      # skin-overrides.json and bundle-patches.json are edited manually, not by the seed.
+      - name: Commit updated skins-db.json
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add sandbox/astro/public/data/skins-db.json
+          git diff --staged --quiet \
+            && echo "skins-db.json unchanged — nothing to commit" \
+            || (git commit -m "chore: update skins-db.json" && git push)
+
+      # ── When sandbox becomes the main product, uncomment this step ────────────
+      #
+      # skins-db.json is a static public asset — no Astro rebuild needed.
+      # Just push the updated JSON directly to the live server, same as
+      # update-players.yml does for org-map.json.
+      #
+      # - name: Upload skins-db.json to Hostinger via FTP
+      #   env:
+      #     FTP_HOST: ${{ secrets.FTP_HOST }}
+      #     FTP_USER: ${{ secrets.FTP_USER }}
+      #     FTP_PASS: ${{ secrets.FTP_PASS }}
+      #     FTP_PATH: ${{ secrets.FTP_PATH }}
+      #   run: |
+      #     sudo apt-get install -y lftp
+      #     cat > /tmp/upload-skins.lftp << EOF
+      #     open -p 21 -u $FTP_USER,$FTP_PASS $FTP_HOST
+      #     set ftp:ssl-allow no
+      #     set net:timeout 60
+      #     set net:max-retries 3
+      #     put sandbox/astro/public/data/skins-db.json -o $FTP_PATH/data/skins-db.json
+      #     bye
+      #     EOF
+      #     lftp -f /tmp/upload-skins.lftp
+      # ─────────────────────────────────────────────────────────────────────────

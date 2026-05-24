@@ -6,7 +6,7 @@
   } from '../lib/agents-data.js';
   import {
     getDailyDateKey, msUntilNextDaily, formatCountdown,
-    loadLang, saveLang,
+    saveLang,
   } from '../lib/game-utils.js';
   import { loadSoundPref, saveSoundPref, scheduleFlipSounds } from '../lib/sounds.js';
 
@@ -104,7 +104,7 @@
 
     if (mode === 'daily') {
       const saved = loadDailyState();
-      if (saved) {
+      if (saved && saved.targetId === targetId) {
         guesses  = (saved.guesses || []).map(g => ({ ...g, isNew: false }));
         finished = saved.finished || false;
         won      = saved.won      || false;
@@ -196,7 +196,7 @@
       guesses = guesses.map(g => g.agentId === agentId ? { ...g, isNew: false } : g);
       inputLocked = false;
       if (mode === 'daily') {
-        saveDailyState({ guesses: guesses.map(g => ({ ...g, isNew: false })), finished: isDone, won: isWin });
+        saveDailyState({ targetId, guesses: guesses.map(g => ({ ...g, isNew: false })), finished: isDone, won: isWin });
       }
       if (isDone && mode === 'daily') startCountdown();
       tick().then(() => {
@@ -281,7 +281,7 @@
 
 <!-- ── Mode picker overlay ──────────────────────────────────────────────────── -->
 {#if showPicker}
-<div class="overlay-full">
+<div class="overlay-full" onclick={(e) => { if (e.target === e.currentTarget) showPicker = false; }}>
   <div class="mpo-card">
     <div class="mpo-eyebrow">Valorandle</div>
     <div class="mpo-title">
@@ -330,7 +330,12 @@
   <!-- Header -->
   <header class="game-header">
     <div class="header-left">
-      <a href={lang === 'pt-BR' ? '/' : '/en'} class="back-btn">{t.back}</a>
+      <a href={lang === 'pt-BR' ? '/' : '/en'} class="back-btn">
+        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+          stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:3px">
+          <line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/>
+        </svg>Lobby
+      </a>
       <span class="mode-tag">{t.modeTag}{mode === 'free' ? ' · ' + t.modeFree : ''}</span>
     </div>
     <div class="header-center">
@@ -508,7 +513,7 @@
     --bg:#08090d; --surface:#0e1018; --surface2:#141620;
     --border:#1c1f2e; --border2:#252838;
     --red:#FF4655; --red-dim:rgba(255,70,85,0.08); --red-bd:rgba(255,70,85,0.32);
-    --text:#eeeef5; --text-dim:#50536a; --text-mid:#8a8da8;
+    --text:#eeeef5; --text-dim:#6e7190; --text-mid:#8a8da8;
     --green:#34d47e; --green-bg:rgba(52,212,126,0.10); --green-bd:rgba(52,212,126,0.45);
     --yellow:#f0b429; --yellow-bg:rgba(240,180,41,0.10); --yellow-bd:rgba(240,180,41,0.42);
     --font-display:'Russo One',sans-serif; --font-ui:'Outfit',sans-serif; --font-mono:'Outfit',sans-serif;

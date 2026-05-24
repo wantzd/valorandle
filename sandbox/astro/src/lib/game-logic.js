@@ -164,7 +164,8 @@ export const TITLE_TIERS = {
   A: ["Masters Reykjavik 2021", "Masters Berlim 2021", "Masters Reykjavik 2022",
       "Masters Copenhagen 2022", "Masters Tokyo 2023", "Masters Shanghai 2024",
       "Masters Bangkok 2025", "Masters Santiago 2026",
-      "VCT Americas 2022", "VCT Americas 2023", "VCT Americas 2024", "VCT Americas 2025"]
+      "VCT Americas 2022", "VCT Americas 2023", "VCT Americas 2024", "VCT Americas 2025",
+      "VCT Americas 2026"]
 };
 
 export function getTitleTier(title) {

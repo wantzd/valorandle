@@ -1,6 +1,6 @@
 ﻿<script>
   import { onMount, onDestroy } from 'svelte';
-  import { getDailyDateKey, msUntilNextDaily, formatCountdown, loadLang, saveLang, loadStats } from '../lib/game-utils.js';
+  import { getDailyDateKey, msUntilNextDaily, formatCountdown, saveLang, loadStats } from '../lib/game-utils.js';
 
   // ── Lang ─────────────────────────────────────────────────────────────────────
   let lang = $state('pt-BR');
@@ -111,23 +111,23 @@
       {#if streak > 0}
         <span class="streak-chip">🔥 {streak}</span>
       {/if}
-      <a class="lang-btn" class:active={lang === 'pt-BR'} href="/" aria-label="Português">
-        <span class="fi fi-br"></span> PT
+      <a class="lang-btn" class:active={lang === 'pt-BR'} href="/">
+        <span class="fi fi-br" aria-hidden="true"></span> PT
       </a>
-      <a class="lang-btn" class:active={lang === 'en'} href="/en" aria-label="English">
-        <span class="fi fi-us"></span> EN
+      <a class="lang-btn" class:active={lang === 'en'} href="/en">
+        <span class="fi fi-us" aria-hidden="true"></span> EN
       </a>
     </div>
   </nav>
 
-  <div class="hub-content">
+  <main class="hub-content">
     <!-- Hero card -->
     <div class="hub-hero">
       <div class="hub-hero-inner">
         <div class="hub-hero-top">
           <div>
             <div class="hub-hero-meta">{heroMeta}</div>
-            <div class="hub-hero-title">{isPT ? 'Pro Players' : 'Pro Players'}</div>
+            <div class="hub-hero-title">Pro Players</div>
             <div class="hub-hero-desc">
               {isPT
                 ? 'Adivinhe qual jogador profissional do VCT está escondido. 8 tentativas por round.'
@@ -187,7 +187,7 @@
         <span class="mode-arrow">→</span>
       </a>
 
-      <a class="mode-row" href={isPT ? '/skins?mode=daily' : '/en/skins?mode=daily'}>
+      <a class="mode-row" href={isPT ? '/skins' : '/en/skins'}>
         <div class="mode-icon">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
             <path d="M3 13h11l3-4 4 1-1 3-5 3H3z"/><circle cx="17" cy="14" r="1" fill="currentColor" stroke="none"/>
@@ -201,17 +201,17 @@
         <span class="mode-arrow">→</span>
       </a>
 
-      <a class="mode-row disabled" aria-disabled="true" tabindex="-1">
+      <a class="mode-row" href={isPT ? '/abilities' : '/en/abilities'}>
         <div class="mode-icon">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
             <path d="M13 2L4 14h7l-1 8 9-12h-7z"/>
           </svg>
         </div>
         <div class="mode-info">
-          <div class="mode-name">Abilities</div>
-          <div class="mode-desc">{isPT ? 'Ícone borrado + descrição censurada' : 'Blurred icon + censored description'}</div>
+          <div class="mode-name">{isPT ? 'Habilidades' : 'Abilities'}</div>
+          <div class="mode-desc">{isPT ? 'Descrição ou ícone revelado progressivamente' : 'Censored description or progressively revealed icon'}</div>
         </div>
-        <span class="mode-tag soon">{isPT ? 'Em breve' : 'Soon'}</span>
+        <span class="mode-tag new">{isPT ? 'Novo' : 'New'}</span>
         <span class="mode-arrow">→</span>
       </a>
     </div>
@@ -247,7 +247,7 @@
         (<a href="https://liquipedia.net/commons/Liquipedia:Copyrights" target="_blank" rel="noopener">CC BY-SA</a>)
       </span>
     </footer>
-  </div>
+  </main>
 </div>
 
 <style>
@@ -255,7 +255,7 @@
   :global(:root) {
     --bg:#08090d; --surface:#0e1018; --surface2:#141620; --border:#1c1f2e; --border2:#252838;
     --red:#FF4655; --red-dim:rgba(255,70,85,0.08); --red-bd:rgba(255,70,85,0.32); --red-glow:rgba(255,70,85,0.22);
-    --text:#eeeef5; --text-dim:#50536a; --text-mid:#8a8da8; --green:#34d47e;
+    --text:#eeeef5; --text-dim:#6e7190; --text-mid:#8a8da8; --green:#34d47e;
     --font-display:'Russo One',sans-serif; --font-ui:'Outfit',sans-serif; --font-mono:'Outfit',sans-serif;
     --col-americas:#FF5400;
   }
@@ -320,7 +320,7 @@
   .mode-name { font-family:var(--font-display); font-size:1rem; text-transform:uppercase; line-height:1; }
   .mode-desc { font-size:0.73rem; color:var(--text-dim); margin-top:3px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
   .mode-tag { font-family:var(--font-mono); font-size:0.55rem; font-weight:700; letter-spacing:0.03em; text-transform:uppercase; padding:0.18rem 0.5rem; border-radius:2px; }
-  .mode-tag.new  { background:var(--red); color:#fff; border:1px solid var(--red); }
+  .mode-tag.new  { background:var(--red); color:#0d0002; border:1px solid var(--red); }
   .mode-tag.beta { background:transparent; color:var(--text-dim); border:1px solid var(--border2); }
   .mode-tag.soon { background:transparent; color:var(--text-dim); border:1px solid var(--border2); opacity:0.6; }
   .mode-arrow { color:var(--text-dim); font-family:var(--font-mono); font-size:0.95rem; flex-shrink:0; transition:color 0.18s; }

@@ -1,0 +1,78 @@
+{
+  "_note": "UUID → canonical bundle name for skins whose wave is not encoded in the displayName. Wave derived from assetPath suffix (Cyberpunk2, Oblivion2, Soulstealer2, etc.). Skins NOT listed here keep the bundleName derived from their displayName.",
+
+  "74789f33-4632-8052-96d7-258538721a32": "Glitchpop 2.0",
+  "25a7f0f2-4bce-7e45-b4b0-ca9264f5dfcc": "Glitchpop 2.0",
+  "8b2598eb-4db9-6338-4a25-c780402c780e": "Glitchpop 2.0",
+  "a491b943-43e3-4e98-64a6-fc87fca43605": "Glitchpop 2.0",
+
+  "0f4b0478-4759-911d-c44b-2a907534789d": "Ion 2.0",
+  "596ce51d-40e3-dc21-b02d-b08d070a7883": "Ion 2.0",
+  "906dcda9-477a-6d09-f85d-599ccb86e168": "Ion 2.0",
+  "eacea54e-4e53-2715-cd4a-5d860aa68449": "Ion 2.0",
+
+  "3f6410af-4fd7-74fb-c0f4-6ab61d30022c": "Kuronami 2.0",
+  "431799d6-4e79-bdf2-573d-4cbc8112982e": "Kuronami 2.0",
+  "a709ad22-45d5-0b51-5de2-85ad5c5ca405": "Kuronami 2.0",
+  "cf3ccc67-4570-9a21-1902-4ea07a0070af": "Kuronami 2.0",
+
+  "0fac1dcf-48d0-c6c4-675e-2a8013bc879c": "Magepunk 2.0",
+  "6460edbf-458d-bf61-7519-519305ba5da2": "Magepunk 2.0",
+  "7e831918-4580-5e2a-089a-84ad58fe1aae": "Magepunk 2.0",
+  "80dbfa46-4a1f-c7a4-2e88-1499308c7b9a": "Magepunk 2.0",
+  "148d7f02-4259-9c17-a1a4-6fa220a56551": "Magepunk 3.0",
+  "f2531d6f-40d8-ad18-4e74-ed812e0a6b1f": "Magepunk 3.0",
+
+  "c5676fb6-4268-d5bd-f2f7-f3a1334ca8b8": "Prelude to Chaos 2.0",
+  "ad2c5365-4147-23da-afaa-08b9bfb3817b": "Prelude to Chaos 2.0",
+  "81bd181f-4124-9e58-ffd4-09964dc0d2cc": "Prelude to Chaos 2.0",
+  "fbb2acd5-4aef-1f50-da10-3084c323011c": "Prelude to Chaos 2.0",
+
+  "499acf05-4f79-e345-3714-57bf7aa163ea": "RGX 11z Pro 2.0",
+  "111680fd-4562-f658-af1c-ed8f9cfe9f9c": "RGX 11z Pro 2.0",
+  "2e1936ed-4582-628f-da9c-25a7f47323cc": "RGX 11z Pro 2.0",
+  "4f0c9544-469c-0c62-df2e-95b15d6f2333": "RGX 11z Pro 2.0",
+  "142be691-42a0-c0a1-f6ed-57b3158def7e": "RGX 11z Pro 3.0",
+  "fdeb2877-4030-e396-f0cb-998868362c12": "RGX 11z Pro 3.0",
+
+  "8dda01a6-4237-f430-ac70-c3ba677963e9": "Reaver 2.0",
+  "044b28ba-4c3b-d315-140d-d9a249da5567": "Reaver 2.0",
+  "c7261be6-47d2-ef86-82f4-6a844e45d33c": "Reaver 2.0",
+  "1cb1ab52-4c7d-0775-77f4-eaac99968261": "Reaver 2.0",
+  "ff766c80-4c4a-269d-2164-3ebb341de27a": "Reaver 3.0",
+
+  "67fb338a-4b21-ed70-7c2a-46bef4742b4f": "Sentinels of Light 2.0",
+  "a8652d02-458c-461c-8aa8-b7a520455023": "Sentinels of Light 2.0",
+  "160d661d-4152-6914-8069-c393914759cb": "Sentinels of Light 2.0",
+  "7c232164-4b8c-7a8f-7ae5-42987cbfb14f": "Sentinels of Light 2.0",
+
+  "a7995818-409f-c79b-20b7-28ad642f3135": "Sovereign 2.0",
+  "42fe7bf8-40ba-b1f4-df5e-34a6f51f29bf": "Sovereign 2.0",
+  "bd034009-469c-88a6-41aa-278dd54b12e6": "Sovereign 2.0",
+  "daaeb0f9-413a-732d-e6f0-598b9dff65a7": "Sovereign 2.0",
+
+  "1e5ee5bf-43d5-28ee-b2f7-96a53b783dc2": "Gaia's Vengeance 2.0",
+  "892b5053-4c0b-149e-38d0-c3a8d6f24384": "Gaia's Vengeance 2.0",
+  "7ae63121-4cf0-b4db-00ed-eb8ef05572b1": "Gaia's Vengeance 2.0",
+  "4c583a37-42d7-23db-5e38-1eafe96f2b9d": "Gaia's Vengeance 2.0",
+
+  "8c6f8399-447b-a7de-7c93-b69273b054ac": "Neptune 2.0",
+  "97d19265-4fa2-70ef-5f8c-6b9f03860705": "Neptune 2.0",
+  "a67c2daa-4f4d-1af0-0ff4-6fafde471776": "Neptune 2.0",
+  "516ff0cb-4d4b-bf0e-d460-92b3c8d27259": "Neptune 2.0",
+
+  "759bca71-4764-19f8-8890-239eedb78fa3": "Oni 2.0",
+  "325d2274-487b-8672-84d6-6db8e9798447": "Oni 2.0",
+  "7a20502f-45b2-6781-b408-08bc86c5e5e2": "Oni 2.0",
+  "7156c2ee-41fc-f8f4-d457-ebb287965c08": "Oni 2.0",
+
+  "1cb0bdf7-46e1-92d5-b400-988c99f25d81": "Araxys 2.0",
+  "317574ca-4a9d-9e5a-f9c4-a79aa378f75b": "Araxys 2.0",
+  "851c1abc-4a84-7bab-7e44-16a5aadf5afc": "Araxys 2.0",
+  "6d73609b-4256-7bf7-46aa-9887c6918992": "Araxys 2.0",
+
+  "c976f29d-4a83-3a40-2907-8dadbb7c5940": "Mystbloom 2.0",
+  "4fc36214-4492-ef57-f8fb-4cab81863545": "Mystbloom 2.0",
+  "82511942-465b-5600-76d7-778159d01bf4": "Mystbloom 2.0",
+  "1a097db1-4778-7049-b62e-6fa071ad7193": "Mystbloom 2.0"
+}

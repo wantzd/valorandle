@@ -1,7 +1,7 @@
 <script>
   import { onMount, onDestroy, tick } from 'svelte';
   import {
-    SKINS_I18N, compareSkins,
+    SKINS_I18N, compareSkins, patchToAct,
     getDailySkinTarget, getFreeSkinTarget, skinSearch,
   } from '../lib/skins-data.js';
   import { getDailyDateKey, msUntilNextDaily, formatCountdown } from '../lib/game-utils.js';
@@ -9,7 +9,7 @@
 
   const MAX_GUESSES = 6;
   const DAILY_KEY   = () => `valorandle_skins_daily_${getDailyDateKey()}`;
-  // 4 attribute columns after the name cell (bundle, weapon, edition, patch)
+  // 4 attribute columns after the name cell (bundle, weapon, edition, act)
   const ATTR_COLS   = 4;
 
   // Pre-generated waveform bar heights — deterministic sine pattern
@@ -151,7 +151,8 @@
 
     if (mode === 'daily') {
       const saved = loadDailyState();
-      if (saved) {
+      // Only restore if the saved target matches today's target
+      if (saved && saved.targetUuid === targetUuid) {
         guesses  = (saved.guesses || []).map(g => ({ ...g, isNew: false }));
         finished = saved.finished || false;
         won      = saved.won      || false;
@@ -238,7 +239,7 @@
   function onInput() {
     inputError  = '';
     acHighlight = -1;
-    acResults   = skinSearch(dailyPool, inputVal, guessedUuids);
+    acResults   = skinSearch(dailyPool, inputVal, guessedUuids, lang);
   }
 
   function onKeydown(e) {
@@ -262,8 +263,12 @@
     }
   }
 
+  // Returns the localised display name / bundle name for a skin
+  function skinName(skin)   { return lang !== 'en' ? (skin.displayNamePT ?? skin.displayName) : skin.displayName; }
+  function skinBundle(skin) { return lang !== 'en' ? (skin.bundleNamePT  ?? skin.bundleName)  : skin.bundleName; }
+
   function selectSkin(skin) {
-    inputVal    = skin.displayName;
+    inputVal    = skinName(skin);
     acResults   = [];
     acHighlight = -1;
     tick().then(() => inputEl?.focus());
@@ -271,8 +276,11 @@
 
   function submitByName() {
     if (inputLocked) return;
-    const q     = inputVal.trim().toLowerCase();
-    const match = dailyPool.find(s => s.displayName.toLowerCase() === q);
+    const q = inputVal.trim().toLowerCase();
+    // match against localised name OR english name
+    const match = dailyPool.find(s =>
+      skinName(s).toLowerCase() === q || s.displayName.toLowerCase() === q
+    );
     if (match) submitGuess(match);
     else inputError = t.notFound;
   }
@@ -281,10 +289,12 @@
     if (finished || inputLocked) return;
     if (guessedUuids.has(skin.uuid)) { inputError = t.alreadyGuessed; return; }
 
-    const feedback = compareSkins(skin, target, patches);
+    const feedback = compareSkins(skin, target, patches, lang);
     const newGuess = {
-      uuid: skin.uuid, displayName: skin.displayName,
-      bundleName: skin.bundleName, weapon: skin.weapon,
+      uuid: skin.uuid,
+      displayName: skin.displayName, displayNamePT: skin.displayNamePT,
+      bundleName: skin.bundleName, bundleNamePT: skin.bundleNamePT,
+      weapon: skin.weapon,
       feedback, isNew: true,
     };
 
@@ -308,7 +318,7 @@
       guesses = guesses.map(g => g.uuid === capturedUuid ? { ...g, isNew: false } : g);
       inputLocked = false;
       if (mode === 'daily') {
-        saveDailyState({ guesses: guesses.map(g => ({ ...g, isNew: false })), finished: isDone, won: isWin });
+        saveDailyState({ targetUuid, guesses: guesses.map(g => ({ ...g, isNew: false })), finished: isDone, won: isWin });
       }
       if (isDone && mode === 'daily') startCountdown();
       tick().then(() => {
@@ -374,7 +384,7 @@
 
 <!-- ── Mode picker overlay ──────────────────────────────────────────────────── -->
 {#if showPicker}
-<div class="overlay-full">
+<div class="overlay-full" onclick={(e) => { if (e.target === e.currentTarget) showPicker = false; }}>
   <div class="mpo-card">
     <div class="mpo-eyebrow">Valorandle</div>
     <div class="mpo-title">
@@ -423,7 +433,12 @@
   <!-- Header -->
   <header class="game-header">
     <div class="header-left">
-      <a href={lang === 'pt-BR' ? '/' : '/en'} class="back-btn">{t.back}</a>
+      <a href={lang === 'pt-BR' ? '/' : '/en'} class="back-btn">
+        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+          stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:3px">
+          <line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/>
+        </svg>Lobby
+      </a>
       <span class="mode-tag">{t.modeTag}{mode === 'free' ? ' · ' + t.modeFree : ''}</span>
     </div>
     <div class="header-center">
@@ -540,9 +555,9 @@
       <!-- Skin name reveal on game end -->
       {#if finished}
         <div class="hero-reveal">
-          <span class="hero-reveal-name">{target.displayName}</span>
+          <span class="hero-reveal-name">{skinName(target)}</span>
           <span class="hero-reveal-sub">
-            {target.bundleName} · {target.weapon} · {target.edition}
+            {skinBundle(target)} · {target.weapon} · {target.edition}
           </span>
         </div>
       {/if}
@@ -582,8 +597,8 @@
                 ondblclick={() => submitGuess(skin)}
               >
                 <div class="ac-meta">
-                  <span class="ac-name">{skin.displayName}</span>
-                  <span class="ac-sub">{skin.bundleName} · {skin.weapon}</span>
+                  <span class="ac-name">{skinName(skin)}</span>
+                  <span class="ac-sub">{skinBundle(skin)} · {skin.weapon}</span>
                 </div>
                 {#if editionIcons[skin.edition]}
                   <img class="ac-edition-icon" src={editionIcons[skin.edition]}
@@ -616,7 +631,7 @@
             <div class="col-header">{t.headers.bundle}</div>
             <div class="col-header">{t.headers.weapon}</div>
             <div class="col-header">{t.headers.edition}</div>
-            <div class="col-header">{t.headers.patch}</div>
+            <div class="col-header">{t.headers.act}</div>
           </div>
 
           <div class="guess-grid" bind:this={feedbackGridEl}>
@@ -624,8 +639,8 @@
               <div class="guess-row">
                 <!-- Skin name cell — ci=0, no status color -->
                 <div class="guess-cell cell-skin" style="--ci:0" class:flip-new={g.isNew}>
-                  <span class="skin-name">{g.displayName}</span>
-                  <span class="skin-bundle-sub">{g.bundleName}</span>
+                  <span class="skin-name">{lang !== 'en' ? (g.displayNamePT ?? g.displayName) : g.displayName}</span>
+                  <span class="skin-bundle-sub">{lang !== 'en' ? (g.bundleNamePT ?? g.bundleName) : g.bundleName}</span>
                 </div>
                 <!-- Attribute cells — ci=1..4 with status colors -->
                 {#each g.feedback as cell, ci}
@@ -662,14 +677,14 @@
     {#if finished}
       <div class="result-panel" class:won class:lost={!won}>
         <div class="result-status">
-          {won ? t.win : t.lose(target.displayName)}
+          {won ? t.win : t.lose(skinName(target))}
         </div>
         <div class="result-body">
           <div class="result-skin-info">
-            <div class="result-name">{target.displayName}</div>
-            <div class="result-sub">{target.bundleName} · {target.weapon} · {target.edition}</div>
+            <div class="result-name">{skinName(target)}</div>
+            <div class="result-sub">{skinBundle(target)} · {target.weapon} · {target.edition}</div>
             {#if patches[target.bundleName]}
-              <div class="result-patch">Patch {patches[target.bundleName]}</div>
+              <div class="result-patch">{patchToAct(patches[target.bundleName], lang)}</div>
             {/if}
           </div>
           <div class="result-sub-text">{won ? t.winSub(guesses.length) : t.loseSub}</div>
@@ -710,10 +725,10 @@
     --bg:#08090d; --surface:#0e1018; --surface2:#141620;
     --border:#1c1f2e; --border2:#252838;
     --red:#FF4655; --red-dim:rgba(255,70,85,0.08); --red-bd:rgba(255,70,85,0.32);
-    --text:#eeeef5; --text-dim:#50536a; --text-mid:#8a8da8;
+    --text:#eeeef5; --text-dim:#6e7190; --text-mid:#8a8da8;
     --green:#34d47e; --green-bg:rgba(52,212,126,0.10); --green-bd:rgba(52,212,126,0.45);
     --yellow:#f0b429; --yellow-bg:rgba(240,180,41,0.10); --yellow-bd:rgba(240,180,41,0.42);
-    --font-display:'Russo One',sans-serif; --font-ui:'Epilogue',sans-serif; --font-mono:'Epilogue',sans-serif;
+    --font-display:'Russo One',sans-serif; --font-ui:'Outfit',sans-serif; --font-mono:'Outfit',sans-serif;
   }
   :global(*, *::before, *::after) { box-sizing:border-box; margin:0; padding:0; }
   :global(html,body) { min-height:100vh; background:var(--bg); color:var(--text); font-family:var(--font-ui); }
@@ -1077,37 +1092,42 @@
     display:flex; align-items:center; justify-content:center; padding:1rem;
   }
   .mpo-card {
-    background:var(--surface); border:1px solid var(--border2); border-radius:12px;
-    padding:2rem 2rem 1.75rem; max-width:440px; width:100%;
-    display:flex; flex-direction:column; gap:1.1rem;
+    background:var(--surface); border:1px solid var(--border2);
+    border-radius:12px; padding:2.2rem 2rem;
+    display:flex; flex-direction:column; align-items:center; gap:1.4rem;
+    width:100%; max-width:420px;
   }
   .mpo-eyebrow {
-    font-family:var(--font-mono); font-size:0.65rem; font-weight:700;
-    letter-spacing:0.1em; text-transform:uppercase; color:var(--text-dim);
+    font-family:var(--font-mono); font-size:0.6rem; letter-spacing:0.07em;
+    text-transform:uppercase; color:var(--text-dim);
   }
-  .mpo-title { display:flex; align-items:center; gap:0.75rem; }
-  .mpo-wordmark { font-family:var(--font-display); font-size:1.6rem; }
+  .mpo-title {
+    font-family:var(--font-display); font-size:1.6rem; text-transform:uppercase;
+    color:var(--text); display:flex; align-items:center; gap:0.6rem;
+  }
+  .mpo-wordmark { color:var(--text); }
   .mpo-wordmark span { color:var(--red); }
   .mpo-mode-tag {
-    font-family:var(--font-mono); font-size:0.65rem; font-weight:700; letter-spacing:0.04em;
-    text-transform:uppercase; color:var(--red); border:1px solid var(--red-bd);
-    padding:0.2rem 0.55rem; border-radius:3px;
+    font-size:0.65rem; font-family:var(--font-mono); letter-spacing:0;
+    text-transform:uppercase; color:var(--red);
+    border:1px solid var(--red-bd); padding:0.2rem 0.5rem; border-radius:3px;
+    align-self:center;
   }
-  .mpo-sub { font-family:var(--font-ui); font-size:0.88rem; color:var(--text-mid); }
-  .mpo-options { display:flex; flex-direction:column; gap:0.55rem; }
+  .mpo-sub { font-family:var(--font-mono); font-size:0.72rem; color:var(--text-dim); letter-spacing:0.02em; }
+  .mpo-options { display:flex; flex-direction:column; gap:0.6rem; width:100%; }
   .mpo-option {
-    display:flex; align-items:center; gap:0.9rem; width:100%;
-    background:var(--surface2); border:1px solid var(--border); border-radius:8px;
-    padding:0.85rem 1rem; cursor:pointer; text-align:left; transition:all 0.2s;
+    display:flex; align-items:center; gap:1rem;
+    background:var(--surface2); border:1px solid var(--border2);
+    color:var(--text); border-radius:8px; padding:0.9rem 1rem;
+    cursor:pointer; text-align:left; transition:all 0.15s; width:100%;
   }
-  .mpo-option:hover { border-color:var(--red); }
-  .mpo-icon { width:28px; height:28px; color:var(--text-dim); flex-shrink:0; }
+  .mpo-option:hover { border-color:var(--red-bd); background:var(--red-dim); }
+  .mpo-icon { width:36px; height:36px; color:var(--text-mid); flex-shrink:0; transition:color 0.15s; }
   .mpo-option:hover .mpo-icon { color:var(--red); }
   .mpo-label { display:flex; flex-direction:column; gap:0.15rem; flex:1; }
-  .mpo-name { font-family:var(--font-ui); font-size:0.92rem; font-weight:600; color:var(--text); }
-  .mpo-desc { font-family:var(--font-mono); font-size:0.62rem; color:var(--text-dim); }
-  .mpo-arrow { font-family:var(--font-mono); color:var(--text-dim); transition:color 0.2s; }
-  .mpo-option:hover .mpo-arrow { color:var(--red); }
+  .mpo-name  { font-family:var(--font-display); font-size:0.95rem; text-transform:uppercase; }
+  .mpo-desc  { font-family:var(--font-mono); font-size:0.62rem; color:var(--text-dim); letter-spacing:0.02em; }
+  .mpo-arrow { font-size:1.1rem; color:var(--text-dim); }
 
   /* ── Toast ───────────────────────────────────────────────────────────────── */
   .toast {

@@ -62,7 +62,12 @@
 
 <div class="page">
   <header class="header">
-    <a class="back-btn" href="/">← {isPT ? 'Lobby' : 'Lobby'}</a>
+    <a class="back-btn" href={isPT ? '/' : '/en'}>
+      <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+        stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:3px">
+        <line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/>
+      </svg>Lobby
+    </a>
     <div class="header-logo">VALOR<span>ANDLE</span></div>
     <div class="mode-pill">{modePillText()}</div>
   </header>
@@ -138,7 +143,7 @@
   :global(*, *::before, *::after) { box-sizing: border-box; margin: 0; padding: 0; }
   :global(:root) {
     --bg:#08090d; --surface:#0e1018; --surface2:#141620; --border:#1c1f2e; --border2:#252838;
-    --red:#FF4655; --text:#eeeef5; --text-dim:#50536a; --text-mid:#8a8da8;
+    --red:#FF4655; --text:#eeeef5; --text-dim:#6e7190; --text-mid:#8a8da8;
     --font-display:'Russo One', sans-serif; --font-ui:'Outfit', sans-serif; --font-mono:'Outfit', sans-serif;
     --col-americas:#FF5400; --col-emea:#C4FF00; --col-pacific:#00DCFF; --col-china:#FF1675; --col-all:#E5C96A;
   }

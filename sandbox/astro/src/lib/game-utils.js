@@ -52,6 +52,20 @@ export function saveLang(lang) {
   setCookie('valorandle_lang', lang, 365);
 }
 
+// ── Seeded PRNG (FNV-1a based) ────────────────────────────────────────────────
+export function seededRandom(seed) {
+  let h = 2166136261;
+  for (let i = 0; i < seed.length; i++) {
+    h = Math.imul(h ^ seed.charCodeAt(i), 16777619);
+  }
+  return function() {
+    h += h << 13; h ^= h >> 7;
+    h += h << 3;  h ^= h >> 17;
+    h += h << 5;
+    return ((h >>> 0) / 4294967296);
+  };
+}
+
 export function loadStats() {
   try {
     const raw = localStorage.getItem('valorandle_stats');

@@ -1,0 +1,745 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Skins UI — Comparação A / B / C / D</title>
+<link href="https://fonts.googleapis.com/css2?family=Russo+One&family=Epilogue:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:#08090d; --surface:#0e1018; --surface2:#141620; --surface3:#1a1d2a;
+  --border:#1c1f2e; --border2:#252838; --border3:#30344a;
+  --red:#FF4655; --red-dim:rgba(255,70,85,0.08); --red-bd:rgba(255,70,85,0.32);
+  --text:#eeeef5; --text-dim:#50536a; --text-mid:#8a8da8;
+  --green:#34d47e; --green-bg:rgba(52,212,126,0.10); --green-bd:rgba(52,212,126,0.45);
+  --fd:'Russo One',sans-serif; --fu:'Epilogue',sans-serif; --fm:'Epilogue',sans-serif;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html,body{min-height:100vh;background:var(--bg);color:var(--text);font-family:var(--fu)}
+body::before{content:'';position:fixed;inset:0;z-index:0;
+  background-image:radial-gradient(circle,#1c1f2e 1px,transparent 1px);
+  background-size:26px 26px;pointer-events:none;opacity:.4}
+
+/* ── CHROME ──────────────────────────────────────────────────────────────── */
+.chrome{
+  position:fixed;top:0;left:0;right:0;z-index:999;
+  background:rgba(8,9,13,0.95);border-bottom:1px solid var(--border2);
+  backdrop-filter:blur(12px);display:flex;align-items:stretch;
+}
+.chrome-label{
+  font-family:var(--fm);font-size:0.58rem;font-weight:700;letter-spacing:0.1em;
+  text-transform:uppercase;color:var(--text-dim);padding:0 1.25rem;
+  border-right:1px solid var(--border);white-space:nowrap;
+  display:flex;align-items:center;
+}
+.tab-btn{
+  flex:1;padding:0.7rem 1rem;background:none;border:none;border-right:1px solid var(--border);
+  font-family:var(--fu);font-size:0.8rem;font-weight:600;color:var(--text-dim);
+  cursor:pointer;transition:all 0.2s;display:flex;flex-direction:column;align-items:center;gap:2px;
+}
+.tab-btn:last-child{border-right:none}
+.tab-btn:hover{background:var(--surface);color:var(--text)}
+.tab-btn.active{background:var(--red-dim);color:var(--red);border-bottom:2px solid var(--red)}
+.tab-sub{font-size:0.57rem;font-weight:400;color:var(--text-dim);letter-spacing:0.02em}
+.tab-btn.active .tab-sub{color:rgba(255,70,85,0.65)}
+
+/* ── PANELS ──────────────────────────────────────────────────────────────── */
+.panel{display:none;padding-top:52px;min-height:100vh;position:relative;z-index:1}
+.panel.active{display:block}
+
+/* ── SHARED ATOMS ────────────────────────────────────────────────────────── */
+.wordmark{font-family:var(--fd);font-size:1.1rem;text-transform:uppercase;letter-spacing:0.01em}
+.wordmark span{color:var(--red)}
+.mode-chip{font-family:var(--fm);font-size:0.57rem;letter-spacing:0.05em;text-transform:uppercase;
+  color:var(--red);border:1px solid var(--red-bd);padding:0.18rem 0.5rem;border-radius:3px}
+.back{background:none;border:1px solid var(--border2);color:var(--text-dim);font-family:var(--fm);
+  font-size:0.62rem;padding:0.3rem 0.7rem;border-radius:3px;cursor:pointer;text-decoration:none;
+  display:inline-block;transition:all 0.2s}
+.back:hover{border-color:var(--red);color:var(--red)}
+
+/* cell status */
+.c-ok{background:var(--green-bg)!important;border-color:var(--green-bd)!important}
+.c-no{background:var(--red-dim)!important;border-color:var(--red-bd)!important}
+
+/* hint arrows */
+.hint{font-size:0.8rem;font-weight:700;line-height:1;margin-top:1px}
+.c-ok .hint{color:var(--green)}
+.c-no .hint{color:var(--red)}
+
+/* edition icon */
+.eico{object-fit:contain;display:block}
+
+@keyframes rowIn{from{opacity:0;transform:translateY(-5px)}to{opacity:1;transform:translateY(0)}}
+
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   OPTION A — Compact & Focused
+   ═══════════════════════════════════════════════════════════════════════ */
+.a-page{max-width:620px;margin:0 auto;padding:0 1rem 4rem;display:flex;flex-direction:column;gap:1rem}
+
+.a-header{display:flex;align-items:center;justify-content:space-between;
+  padding:0.9rem 0;border-bottom:1px solid var(--border)}
+.a-hd-left{display:flex;align-items:center;gap:0.55rem}
+.a-hd-right{font-family:var(--fm);font-size:0.7rem;color:var(--text-dim)}
+
+.a-player{background:var(--surface);border:1px solid var(--border2);border-radius:10px;
+  padding:1.1rem 1.25rem;display:flex;flex-direction:column;gap:0.8rem}
+.a-qlabel{font-family:var(--fm);font-size:0.68rem;font-weight:700;letter-spacing:0.06em;
+  text-transform:uppercase;color:var(--text-dim);display:flex;align-items:center;gap:0.45rem}
+.a-qlabel svg{width:14px;height:14px;opacity:0.55}
+.a-play-row{display:flex;align-items:center;gap:0.75rem}
+.a-play{width:42px;height:42px;border-radius:50%;background:var(--red);border:none;color:#fff;
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;cursor:pointer}
+.a-play svg{width:16px;height:16px}
+.a-bar{flex:1;height:24px;position:relative;cursor:pointer;display:flex;align-items:center}
+.a-bg{position:absolute;left:0;right:0;height:3px;background:var(--border2);border-radius:2px}
+.a-fill{position:absolute;left:0;height:3px;width:35%;background:var(--red);border-radius:2px}
+.a-thumb{position:absolute;left:35%;transform:translateX(-50%);
+  width:11px;height:11px;background:var(--red);border-radius:50%}
+.a-time{font-family:var(--fm);font-size:0.65rem;color:var(--text-dim);white-space:nowrap}
+.a-replay{width:30px;height:30px;border-radius:50%;background:none;border:1px solid var(--border2);
+  color:var(--text-dim);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:0.85rem}
+
+.a-input-wrap{display:flex;gap:6px}
+.a-input{flex:1;background:var(--surface);border:1px solid var(--border2);border-radius:5px;
+  color:var(--text);font-family:var(--fu);font-size:0.9rem;padding:0.75rem 1rem;outline:none}
+.a-btn{background:var(--red);border:none;color:#fff;font-family:var(--fm);font-size:0.75rem;
+  font-weight:700;letter-spacing:0.02em;padding:0.75rem 1.25rem;border-radius:5px;cursor:pointer;flex-shrink:0}
+
+/* Compact row: name banner + chips */
+.a-col-headers{display:grid;grid-template-columns:repeat(4,1fr);gap:5px;margin-bottom:4px}
+.a-ch{font-family:var(--fm);font-size:0.58rem;font-weight:700;letter-spacing:0.06em;
+  text-transform:uppercase;color:var(--text-dim);text-align:center;padding:0.28rem 0;
+  background:var(--surface);border:1px solid var(--border);border-radius:3px}
+
+.a-rows{display:flex;flex-direction:column;gap:6px}
+.a-card{background:var(--surface2);border:1px solid var(--border);border-radius:8px;overflow:hidden;
+  animation:rowIn 0.25s ease both}
+.a-card-name{padding:0.48rem 0.85rem;font-family:var(--fu);font-size:0.83rem;font-weight:600;
+  border-bottom:1px solid var(--border);display:flex;align-items:baseline;gap:0.45rem}
+.a-card-sub{font-size:0.62rem;font-weight:400;color:var(--text-dim)}
+.a-chips{display:grid;grid-template-columns:repeat(4,1fr);gap:5px;padding:5px}
+.a-chip{background:var(--surface);border:1px solid var(--border);border-radius:5px;
+  padding:0.45rem 0.2rem;display:flex;flex-direction:column;align-items:center;
+  justify-content:center;gap:2px;min-height:52px;text-align:center}
+.a-chip-val{font-family:var(--fu);font-size:0.78rem;font-weight:600;line-height:1.2}
+
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   OPTION B — Two-Column Desktop
+   ═══════════════════════════════════════════════════════════════════════ */
+.b-page{max-width:1080px;margin:0 auto;padding:0 1.5rem 4rem}
+.b-header{display:flex;align-items:center;justify-content:space-between;
+  padding:0.9rem 0;border-bottom:1px solid var(--border);margin-bottom:1.25rem}
+.b-hd-center{display:flex;align-items:center;gap:0.6rem}
+.b-hd-right{font-family:var(--fm);font-size:0.7rem;color:var(--text-dim)}
+
+.b-body{display:grid;grid-template-columns:320px 1fr;gap:1.25rem;align-items:start}
+
+.b-left{display:flex;flex-direction:column;gap:0.9rem;position:sticky;top:66px}
+
+.b-player{background:var(--surface);border:1px solid var(--border2);border-radius:10px;
+  padding:1.1rem 1.2rem;display:flex;flex-direction:column;gap:0.8rem}
+.b-qlabel{font-family:var(--fm);font-size:0.65rem;font-weight:700;letter-spacing:0.06em;
+  text-transform:uppercase;color:var(--text-dim);display:flex;align-items:center;gap:0.4rem}
+.b-qlabel svg{width:13px;height:13px;opacity:0.55}
+.b-play-row{display:flex;align-items:center;gap:0.7rem}
+.b-play{width:40px;height:40px;border-radius:50%;background:var(--red);border:none;color:#fff;
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;cursor:pointer}
+.b-play svg{width:15px;height:15px}
+.b-bar{flex:1;height:22px;position:relative;cursor:pointer;display:flex;align-items:center}
+.b-bg{position:absolute;left:0;right:0;height:3px;background:var(--border2);border-radius:2px}
+.b-fill{position:absolute;left:0;height:3px;width:42%;background:var(--red);border-radius:2px}
+.b-thumb{position:absolute;left:42%;transform:translateX(-50%);
+  width:10px;height:10px;background:var(--red);border-radius:50%}
+.b-time{font-family:var(--fm);font-size:0.63rem;color:var(--text-dim);white-space:nowrap}
+.b-replay{width:28px;height:28px;border-radius:50%;background:none;border:1px solid var(--border2);
+  color:var(--text-dim);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:0.8rem}
+
+.b-input-wrap{display:flex;gap:6px}
+.b-input{flex:1;background:var(--surface);border:1px solid var(--border2);border-radius:5px;
+  color:var(--text);font-family:var(--fu);font-size:0.88rem;padding:0.7rem 0.9rem;outline:none}
+.b-btn{background:var(--red);border:none;color:#fff;font-family:var(--fm);font-size:0.72rem;
+  font-weight:700;padding:0.7rem 1rem;border-radius:5px;cursor:pointer;flex-shrink:0}
+
+.b-ac{background:var(--surface2);border:1px solid var(--border2);border-radius:5px;overflow:hidden}
+.b-ac-item{display:flex;align-items:center;gap:0.65rem;padding:0.48rem 0.85rem;
+  border-bottom:1px solid var(--border);cursor:pointer;transition:background 0.1s}
+.b-ac-item:last-child{border-bottom:none}
+.b-ac-item:hover,.b-ac-item.hl{background:var(--surface)}
+.b-ac-meta{flex:1;display:flex;flex-direction:column;gap:1px}
+.b-ac-name{font-size:0.85rem;font-weight:600}
+.b-ac-sub{font-size:0.67rem;color:var(--text-dim)}
+
+.b-right{display:flex;flex-direction:column;gap:5px}
+.b-grid-head,.b-row{display:grid;grid-template-columns:170px repeat(4,1fr);gap:4px}
+.b-grid-head{margin-bottom:4px}
+.b-gh{font-family:var(--fm);font-size:0.6rem;font-weight:700;letter-spacing:0.06em;
+  text-transform:uppercase;color:var(--text-dim);text-align:center;padding:0.35rem 0.2rem;
+  background:var(--surface);border:1px solid var(--border);border-radius:3px}
+.b-gh:first-child{text-align:left;padding-left:0.65rem}
+.b-row{animation:rowIn 0.25s ease both}
+.b-cell{background:var(--surface);border:1px solid var(--border);border-radius:4px;
+  padding:0.48rem 0.3rem;display:flex;flex-direction:column;align-items:center;
+  justify-content:center;text-align:center;gap:3px;min-height:60px}
+.b-cell-skin{align-items:flex-start;text-align:left;padding-left:0.65rem}
+.b-skin-name{font-family:var(--fu);font-size:0.82rem;font-weight:600;line-height:1.25}
+.b-skin-sub{font-family:var(--fm);font-size:0.6rem;color:var(--text-dim)}
+.b-val{font-family:var(--fu);font-size:0.85rem;font-weight:600;line-height:1.25}
+
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   OPTION C — Incremental Polish
+   ═══════════════════════════════════════════════════════════════════════ */
+.c-page{max-width:860px;margin:0 auto;padding:0 1.25rem 4rem;display:flex;flex-direction:column;gap:1.1rem}
+.c-header{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;
+  padding:0.9rem 0;border-bottom:1px solid var(--border)}
+.c-hd-left{display:flex;align-items:center;gap:0.6rem}
+.c-hd-right{display:flex;justify-content:flex-end}
+.c-attempts{font-family:var(--fm);font-size:0.7rem;color:var(--text-dim)}
+
+.c-player{background:var(--surface);border:1px solid var(--border2);border-radius:10px;
+  padding:1.25rem 1.5rem;display:flex;flex-direction:column;gap:0.9rem}
+.c-qlabel{display:flex;align-items:center;gap:0.5rem;
+  font-family:var(--fm);font-size:0.7rem;font-weight:700;letter-spacing:0.05em;
+  text-transform:uppercase;color:var(--text-dim)}
+.c-qlabel svg{width:15px;height:15px;opacity:0.55}
+.c-play-row{display:flex;align-items:center;gap:0.9rem}
+.c-play{width:46px;height:46px;border-radius:50%;background:var(--red);border:none;color:#fff;
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;cursor:pointer;
+  box-shadow:0 0 18px rgba(255,70,85,0.35);transition:all 0.15s}
+.c-play:hover{transform:scale(1.06)}
+.c-play svg{width:18px;height:18px}
+.c-bar{flex:1;height:28px;position:relative;cursor:pointer;display:flex;align-items:center}
+.c-bg{position:absolute;left:0;right:0;height:4px;background:var(--border2);border-radius:2px}
+.c-fill{position:absolute;left:0;height:4px;width:28%;
+  background:linear-gradient(90deg,var(--red),#ff7080);border-radius:2px}
+.c-thumb{position:absolute;left:28%;transform:translateX(-50%);
+  width:13px;height:13px;background:#fff;border:2px solid var(--red);border-radius:50%;
+  box-shadow:0 0 6px rgba(255,70,85,0.5)}
+.c-time{font-family:var(--fm);font-size:0.68rem;color:var(--text-dim);white-space:nowrap;min-width:72px;text-align:right}
+.c-replay{width:34px;height:34px;border-radius:50%;background:none;border:1px solid var(--border2);
+  color:var(--text-dim);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:0.9rem;transition:all 0.15s}
+.c-replay:hover{border-color:var(--red);color:var(--red)}
+
+.c-input-wrap{display:flex;gap:7px}
+.c-input{flex:1;background:var(--surface);border:1px solid var(--border2);border-radius:6px;
+  color:var(--text);font-family:var(--fu);font-size:0.95rem;padding:0.82rem 1.1rem;outline:none;transition:border-color 0.2s}
+.c-input:focus{border-color:var(--red);box-shadow:0 0 0 3px rgba(255,70,85,0.08)}
+.c-btn{background:var(--red);border:none;color:#fff;font-family:var(--fm);font-size:0.78rem;
+  font-weight:700;letter-spacing:0.02em;padding:0.82rem 1.5rem;border-radius:6px;cursor:pointer;flex-shrink:0}
+
+.c-grid-wrap{overflow-x:auto}
+.c-grid-head,.c-row{display:grid;grid-template-columns:185px repeat(4,1fr);gap:4px;min-width:520px}
+.c-grid-head{margin-bottom:5px}
+.c-gh{font-family:var(--fm);font-size:0.62rem;font-weight:700;letter-spacing:0.06em;
+  text-transform:uppercase;color:var(--text-dim);text-align:center;padding:0.4rem 0.2rem;
+  background:var(--surface);border:1px solid var(--border);border-radius:4px}
+.c-gh:first-child{text-align:left;padding-left:0.8rem}
+.c-rows{display:flex;flex-direction:column;gap:4px}
+
+@keyframes flipIn{
+  0%{transform:rotateX(-90deg);opacity:0}
+  60%{transform:rotateX(6deg)}
+  100%{transform:rotateX(0);opacity:1}
+}
+.c-row .c-cell:nth-child(1){animation:flipIn 0.32s 0.00s ease both}
+.c-row .c-cell:nth-child(2){animation:flipIn 0.32s 0.07s ease both}
+.c-row .c-cell:nth-child(3){animation:flipIn 0.32s 0.14s ease both}
+.c-row .c-cell:nth-child(4){animation:flipIn 0.32s 0.21s ease both}
+.c-row .c-cell:nth-child(5){animation:flipIn 0.32s 0.28s ease both}
+
+.c-cell{background:var(--surface);border:1px solid var(--border);border-radius:4px;
+  padding:0.55rem 0.35rem;display:flex;flex-direction:column;align-items:center;
+  justify-content:center;text-align:center;gap:3px;min-height:64px}
+.c-cell-skin{align-items:flex-start;padding-left:0.8rem}
+.c-skin-name{font-family:var(--fu);font-size:0.84rem;font-weight:600;line-height:1.3}
+.c-skin-sub{font-family:var(--fm);font-size:0.61rem;color:var(--text-dim)}
+.c-val{font-family:var(--fu);font-size:0.9rem;font-weight:600;line-height:1.3}
+
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   OPTION D — Audio-First Hero
+   ═══════════════════════════════════════════════════════════════════════ */
+.d-page{max-width:820px;margin:0 auto;padding:0 1rem 4rem;display:flex;flex-direction:column;gap:0}
+
+.d-header{display:flex;align-items:center;justify-content:space-between;
+  padding:0.85rem 0;border-bottom:1px solid var(--border)}
+.d-hd-left{display:flex;align-items:center;gap:0.55rem}
+.d-hd-right{font-family:var(--fm);font-size:0.7rem;color:var(--text-dim)}
+
+/* Hero */
+.d-hero{
+  background:
+    radial-gradient(ellipse at 65% -10%,rgba(255,70,85,0.2) 0%,transparent 60%),
+    radial-gradient(ellipse at 5% 110%,rgba(120,30,50,0.12) 0%,transparent 50%),
+    var(--surface);
+  border:1px solid var(--border2);border-top:none;
+  border-radius:0 0 14px 14px;
+  padding:1.75rem 2rem 1.6rem;
+  display:flex;flex-direction:column;gap:1.1rem;
+  margin-bottom:1rem;position:relative;overflow:hidden;
+}
+.d-hero::after{
+  content:'SKINS';position:absolute;right:-1rem;top:50%;transform:translateY(-50%);
+  font-family:var(--fd);font-size:7rem;color:rgba(255,70,85,0.035);
+  pointer-events:none;user-select:none;white-space:nowrap;letter-spacing:0.04em;
+}
+
+.d-qlabel{display:flex;align-items:center;gap:0.7rem}
+.d-qlabel-icon{
+  width:34px;height:34px;background:rgba(255,70,85,0.1);border:1px solid var(--red-bd);
+  border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;
+}
+.d-qlabel-icon svg{width:15px;height:15px;color:var(--red)}
+.d-qlabel-text{display:flex;flex-direction:column;gap:2px}
+.d-qlabel-main{font-family:var(--fm);font-size:0.68rem;font-weight:700;letter-spacing:0.06em;
+  text-transform:uppercase;color:var(--text-dim)}
+.d-qlabel-sub{font-family:var(--fu);font-size:0.8rem;color:var(--text-mid)}
+
+/* Animated waveform bars */
+.d-wave{display:flex;align-items:center;gap:3px;height:42px}
+.d-wb{width:3px;border-radius:2px;background:var(--red);animation:wave var(--d,0.8s) ease-in-out infinite alternate}
+@keyframes wave{from{height:var(--lo,4px)}to{height:var(--hi,30px)}}
+
+.d-play-row{display:flex;align-items:center;gap:1rem}
+.d-play{width:52px;height:52px;border-radius:50%;background:var(--red);border:none;color:#fff;
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;cursor:pointer;
+  box-shadow:0 0 26px rgba(255,70,85,0.4);transition:all 0.15s}
+.d-play:hover{transform:scale(1.07)}
+.d-play svg{width:20px;height:20px}
+.d-bar{flex:1;height:32px;position:relative;cursor:pointer;display:flex;align-items:center}
+.d-bg{position:absolute;left:0;right:0;height:5px;background:rgba(255,255,255,0.07);border-radius:3px}
+.d-fill{position:absolute;left:0;height:5px;width:22%;
+  background:linear-gradient(90deg,var(--red),#ff6878);border-radius:3px}
+.d-thumb{position:absolute;left:22%;transform:translateX(-50%);
+  width:14px;height:14px;background:#fff;border:2.5px solid var(--red);border-radius:50%;
+  box-shadow:0 0 8px rgba(255,70,85,0.55)}
+.d-time{font-family:var(--fm);font-size:0.68rem;color:var(--text-dim);white-space:nowrap}
+.d-replay{width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,0.04);
+  border:1px solid var(--border2);color:var(--text-dim);display:flex;align-items:center;
+  justify-content:center;cursor:pointer;font-size:0.95rem}
+
+/* Input strip */
+.d-input-strip{display:flex;gap:8px;padding:0.75rem 0;border-bottom:1px solid var(--border);margin-bottom:0.25rem}
+.d-input{flex:1;background:var(--surface);border:1px solid var(--border2);border-radius:6px;
+  color:var(--text);font-family:var(--fu);font-size:0.92rem;padding:0.76rem 1rem;outline:none}
+.d-input:focus{border-color:var(--red)}
+.d-btn{background:var(--red);border:none;color:#fff;font-family:var(--fm);font-size:0.76rem;
+  font-weight:700;letter-spacing:0.02em;padding:0.76rem 1.35rem;border-radius:6px;cursor:pointer;flex-shrink:0}
+
+.d-section-label{font-family:var(--fm);font-size:0.6rem;font-weight:700;letter-spacing:0.1em;
+  text-transform:uppercase;color:var(--text-dim);padding:0.8rem 0 0.45rem;
+  display:flex;align-items:center;gap:0.6rem}
+.d-section-label::after{content:'';flex:1;height:1px;background:var(--border)}
+
+.d-grid-wrap{overflow-x:auto}
+.d-grid-head,.d-row{display:grid;grid-template-columns:175px repeat(4,1fr);gap:4px;min-width:500px}
+.d-grid-head{margin-bottom:5px}
+.d-gh{font-family:var(--fm);font-size:0.6rem;font-weight:700;letter-spacing:0.07em;
+  text-transform:uppercase;color:var(--text-dim);text-align:center;padding:0.38rem 0.2rem;
+  background:var(--surface2);border:1px solid var(--border);border-radius:4px}
+.d-gh:first-child{text-align:left;padding-left:0.7rem}
+.d-rows{display:flex;flex-direction:column;gap:4px}
+.d-row{animation:rowIn 0.28s ease both}
+.d-cell{background:var(--surface2);border:1px solid var(--border);border-radius:4px;
+  padding:0.52rem 0.35rem;display:flex;flex-direction:column;align-items:center;
+  justify-content:center;text-align:center;gap:3px;min-height:62px}
+.d-cell-skin{align-items:flex-start;padding-left:0.7rem}
+.d-skin-name{font-family:var(--fu);font-size:0.83rem;font-weight:600;line-height:1.3}
+.d-skin-sub{font-family:var(--fm);font-size:0.6rem;color:var(--text-dim)}
+.d-val{font-family:var(--fu);font-size:0.88rem;font-weight:600}
+</style>
+</head>
+<body>
+
+<!-- ── Chrome tabs ────────────────────────────────────────────────────────── -->
+<div class="chrome">
+  <div class="chrome-label">UI COMPARISON</div>
+  <button class="tab-btn active" onclick="show('a',this)">
+    Opção A<span class="tab-sub">Compact &amp; Focused</span>
+  </button>
+  <button class="tab-btn" onclick="show('b',this)">
+    Opção B<span class="tab-sub">Two-Column Desktop</span>
+  </button>
+  <button class="tab-btn" onclick="show('c',this)">
+    Opção C<span class="tab-sub">Incremental Polish</span>
+  </button>
+  <button class="tab-btn" onclick="show('d',this)">
+    Opção D<span class="tab-sub">Audio-First Hero</span>
+  </button>
+</div>
+
+<!-- ════════════════════════════════════════════════════════════════════════
+     OPTION A — Compact & Focused
+     ═══════════════════════════════════════════════════════════════════════ -->
+<div class="panel active" id="panel-a">
+<div class="a-page">
+  <div class="a-header">
+    <div class="a-hd-left">
+      <a class="back" href="#">← Hub</a>
+      <span class="mode-chip">Skins · Daily</span>
+    </div>
+    <div class="wordmark">VALOR<span>ANDLE</span></div>
+    <div class="a-hd-right">3 / 6</div>
+  </div>
+
+  <div class="a-player">
+    <div class="a-qlabel">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
+      Qual skin é essa?
+    </div>
+    <div class="a-play-row">
+      <button class="a-play"><svg viewBox="0 0 24 24" fill="currentColor"><polygon points="5,3 19,12 5,21"/></svg></button>
+      <div class="a-bar"><div class="a-bg"></div><div class="a-fill"></div><div class="a-thumb"></div></div>
+      <span class="a-time">0:04 / 0:12</span>
+      <button class="a-replay">↺</button>
+    </div>
+  </div>
+
+  <div class="a-input-wrap">
+    <input class="a-input" placeholder="Nome da skin…" />
+    <button class="a-btn">Confirmar</button>
+  </div>
+
+  <!-- Column headers -->
+  <div>
+    <div class="a-col-headers">
+      <div class="a-ch">Bundle</div>
+      <div class="a-ch">Arma</div>
+      <div class="a-ch">Edição</div>
+      <div class="a-ch">Patch</div>
+    </div>
+
+    <div class="a-rows">
+      <!-- Prime Vandal -->
+      <div class="a-card" style="animation-delay:0s">
+        <div class="a-card-name">Prime Vandal<span class="a-card-sub">Prime · Vandal · Premium · 1.00</span></div>
+        <div class="a-chips">
+          <div class="a-chip c-no"><span class="a-chip-val">Prime</span></div>
+          <div class="a-chip c-ok"><span class="a-chip-val">Vandal</span></div>
+          <div class="a-chip c-no">
+            <img class="eico" style="width:28px;height:28px" src="https://media.valorant-api.com/contenttiers/60bca009-4182-7998-dee7-b8a2558dc369/displayicon.png" alt="Premium"/>
+            <span class="hint">↓</span>
+          </div>
+          <div class="a-chip c-no"><span class="a-chip-val">1.00</span><span class="hint">↑</span></div>
+        </div>
+      </div>
+      <!-- Reaver Vandal -->
+      <div class="a-card" style="animation-delay:0.06s">
+        <div class="a-card-name">Reaver Vandal<span class="a-card-sub">Reaver · Vandal · Premium · 1.11</span></div>
+        <div class="a-chips">
+          <div class="a-chip c-no"><span class="a-chip-val">Reaver</span></div>
+          <div class="a-chip c-ok"><span class="a-chip-val">Vandal</span></div>
+          <div class="a-chip c-no">
+            <img class="eico" style="width:28px;height:28px" src="https://media.valorant-api.com/contenttiers/60bca009-4182-7998-dee7-b8a2558dc369/displayicon.png" alt="Premium"/>
+            <span class="hint">↓</span>
+          </div>
+          <div class="a-chip c-no"><span class="a-chip-val">1.11</span><span class="hint">↓</span></div>
+        </div>
+      </div>
+      <!-- ChronoVoid Phantom -->
+      <div class="a-card" style="animation-delay:0.12s">
+        <div class="a-card-name">ChronoVoid Phantom<span class="a-card-sub">ChronoVoid · Phantom · Ultra · 5.06</span></div>
+        <div class="a-chips">
+          <div class="a-chip c-no"><span class="a-chip-val">ChronoVoid</span></div>
+          <div class="a-chip c-no"><span class="a-chip-val">Phantom</span></div>
+          <div class="a-chip c-no">
+            <img class="eico" style="width:28px;height:28px" src="https://media.valorant-api.com/contenttiers/411e4a55-4e59-7757-41f0-86a53f101bb5/displayicon.png" alt="Ultra"/>
+            <span class="hint">↓</span>
+          </div>
+          <div class="a-chip c-no"><span class="a-chip-val">5.06</span><span class="hint">↓</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ════════════════════════════════════════════════════════════════════════
+     OPTION B — Two-Column Desktop
+     ═══════════════════════════════════════════════════════════════════════ -->
+<div class="panel" id="panel-b">
+<div class="b-page">
+  <div class="b-header">
+    <div class="b-hd-center">
+      <a class="back" href="#">← Hub</a>
+      <div class="wordmark">VALOR<span>ANDLE</span></div>
+      <span class="mode-chip">Skins · Daily</span>
+    </div>
+    <div class="b-hd-right">3 / 6 tentativas</div>
+  </div>
+
+  <div class="b-body">
+    <!-- Left column: player + input + autocomplete -->
+    <div class="b-left">
+      <div class="b-player">
+        <div class="b-qlabel">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
+          Qual skin é essa?
+        </div>
+        <div class="b-play-row">
+          <button class="b-play"><svg viewBox="0 0 24 24" fill="currentColor"><polygon points="5,3 19,12 5,21"/></svg></button>
+          <div class="b-bar"><div class="b-bg"></div><div class="b-fill"></div><div class="b-thumb"></div></div>
+          <span class="b-time">0:05 / 0:12</span>
+          <button class="b-replay">↺</button>
+        </div>
+      </div>
+
+      <div class="b-input-wrap">
+        <input class="b-input" value="Glitchpop" />
+        <button class="b-btn">OK</button>
+      </div>
+
+      <div class="b-ac">
+        <div class="b-ac-item hl">
+          <div class="b-ac-meta">
+            <span class="b-ac-name">Glitchpop Vandal</span>
+            <span class="b-ac-sub">Glitchpop · Vandal</span>
+          </div>
+          <img style="width:19px;height:19px;object-fit:contain" src="https://media.valorant-api.com/contenttiers/0cebb8be-46d7-c12a-d306-e9907bfc5a25/displayicon.png" alt="Deluxe"/>
+        </div>
+        <div class="b-ac-item" style="opacity:.55">
+          <div class="b-ac-meta">
+            <span class="b-ac-name">Glitchpop Frenzy</span>
+            <span class="b-ac-sub">Glitchpop · Frenzy</span>
+          </div>
+          <img style="width:19px;height:19px;object-fit:contain" src="https://media.valorant-api.com/contenttiers/0cebb8be-46d7-c12a-d306-e9907bfc5a25/displayicon.png" alt="Deluxe"/>
+        </div>
+        <div class="b-ac-item" style="opacity:.3">
+          <div class="b-ac-meta">
+            <span class="b-ac-name">Glitchpop Sheriff</span>
+            <span class="b-ac-sub">Glitchpop · Sheriff</span>
+          </div>
+          <img style="width:19px;height:19px;object-fit:contain" src="https://media.valorant-api.com/contenttiers/0cebb8be-46d7-c12a-d306-e9907bfc5a25/displayicon.png" alt="Deluxe"/>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right column: grid -->
+    <div class="b-right">
+      <div class="b-grid-head">
+        <div class="b-gh">Skin</div>
+        <div class="b-gh">Bundle</div>
+        <div class="b-gh">Arma</div>
+        <div class="b-gh">Edição</div>
+        <div class="b-gh">Patch</div>
+      </div>
+
+      <div class="b-row" style="animation-delay:0s">
+        <div class="b-cell b-cell-skin"><span class="b-skin-name">Prime Vandal</span><span class="b-skin-sub">Prime · Premium</span></div>
+        <div class="b-cell c-no"><span class="b-val">Prime</span></div>
+        <div class="b-cell c-ok"><span class="b-val">Vandal</span></div>
+        <div class="b-cell c-no"><img class="eico" style="width:32px;height:32px" src="https://media.valorant-api.com/contenttiers/60bca009-4182-7998-dee7-b8a2558dc369/displayicon.png" alt="Premium"/><span class="hint">↓</span></div>
+        <div class="b-cell c-no"><span class="b-val">1.00</span><span class="hint">↑</span></div>
+      </div>
+
+      <div class="b-row" style="animation-delay:0.05s">
+        <div class="b-cell b-cell-skin"><span class="b-skin-name">Reaver Vandal</span><span class="b-skin-sub">Reaver · Premium</span></div>
+        <div class="b-cell c-no"><span class="b-val">Reaver</span></div>
+        <div class="b-cell c-ok"><span class="b-val">Vandal</span></div>
+        <div class="b-cell c-no"><img class="eico" style="width:32px;height:32px" src="https://media.valorant-api.com/contenttiers/60bca009-4182-7998-dee7-b8a2558dc369/displayicon.png" alt="Premium"/><span class="hint">↓</span></div>
+        <div class="b-cell c-no"><span class="b-val">1.11</span><span class="hint">↓</span></div>
+      </div>
+
+      <div class="b-row" style="animation-delay:0.1s">
+        <div class="b-cell b-cell-skin"><span class="b-skin-name">ChronoVoid Phantom</span><span class="b-skin-sub">ChronoVoid · Ultra</span></div>
+        <div class="b-cell c-no"><span class="b-val">ChronoVoid</span></div>
+        <div class="b-cell c-no"><span class="b-val">Phantom</span></div>
+        <div class="b-cell c-no"><img class="eico" style="width:32px;height:32px" src="https://media.valorant-api.com/contenttiers/411e4a55-4e59-7757-41f0-86a53f101bb5/displayicon.png" alt="Ultra"/><span class="hint">↓</span></div>
+        <div class="b-cell c-no"><span class="b-val">5.06</span><span class="hint">↓</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ════════════════════════════════════════════════════════════════════════
+     OPTION C — Incremental Polish
+     ═══════════════════════════════════════════════════════════════════════ -->
+<div class="panel" id="panel-c">
+<div class="c-page">
+  <div class="c-header">
+    <div class="c-hd-left">
+      <a class="back" href="#">← Hub</a>
+      <span class="mode-chip">Skins</span>
+    </div>
+    <div class="wordmark">VALOR<span>ANDLE</span></div>
+    <div class="c-hd-right"><span class="c-attempts">3 / 6</span></div>
+  </div>
+
+  <div class="c-player">
+    <div class="c-qlabel">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
+      Qual skin é essa?
+    </div>
+    <div class="c-play-row">
+      <button class="c-play"><svg viewBox="0 0 24 24" fill="currentColor"><polygon points="5,3 19,12 5,21"/></svg></button>
+      <div class="c-bar"><div class="c-bg"></div><div class="c-fill"></div><div class="c-thumb"></div></div>
+      <span class="c-time">0:03 / 0:14</span>
+      <button class="c-replay">↺</button>
+    </div>
+  </div>
+
+  <div class="c-input-wrap">
+    <input class="c-input" placeholder="Nome da skin…" />
+    <button class="c-btn">Confirmar</button>
+  </div>
+
+  <div class="c-grid-wrap">
+    <div class="c-grid-head">
+      <div class="c-gh">Skin</div>
+      <div class="c-gh">Bundle</div>
+      <div class="c-gh">Arma</div>
+      <div class="c-gh">Edição</div>
+      <div class="c-gh">Patch</div>
+    </div>
+    <div class="c-rows">
+      <div class="c-row">
+        <div class="c-cell c-cell-skin"><span class="c-skin-name">Prime Vandal</span><span class="c-skin-sub">Prime · Premium</span></div>
+        <div class="c-cell c-no"><span class="c-val">Prime</span></div>
+        <div class="c-cell c-ok"><span class="c-val">Vandal</span></div>
+        <div class="c-cell c-no"><img class="eico" style="width:36px;height:36px" src="https://media.valorant-api.com/contenttiers/60bca009-4182-7998-dee7-b8a2558dc369/displayicon.png" alt="Premium"/><span class="hint">↓</span></div>
+        <div class="c-cell c-no"><span class="c-val">1.00</span><span class="hint">↑</span></div>
+      </div>
+      <div class="c-row">
+        <div class="c-cell c-cell-skin"><span class="c-skin-name">Reaver Vandal</span><span class="c-skin-sub">Reaver · Premium</span></div>
+        <div class="c-cell c-no"><span class="c-val">Reaver</span></div>
+        <div class="c-cell c-ok"><span class="c-val">Vandal</span></div>
+        <div class="c-cell c-no"><img class="eico" style="width:36px;height:36px" src="https://media.valorant-api.com/contenttiers/60bca009-4182-7998-dee7-b8a2558dc369/displayicon.png" alt="Premium"/><span class="hint">↓</span></div>
+        <div class="c-cell c-no"><span class="c-val">1.11</span><span class="hint">↓</span></div>
+      </div>
+      <div class="c-row">
+        <div class="c-cell c-cell-skin"><span class="c-skin-name">ChronoVoid Phantom</span><span class="c-skin-sub">ChronoVoid · Ultra</span></div>
+        <div class="c-cell c-no"><span class="c-val">ChronoVoid</span></div>
+        <div class="c-cell c-no"><span class="c-val">Phantom</span></div>
+        <div class="c-cell c-no"><img class="eico" style="width:36px;height:36px" src="https://media.valorant-api.com/contenttiers/411e4a55-4e59-7757-41f0-86a53f101bb5/displayicon.png" alt="Ultra"/><span class="hint">↓</span></div>
+        <div class="c-cell c-no"><span class="c-val">5.06</span><span class="hint">↓</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ════════════════════════════════════════════════════════════════════════
+     OPTION D — Audio-First Hero
+     ═══════════════════════════════════════════════════════════════════════ -->
+<div class="panel" id="panel-d">
+<div class="d-page">
+  <div class="d-header">
+    <div class="d-hd-left">
+      <a class="back" href="#">← Hub</a>
+      <span class="mode-chip">Skins · Daily</span>
+    </div>
+    <div class="wordmark">VALOR<span>ANDLE</span></div>
+    <div class="d-hd-right">3 / 6</div>
+  </div>
+
+  <div class="d-hero">
+    <div class="d-qlabel">
+      <div class="d-qlabel-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
+      </div>
+      <div class="d-qlabel-text">
+        <span class="d-qlabel-main">Adivinhe a skin</span>
+        <span class="d-qlabel-sub">Ouça o som do tiro e adivinhe bundle, arma e edição</span>
+      </div>
+    </div>
+
+    <!-- Decorative animated waveform -->
+    <div class="d-wave">
+      <div class="d-wb" style="--d:.60s;--lo:3px;--hi:8px"></div>
+      <div class="d-wb" style="--d:.80s;--lo:5px;--hi:22px"></div>
+      <div class="d-wb" style="--d:.50s;--lo:8px;--hi:34px"></div>
+      <div class="d-wb" style="--d:.90s;--lo:4px;--hi:26px"></div>
+      <div class="d-wb" style="--d:.70s;--lo:10px;--hi:38px;opacity:.5"></div>
+      <div class="d-wb" style="--d:.65s;--lo:6px;--hi:30px"></div>
+      <div class="d-wb" style="--d:.85s;--lo:3px;--hi:20px"></div>
+      <div class="d-wb" style="--d:.55s;--lo:8px;--hi:36px;opacity:.5"></div>
+      <div class="d-wb" style="--d:.75s;--lo:5px;--hi:28px"></div>
+      <div class="d-wb" style="--d:.90s;--lo:4px;--hi:18px"></div>
+      <div class="d-wb" style="--d:.60s;--lo:7px;--hi:40px;opacity:.4"></div>
+      <div class="d-wb" style="--d:.80s;--lo:3px;--hi:24px"></div>
+      <div class="d-wb" style="--d:.70s;--lo:9px;--hi:32px"></div>
+      <div class="d-wb" style="--d:.50s;--lo:5px;--hi:20px"></div>
+      <div class="d-wb" style="--d:.95s;--lo:4px;--hi:30px;opacity:.5"></div>
+      <div class="d-wb" style="--d:.65s;--lo:8px;--hi:38px"></div>
+      <div class="d-wb" style="--d:.85s;--lo:3px;--hi:16px"></div>
+      <div class="d-wb" style="--d:.60s;--lo:6px;--hi:28px"></div>
+      <div class="d-wb" style="--d:.75s;--lo:10px;--hi:34px;opacity:.4"></div>
+      <div class="d-wb" style="--d:.90s;--lo:5px;--hi:22px"></div>
+      <div class="d-wb" style="--d:.55s;--lo:3px;--hi:18px"></div>
+      <div class="d-wb" style="--d:.80s;--lo:7px;--hi:30px"></div>
+      <div class="d-wb" style="--d:.70s;--lo:4px;--hi:40px;opacity:.5"></div>
+      <div class="d-wb" style="--d:.65s;--lo:9px;--hi:26px"></div>
+      <div class="d-wb" style="--d:.85s;--lo:5px;--hi:20px"></div>
+      <div class="d-wb" style="--d:.60s;--lo:3px;--hi:14px"></div>
+      <div class="d-wb" style="--d:.90s;--lo:6px;--hi:32px"></div>
+      <div class="d-wb" style="--d:.75s;--lo:8px;--hi:28px;opacity:.4"></div>
+      <div class="d-wb" style="--d:.50s;--lo:4px;--hi:20px"></div>
+      <div class="d-wb" style="--d:.80s;--lo:7px;--hi:36px"></div>
+      <div class="d-wb" style="--d:.65s;--lo:3px;--hi:10px"></div>
+      <div class="d-wb" style="--d:.70s;--lo:5px;--hi:8px"></div>
+    </div>
+
+    <div class="d-play-row">
+      <button class="d-play"><svg viewBox="0 0 24 24" fill="currentColor"><polygon points="5,3 19,12 5,21"/></svg></button>
+      <div class="d-bar"><div class="d-bg"></div><div class="d-fill"></div><div class="d-thumb"></div></div>
+      <span class="d-time">0:03 / 0:14</span>
+      <button class="d-replay">↺</button>
+    </div>
+  </div>
+
+  <div class="d-input-strip">
+    <input class="d-input" placeholder="Nome da skin…" />
+    <button class="d-btn">Confirmar →</button>
+  </div>
+
+  <div class="d-section-label">3 palpites</div>
+
+  <div class="d-grid-wrap">
+    <div class="d-grid-head">
+      <div class="d-gh">Skin</div>
+      <div class="d-gh">Bundle</div>
+      <div class="d-gh">Arma</div>
+      <div class="d-gh">Edição</div>
+      <div class="d-gh">Patch</div>
+    </div>
+    <div class="d-rows">
+      <div class="d-row" style="animation-delay:0s">
+        <div class="d-cell d-cell-skin"><span class="d-skin-name">Prime Vandal</span><span class="d-skin-sub">Prime · Premium · 1.00</span></div>
+        <div class="d-cell c-no"><span class="d-val">Prime</span></div>
+        <div class="d-cell c-ok"><span class="d-val">Vandal</span></div>
+        <div class="d-cell c-no"><img class="eico" style="width:34px;height:34px" src="https://media.valorant-api.com/contenttiers/60bca009-4182-7998-dee7-b8a2558dc369/displayicon.png" alt="Premium"/><span class="hint">↓</span></div>
+        <div class="d-cell c-no"><span class="d-val">1.00</span><span class="hint">↑</span></div>
+      </div>
+      <div class="d-row" style="animation-delay:0.06s">
+        <div class="d-cell d-cell-skin"><span class="d-skin-name">Reaver Vandal</span><span class="d-skin-sub">Reaver · Premium · 1.11</span></div>
+        <div class="d-cell c-no"><span class="d-val">Reaver</span></div>
+        <div class="d-cell c-ok"><span class="d-val">Vandal</span></div>
+        <div class="d-cell c-no"><img class="eico" style="width:34px;height:34px" src="https://media.valorant-api.com/contenttiers/60bca009-4182-7998-dee7-b8a2558dc369/displayicon.png" alt="Premium"/><span class="hint">↓</span></div>
+        <div class="d-cell c-no"><span class="d-val">1.11</span><span class="hint">↓</span></div>
+      </div>
+      <div class="d-row" style="animation-delay:0.12s">
+        <div class="d-cell d-cell-skin"><span class="d-skin-name">ChronoVoid Phantom</span><span class="d-skin-sub">ChronoVoid · Ultra · 5.06</span></div>
+        <div class="d-cell c-no"><span class="d-val">ChronoVoid</span></div>
+        <div class="d-cell c-no"><span class="d-val">Phantom</span></div>
+        <div class="d-cell c-no"><img class="eico" style="width:34px;height:34px" src="https://media.valorant-api.com/contenttiers/411e4a55-4e59-7757-41f0-86a53f101bb5/displayicon.png" alt="Ultra"/><span class="hint">↓</span></div>
+        <div class="d-cell c-no"><span class="d-val">5.06</span><span class="hint">↓</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
+<script>
+function show(id, btn) {
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('panel-' + id).classList.add('active');
+  btn.classList.add('active');
+  window.scrollTo(0,0);
+}
+</script>
+</body>
+</html>

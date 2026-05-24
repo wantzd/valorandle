@@ -1,0 +1,13 @@
+---
+import Base from '../layouts/Base.astro';
+import AbilitiesGame from '../components/AbilitiesGame.svelte';
+---
+<Base
+  title="Valorandle — Habilidades"
+  description="Adivinhe o agente de VALORANT pela habilidade — descrição ou ícone revelado progressivamente."
+  lang="pt-BR"
+  path="/abilities"
+  noindex={true}
+>
+  <AbilitiesGame client:load />
+</Base>
