@@ -18,14 +18,14 @@ const ogLocale = lang === 'en' ? 'en_US' : 'pt_BR';
 const ogLocaleAlt = lang === 'en' ? 'pt_BR' : 'en_US';
 
 const schemaDescription = lang === 'en'
-  ? "Valorandle is the VALORANT Wordle: guess the VCT pro player with up to 8 tries. New challenge every day with players from all 4 global leagues."
-  : "Valorandle é o Wordle de VALORANT: adivinhe o pro player do VCT com até 8 tentativas. Novo desafio todo dia com jogadores das 4 ligas globais.";
+  ? "Multiple VALORANT guessing modes: VCT pro players, agents, maps and skins. New daily challenge every day."
+  : "Múltiplos modos de adivinhação de VALORANT: pro players do VCT, agentes, mapas e skins. Novo desafio todo dia.";
 
 const schemaJson = JSON.stringify({
   "@context": "https://schema.org",
   "@type": "WebApplication",
   "name": "Valorandle",
-  "alternateName": ["Valorant Wordle", "Valdle"],
+  "alternateName": ["Valdle", "Valorandle Quiz"],
   "description": schemaDescription,
   "url": canonical,
   "applicationCategory": "GameApplication",
@@ -44,7 +44,7 @@ const schemaJson = JSON.stringify({
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>{title}</title>
   <meta name="description" content={description} />
-  <meta name="keywords" content="valorandle, valdle, valorant wordle, vct pro player, adivinhe o jogador valorant, valorant quiz" />
+  <meta name="keywords" content="valorandle, valdle, valorant quiz, vct pro player, adivinhe jogador valorant, valorant agentes, valorant mapas, valorant skins" />
   {noindex ? <meta name="robots" content="noindex, follow" /> : <meta name="robots" content="index, follow" />}
   <meta name="author" content="Valorandle" />
 
