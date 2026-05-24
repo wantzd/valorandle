@@ -1,7 +1,0 @@
-User-agent: *
-Allow: /
-
-Disallow: /.github/
-Disallow: /.claude/
-
-Sitemap: https://valorandle.com/sitemap.xml
