@@ -49,8 +49,9 @@ jobs:
             --exclude '^maps/' \
             dist/ $FTP_PATH
 
-          # Upload only NEW map screenshots (no --delete keeps existing files)
-          mirror --reverse --verbose \
+          # Upload only NEW map screenshots — --ignore-time compares by size only,
+          # avoiding re-uploads caused by fresh CI timestamps on unchanged files
+          mirror --reverse --verbose --ignore-time \
             dist/maps/ $FTP_PATH/maps/
 
           bye
