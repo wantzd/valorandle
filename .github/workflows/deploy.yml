@@ -4,11 +4,10 @@ on:
   push:
     branches: [main]
     paths-ignore:
-      - 'data/org-map.json'   # handled by update-players.yml
+      - 'public/data/org-map.json'   # handled by update-players.yml
       - '.github/**'
       - 'README.md'
       - '.gitignore'
-      - 'sandbox/**'
   workflow_dispatch:
 
 jobs:
@@ -19,7 +18,18 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Deploy via FTP
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build Astro site
+        run: npm run build
+
+      - name: Deploy dist/ via FTP
         env:
           FTP_HOST: ${{ secrets.FTP_HOST }}
           FTP_USER: ${{ secrets.FTP_USER }}
@@ -38,9 +48,7 @@ jobs:
             --exclude-glob .github \
             --exclude-glob .gitignore \
             --exclude-glob README.md \
-            --exclude-glob sandbox \
-            --exclude-glob data/org-map.json \
-            . $FTP_PATH
+            dist/ $FTP_PATH
           bye
           EOF
 
