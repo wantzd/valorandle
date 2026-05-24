@@ -107,9 +107,13 @@
   </div>
 
   <footer class="game-footer">
-    <span id="gf-liq">Dados dos jogadores: <a href="https://liquipedia.net/valorant" target="_blank" rel="noopener">Liquipedia</a> (<a href="https://liquipedia.net/commons/Liquipedia:Copyrights" target="_blank" rel="noopener">CC BY-SA</a>)</span>
-    <span class="footer-sep">·</span>
-    <span>Fan-made · <a href="https://playvalorant.com" target="_blank" rel="noopener">Riot Games</a></span>
+    <span>Fan-made. {isPT ? 'Não afiliado à' : 'Not affiliated with'}
+      <a href="https://playvalorant.com" target="_blank" rel="noopener">Riot Games</a>.</span>
+    <span class="footer-sep"> · </span>
+    <span>{isPT ? 'Dados dos jogadores:' : 'Player data:'}
+      <a href="https://liquipedia.net/valorant" target="_blank" rel="noopener">Liquipedia</a>
+      (<a href="https://liquipedia.net/commons/Liquipedia:Copyrights" target="_blank" rel="noopener">CC BY-SA</a>)
+    </span>
   </footer>
 </div>
 
@@ -275,8 +279,8 @@
   #loading-overlay .lo-spinner { width:28px; height:28px; border:3px solid var(--border2); border-top-color:var(--red); border-radius:50%; animation:lo-spin 0.75s linear infinite; }
   @keyframes lo-spin { to{transform:rotate(360deg)} }
 
-  .game-footer { text-align:center; padding:1.5rem 0 0.5rem; font-size:0.7rem; color:var(--text-dim); display:flex; align-items:center; justify-content:center; gap:0.35rem; flex-wrap:wrap; }
-  .game-footer a { color:var(--text-dim); text-decoration:none; }
+  .game-footer { text-align:center; padding:1.5rem 0 0.5rem; font-family:var(--font-mono); font-size:0.65rem; color:var(--text-dim); display:flex; align-items:center; justify-content:center; gap:0.35rem; flex-wrap:wrap; line-height:1.8; }
+  .game-footer a { color:var(--text-mid); text-decoration:none; }
   .game-footer a:hover { color:var(--red); }
   .footer-sep { color:var(--border2); }
 </style>
