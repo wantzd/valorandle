@@ -304,7 +304,15 @@ def _is_official_vct_event(event_name):
     return any(re.search(p, name) for p in patterns)
 
 def _format_vct_title(event_name, year):
-    """Convert vlrgg event name to a short display title."""
+    """Convert vlrgg event name to a short display title.
+
+    Titles are normalised to match the TITLE_TIERS keys in game-logic.js:
+      Champions <year>              — world championship
+      Masters <city> <year>         — international masters
+      VCT <region> <year>           — any regional event (Kickoff/Stage N all
+                                       map to the same year-level key so that
+                                       compareTitles() strict-equality works)
+    """
     # World championship
     m = re.search(r'Valorant Champions (\d+)', event_name)
     if m:
@@ -313,15 +321,13 @@ def _format_vct_title(event_name, year):
     m = re.search(r'Masters (\w+) (\d+)', event_name)
     if m:
         return f'Masters {m.group(1)} {m.group(2)}'
-    # Regional: extract sub-stage (Kickoff, Stage 1, Stage 2, Split N…)
-    m = re.search(r'(?:VCT|Champions Tour) \d+: (Americas|EMEA|Pacific|China)(.*)', event_name)
+    # Regional: always year-level (Kickoff / Stage 1 / Stage 2 / Split N all
+    # collapse to the same "VCT <Region> <year>" key used in TITLE_TIERS)
+    m = re.search(r'(?:VCT|Champions Tour) (\d+): (Americas|EMEA|Pacific|China)', event_name)
     if m:
-        region = m.group(1)
-        rest   = m.group(2).strip()
-        stage  = re.search(r'(Stage \d+|Kickoff|Split \d+)', rest)
-        if stage:
-            return f'VCT {region} {stage.group(1)} {year}'
-        return f'VCT {region} {year}'   # old single-stage format
+        year_str = m.group(1)
+        region   = m.group(2)
+        return f'VCT {region} {year_str}'
     return event_name
 
 print(f"[Step 1c] Fetching per-player data via vlrId ({len(vlr_id_map)} players)...\n")

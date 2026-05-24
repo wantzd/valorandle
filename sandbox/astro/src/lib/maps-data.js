@@ -22,7 +22,7 @@ export const MAPS_ROTATION = {
 };
 
 export const MAPS_WITH_SCREENSHOTS = new Set([
-  'bind','haven','ascent','icebox','breeze','fracture','pearl','lotus',
+  'bind','haven','ascent','icebox','breeze','fracture','pearl','lotus','split',
 ]);
 
 // Filename overrides: derived name would be wrong
@@ -30,6 +30,7 @@ export const IMG_OVERRIDES = {
   'ascent|b_boathouse': 'Boat House_B',
   'breeze|mid_hall':    'Hall_A',
   'breeze|a_ramp':      null,
+  'split|a_back':       null,   // Back_A.png missing
 };
 
 // ── Callout positions (from callout-positions (7).json) ────────────────────────
@@ -66,7 +67,7 @@ export const MAPS_HINTS = {
 // ── i18n ───────────────────────────────────────────────────────────────────────
 export const MAPS_I18N = {
   'pt-BR': {
-    back:'← Hub', modeTag:'Mapas', modeFree:'Modo livre', showMap:'🗺️ Ver mapa', hideMap:'✕ Ocultar mapa',
+    back:'Lobby', modeTag:'Mapas', modeFree:'Modo livre', showMap:'🗺️ Ver mapa', hideMap:'✕ Ocultar mapa',
     selectMapHint:'Selecione um mapa acima', hintBtn:'💡 Dica',
     hintLeft: n => `${n} restante${n===1?'':'s'}`, noHints:'Sem mais dicas',
     attempts: (n,max) => `${n}/${max} tentativas`,
@@ -91,7 +92,7 @@ export const MAPS_I18N = {
     ],
   },
   'en': {
-    back:'← Hub', modeTag:'Maps', modeFree:'Free mode', showMap:'🗺️ Show map', hideMap:'✕ Hide map',
+    back:'Lobby', modeTag:'Maps', modeFree:'Free mode', showMap:'🗺️ Show map', hideMap:'✕ Hide map',
     selectMapHint:'Select a map above', hintBtn:'💡 Hint',
     hintLeft: n => `${n} left`, noHints:'No more hints',
     attempts: (n,max) => `${n}/${max} attempts`,

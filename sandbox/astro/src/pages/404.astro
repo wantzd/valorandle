@@ -1,0 +1,98 @@
+---
+import Base from '../layouts/Base.astro';
+
+const lang = Astro.url.pathname.startsWith('/en') ? 'en' : 'pt-BR';
+const isPT  = lang === 'pt-BR';
+---
+<Base
+  title={isPT ? 'Página não encontrada — Valorandle' : 'Page not found — Valorandle'}
+  description={isPT ? 'Essa página não existe.' : 'This page does not exist.'}
+  lang={lang}
+  path=""
+  noindex={true}
+>
+  <div class="page">
+    <div class="card">
+      <div class="code">404</div>
+      <div class="logo">VALOR<span>ANDLE</span></div>
+      <p class="msg">
+        {isPT
+          ? 'Essa página não existe ou foi removida.'
+          : 'This page doesn\'t exist or was removed.'}
+      </p>
+      <a class="btn" href={isPT ? '/' : '/en'}>
+        {isPT ? '← Voltar ao lobby' : '← Back to lobby'}
+      </a>
+    </div>
+  </div>
+</Base>
+
+<style>
+  :global(*, *::before, *::after) { box-sizing: border-box; margin: 0; padding: 0; }
+  :global(:root) {
+    --bg:#08090d; --surface:#0e1018; --surface2:#141620; --border:#1c1f2e; --border2:#252838;
+    --red:#FF4655; --text:#eeeef5; --text-dim:#6e7190; --text-mid:#8a8da8;
+    --font-display:'Russo One',sans-serif; --font-ui:'Outfit',sans-serif; --font-mono:'Outfit',sans-serif;
+  }
+  :global(html,body) { min-height:100vh; background:var(--bg); color:var(--text); font-family:var(--font-ui); }
+  :global(body::before) { content:''; position:fixed; inset:0; z-index:0; background-image:radial-gradient(circle,#1c1f2e 1px,transparent 1px); background-size:28px 28px; pointer-events:none; opacity:.5; }
+
+  .page {
+    position: relative; z-index: 1;
+    min-height: 100vh;
+    display: flex; align-items: center; justify-content: center;
+    padding: 2rem;
+  }
+
+  .card {
+    display: flex; flex-direction: column; align-items: center;
+    gap: 1.1rem; text-align: center;
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 10px; padding: 3rem 2.5rem;
+    max-width: 420px; width: 100%;
+    animation: fadeUp 0.38s ease both;
+  }
+
+  .code {
+    font-family: var(--font-display);
+    font-size: clamp(4rem, 15vw, 7rem);
+    line-height: 1;
+    color: var(--red);
+    opacity: 0.18;
+    letter-spacing: -0.02em;
+    margin-bottom: -0.5rem;
+  }
+
+  .logo {
+    font-family: var(--font-display);
+    font-size: 1.4rem;
+    text-transform: uppercase;
+    letter-spacing: 0.01em;
+  }
+  .logo span { color: var(--red); }
+
+  .msg {
+    font-size: 0.85rem;
+    color: var(--text-dim);
+    line-height: 1.6;
+    max-width: 300px;
+  }
+
+  .btn {
+    margin-top: 0.5rem;
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    text-decoration: none;
+    padding: 0.65rem 1.4rem;
+    background: var(--red);
+    color: #fff;
+    border-radius: 4px;
+    transition: background 0.2s, box-shadow 0.2s;
+  }
+  .btn:hover { background: #e03040; box-shadow: 0 0 14px rgba(255,70,85,0.3); }
+
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
+</style>

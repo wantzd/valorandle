@@ -3,6 +3,89 @@
 
 import { getDailyDateKey } from './game-utils.js';
 
+// ── Act boundaries ─────────────────────────────────────────────────────────────
+// Each entry: [minPatchInt, ptLabel, enLabel]
+// minPatchInt = major * 100 + minor  (e.g. patch "3.10" → 310, "2.02" → 202)
+// This avoids the parseFloat trap where "2.10" < "2.9" as floats (2.1 < 2.9).
+// Boundaries derived from /v1/seasons act startTimes + VALORANT biweekly cadence.
+const ACT_BOUNDARIES = [
+  [100,  'EP 1/Ato I',    'EP 1/Act I'],
+  [103,  'EP 1/Ato II',   'EP 1/Act II'],
+  [109,  'EP 1/Ato III',  'EP 1/Act III'],
+  [200,  'EP 2/Ato I',    'EP 2/Act I'],
+  [204,  'EP 2/Ato II',   'EP 2/Act II'],
+  [208,  'EP 2/Ato III',  'EP 2/Act III'],
+  [300,  'EP 3/Ato I',    'EP 3/Act I'],
+  [305,  'EP 3/Ato II',   'EP 3/Act II'],
+  [310,  'EP 3/Ato III',  'EP 3/Act III'],
+  [400,  'EP 4/Ato I',    'EP 4/Act I'],
+  [404,  'EP 4/Ato II',   'EP 4/Act II'],
+  [408,  'EP 4/Ato III',  'EP 4/Act III'],
+  [500,  'EP 5/Ato I',    'EP 5/Act I'],
+  [504,  'EP 5/Ato II',   'EP 5/Act II'],
+  [508,  'EP 5/Ato III',  'EP 5/Act III'],
+  [600,  'EP 6/Ato I',    'EP 6/Act I'],
+  [604,  'EP 6/Ato II',   'EP 6/Act II'],
+  [608,  'EP 6/Ato III',  'EP 6/Act III'],
+  [700,  'EP 7/Ato I',    'EP 7/Act I'],
+  [704,  'EP 7/Ato II',   'EP 7/Act II'],
+  [709,  'EP 7/Ato III',  'EP 7/Act III'],
+  [800,  'EP 8/Ato I',    'EP 8/Act I'],
+  [804,  'EP 8/Ato II',   'EP 8/Act II'],
+  [808,  'EP 8/Ato III',  'EP 8/Act III'],
+  [900,  'EP 9/Ato I',    'EP 9/Act I'],
+  [904,  'EP 9/Ato II',   'EP 9/Act II'],
+  [909,  'EP 9/Ato III',  'EP 9/Act III'],
+  [1000, 'V25/Ato I',     'V25/Act I'],
+  [1004, 'V25/Ato II',    'V25/Act II'],
+  [1008, 'V25/Ato III',   'V25/Act III'],
+  [1100, 'V25/Ato IV',    'V25/Act IV'],
+  [1104, 'V25/Ato V',     'V25/Act V'],
+  [1108, 'V25/Ato VI',    'V25/Act VI'],
+  [1200, 'V26/Ato I',     'V26/Act I'],
+  [1205, 'V26/Ato II',    'V26/Act II'],
+  [1208, 'V26/Ato III',   'V26/Act III'],
+];
+
+/**
+ * Converts a patch string like "3.10", "2.02", "5.0" to a sortable integer.
+ * "3.10" → 310,  "2.02" → 202,  "5.0" → 500,  "10.04" → 1004
+ * Avoids parseFloat("2.10") === 2.1 < parseFloat("2.9") === 2.9 (wrong order).
+ */
+function patchToInt(patchStr) {
+  if (!patchStr) return -1;
+  const dot = patchStr.indexOf('.');
+  if (dot === -1) {
+    const n = parseInt(patchStr, 10);
+    return isNaN(n) ? -1 : n * 100;
+  }
+  const major = parseInt(patchStr.slice(0, dot), 10);
+  const minor = parseInt(patchStr.slice(dot + 1), 10);
+  if (isNaN(major) || isNaN(minor)) return -1;
+  return major * 100 + minor;
+}
+
+/** Returns the index of the act a patch belongs to (for ↑/↓ comparison). */
+function patchToActIndex(patchStr) {
+  if (!patchStr) return -1;
+  const p = patchToInt(patchStr);
+  if (p === -1) return -1;
+  let idx = 0;
+  for (let i = 0; i < ACT_BOUNDARIES.length; i++) {
+    if (p >= ACT_BOUNDARIES[i][0]) idx = i;
+    else break;
+  }
+  return idx;
+}
+
+/** Returns a localised act label like "EP 5/Ato I" or "V25/Act III". */
+export function patchToAct(patchStr, lang = 'pt-BR') {
+  if (!patchStr) return '?';
+  const idx = patchToActIndex(patchStr);
+  if (idx === -1) return '?';
+  return lang === 'en' ? ACT_BOUNDARIES[idx][2] : ACT_BOUNDARIES[idx][1];
+}
+
 // ── Edition ordering ───────────────────────────────────────────────────────────
 export const EDITION_ORDER = {
   Select:    1,
@@ -30,26 +113,33 @@ export function getFreeSkinTarget(pool) {
 }
 
 // ── Search skins by query ─────────────────────────────────────────────────────
-export function skinSearch(allSkins, query, excludeUuids = new Set()) {
+export function skinSearch(allSkins, query, excludeUuids = new Set(), lang = 'pt-BR') {
   const q = query.toLowerCase().trim();
   if (!q) return [];
+  const isPT = lang !== 'en';
   return allSkins
-    .filter(s =>
-      !excludeUuids.has(s.uuid) && (
+    .filter(s => {
+      if (excludeUuids.has(s.uuid)) return false;
+      const name   = isPT ? (s.displayNamePT ?? s.displayName) : s.displayName;
+      const bundle = isPT ? (s.bundleNamePT  ?? s.bundleName)  : s.bundleName;
+      return (
+        name.toLowerCase().includes(q)   ||
+        bundle.toLowerCase().includes(q) ||
+        // always also search EN so players can type in English
         s.displayName.toLowerCase().includes(q) ||
         s.bundleName.toLowerCase().includes(q)  ||
         s.weapon.toLowerCase().includes(q)
-      )
-    )
+      );
+    })
     .slice(0, 14);
 }
 
 // ── Guess comparison ──────────────────────────────────────────────────────────
 // Returns an array of feedback cells:
-//   [bundle, weapon, edition, patch]
+//   [bundle, weapon, edition, act]
 // status: 'correct' | 'wrong'
 // hint:   '↑' | '↓' | null (direction arrows for ordered columns)
-export function compareSkins(guess, target, patches) {
+export function compareSkins(guess, target, patches, lang = 'pt-BR') {
   const bundleOk = guess.bundleName === target.bundleName;
   const weaponOk = guess.weapon     === target.weapon;
 
@@ -59,14 +149,18 @@ export function compareSkins(guess, target, patches) {
 
   const gPatchStr = patches[guess.bundleName]  ?? null;
   const tPatchStr = patches[target.bundleName] ?? null;
-  const gP = gPatchStr ? parseFloat(gPatchStr) : null;
-  const tP = tPatchStr ? parseFloat(tPatchStr) : null;
-  const patchOk = gP !== null && tP !== null && gP === tP;
+  const gActIdx = patchToActIndex(gPatchStr);
+  const tActIdx = patchToActIndex(tPatchStr);
+  const actOk = gActIdx !== -1 && tActIdx !== -1 && gActIdx === tActIdx;
+
+  const gBundleDisplay = lang !== 'en'
+    ? (guess.bundleNamePT ?? guess.bundleName)
+    : guess.bundleName;
 
   return [
     {
       attr: 'bundle',
-      value: guess.bundleName,
+      value: gBundleDisplay,
       status: bundleOk ? 'correct' : 'wrong',
       hint: null,
     },
@@ -83,10 +177,10 @@ export function compareSkins(guess, target, patches) {
       hint: !edOk && gEd && tEd ? (gEd < tEd ? '↑' : '↓') : null,
     },
     {
-      attr: 'patch',
-      value: gPatchStr || '?',
-      status: patchOk ? 'correct' : 'wrong',
-      hint: !patchOk && gP && tP ? (gP < tP ? '↑' : '↓') : null,
+      attr: 'act',
+      value: patchToAct(gPatchStr, lang),
+      status: actOk ? 'correct' : 'wrong',
+      hint: !actOk && gActIdx !== -1 && tActIdx !== -1 ? (gActIdx < tActIdx ? '↑' : '↓') : null,
     },
   ];
 }
@@ -105,7 +199,7 @@ export const SKINS_I18N = {
       bundle:  'Bundle',
       weapon:  'Arma',
       edition: 'Edição',
-      patch:   'Patch',
+      act:     'Ato',
     },
     placeholder:    'Buscar skin ou bundle…',
     confirmBtn:     'OK →',
@@ -148,7 +242,7 @@ export const SKINS_I18N = {
       bundle:  'Bundle',
       weapon:  'Weapon',
       edition: 'Edition',
-      patch:   'Patch',
+      act:     'Act',
     },
     placeholder:    'Search skin or bundle…',
     confirmBtn:     'OK →',

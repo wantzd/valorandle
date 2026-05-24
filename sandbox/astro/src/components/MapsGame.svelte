@@ -7,7 +7,7 @@
   } from '../lib/maps-data.js';
   import {
     getDailyDateKey, msUntilNextDaily, formatCountdown,
-    loadLang, saveLang,
+    saveLang,
   } from '../lib/game-utils.js';
   import { loadSoundPref, saveSoundPref, scheduleFlipSounds } from '../lib/sounds.js';
 
@@ -175,7 +175,7 @@
 
     if (mode === 'daily') {
       const saved = loadDailyState();
-      if (saved) {
+      if (saved && saved.targetId === target.id) {
         guesses   = (saved.guesses || []).map(g => ({ ...g, isNew: false }));
         hintsUsed = saved.hintsUsed || 0;
         finished  = saved.finished  || false;
@@ -296,7 +296,7 @@
       guesses = guesses.map(g => g.isNew ? { ...g, isNew: false } : g);
       inputLocked = false;
       if (mode === 'daily') {
-        saveDailyState({ guesses: guesses.map(g => ({ ...g, isNew: false })), hintsUsed, finished: isDone, won: isWin });
+        saveDailyState({ targetId: target.id, guesses: guesses.map(g => ({ ...g, isNew: false })), hintsUsed, finished: isDone, won: isWin });
       }
       if (isDone && mode === 'daily') startCountdown();
       tick().then(() => {
@@ -317,7 +317,7 @@
   function revealHint() {
     if (!canHint) return;
     hintsUsed++;
-    if (mode === 'daily') saveDailyState({ guesses, hintsUsed, finished, won });
+    if (mode === 'daily') saveDailyState({ targetId: target.id, guesses, hintsUsed, finished, won });
   }
 
   function hintText(h) {
@@ -480,7 +480,12 @@
   <!-- Header -->
   <header class="game-header">
     <div class="header-left">
-      <a href={lang === 'pt-BR' ? '/' : '/en'} class="back-btn">{t.back}</a>
+      <a href={lang === 'pt-BR' ? '/' : '/en'} class="back-btn">
+        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+          stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:3px">
+          <line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/>
+        </svg>{lang === 'pt-BR' ? 'Lobby' : 'Lobby'}
+      </a>
       <span class="mode-tag">{t.modeTag}{mode === 'free' ? ' · ' + t.modeFree : ''}</span>
     </div>
     <div class="header-center">
@@ -736,7 +741,7 @@
     --bg:#08090d; --surface:#0e1018; --surface2:#141620;
     --border:#1c1f2e; --border2:#252838;
     --red:#FF4655; --red-dim:rgba(255,70,85,0.08); --red-bd:rgba(255,70,85,0.32);
-    --text:#eeeef5; --text-dim:#50536a; --text-mid:#8a8da8;
+    --text:#eeeef5; --text-dim:#6e7190; --text-mid:#8a8da8;
     --green:#34d47e; --green-bg:rgba(52,212,126,0.10); --green-bd:rgba(52,212,126,0.45);
     --font-display:'Russo One',sans-serif; --font-ui:'Outfit',sans-serif;
     --font-mono:'Outfit',sans-serif;
@@ -766,11 +771,12 @@
   .header-left  { display:flex; align-items:center; gap:0.6rem; }
   .header-right { display:flex; align-items:center; gap:0.5rem; justify-content:flex-end; }
   .back-btn {
-    font-family:var(--font-mono); font-size:0.68rem; color:var(--text-dim);
-    text-decoration:none; letter-spacing:0.02em;
-    transition:color 0.15s;
+    background:transparent; border:1px solid var(--border2); color:var(--text-dim);
+    font-family:var(--font-mono); font-size:0.65rem; letter-spacing:0.03em;
+    padding:0.35rem 0.65rem; border-radius:3px; cursor:pointer;
+    transition:all 0.2s; text-decoration:none;
   }
-  .back-btn:hover { color:var(--text); }
+  .back-btn:hover { border-color:var(--red); color:var(--red); }
   .mode-tag {
     font-family:var(--font-mono); font-size:0.6rem; letter-spacing:0.02em;
     text-transform:uppercase; color:var(--red); border:1px solid var(--red-bd);
@@ -1033,7 +1039,7 @@
     font-size:0.65rem; font-family:var(--font-mono); letter-spacing:0;
     text-transform:uppercase; color:var(--red);
     border:1px solid var(--red-bd); padding:0.2rem 0.5rem; border-radius:3px;
-    align-self:center; font-display:block;
+    align-self:center;
   }
   .mpo-sub { font-family:var(--font-mono); font-size:0.72rem; color:var(--text-dim); letter-spacing:0.02em; }
   .mpo-options { display:flex; flex-direction:column; gap:0.6rem; width:100%; }

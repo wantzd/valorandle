@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://valorandle.com/sitemap.xml
