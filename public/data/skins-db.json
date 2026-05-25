@@ -451,6 +451,46 @@
       "audioUrl": "https://valorant.dyn.riotcdn.net/x/videos/release-12.09/082fe9c3-4fb8-9b23-b79a-fda02ebd310f_default_universal.mp4"
     },
     {
+      "uuid": "57bfa350-4f93-e82a-714c-d2a01853b587",
+      "displayName": "Combat Crafts Bulldog",
+      "displayNamePT": "Bulldog Arsenal Artesanal",
+      "bundleName": "Combat Crafts",
+      "bundleNamePT": "Arsenal Artesanal",
+      "weapon": "Bulldog",
+      "edition": "Deluxe",
+      "audioUrl": "https://valorant.dyn.riotcdn.net/x/videos/release-12.09/930a0ed4-4c21-9f2b-4949-f6951da55fb8_default_universal.mp4"
+    },
+    {
+      "uuid": "a024e3fe-4b05-310f-d11c-0b873744f356",
+      "displayName": "Combat Crafts Frenzy",
+      "displayNamePT": "Frenzy Arsenal Artesanal",
+      "bundleName": "Combat Crafts",
+      "bundleNamePT": "Arsenal Artesanal",
+      "weapon": "Frenzy",
+      "edition": "Deluxe",
+      "audioUrl": "https://valorant.dyn.riotcdn.net/x/videos/release-12.09/07059b88-4f18-f4ba-c412-ab92775a0a13_default_universal.mp4"
+    },
+    {
+      "uuid": "babd42b8-44ed-ba23-efe4-f0b6710f32ea",
+      "displayName": "Combat Crafts Judge",
+      "displayNamePT": "Judge Arsenal Artesanal",
+      "bundleName": "Combat Crafts",
+      "bundleNamePT": "Arsenal Artesanal",
+      "weapon": "Judge",
+      "edition": "Deluxe",
+      "audioUrl": "https://valorant.dyn.riotcdn.net/x/videos/release-12.09/43e0acae-46f0-d48d-25ca-97a53d62b57a_default_universal.mp4"
+    },
+    {
+      "uuid": "fac695ab-40d4-e97e-2319-a8bab4dcb610",
+      "displayName": "Combat Crafts Phantom",
+      "displayNamePT": "Phantom Arsenal Artesanal",
+      "bundleName": "Combat Crafts",
+      "bundleNamePT": "Arsenal Artesanal",
+      "weapon": "Phantom",
+      "edition": "Deluxe",
+      "audioUrl": "https://valorant.dyn.riotcdn.net/x/videos/release-12.09/29355fea-4c87-30a8-b608-a492c46f2261_default_universal.mp4"
+    },
+    {
       "uuid": "5e342c5c-4757-4c4e-ca7c-a4b97930308b",
       "displayName": "Crimsonbeast Judge",
       "displayNamePT": "Judge Fera Incendiária",
@@ -1281,6 +1321,46 @@
       "audioUrl": "https://valorant.dyn.riotcdn.net/x/videos/release-12.09/e493f4db-4dce-f9e1-fdbb-4d8123bcbd85_default_universal.mp4"
     },
     {
+      "uuid": "be7cf362-4993-b9e4-9ba9-cdac6c99b8e4",
+      "displayName": "Kohaku & Matsuba Classic",
+      "displayNamePT": "Classic Kohaku e Matsuba",
+      "bundleName": "Kohaku & Matsuba",
+      "bundleNamePT": "Kohaku e Matsuba",
+      "weapon": "Classic",
+      "edition": "Deluxe",
+      "audioUrl": "https://valorant.dyn.riotcdn.net/x/videos/release-12.09/7675b416-4c62-88a9-89ef-8aadcda83b14_default_universal.mp4"
+    },
+    {
+      "uuid": "da3cedea-4f2e-c501-ec79-438433ffabdf",
+      "displayName": "Kohaku & Matsuba Judge",
+      "displayNamePT": "Judge Kohaku e Matsuba",
+      "bundleName": "Kohaku & Matsuba",
+      "bundleNamePT": "Kohaku e Matsuba",
+      "weapon": "Judge",
+      "edition": "Deluxe",
+      "audioUrl": "https://valorant.dyn.riotcdn.net/x/videos/release-12.09/b688c96c-4561-82ec-5404-20ad588c8ba9_default_universal.mp4"
+    },
+    {
+      "uuid": "403cce8c-4484-a796-a6f6-a0a07d9832e0",
+      "displayName": "Kohaku & Matsuba Operator",
+      "displayNamePT": "Operator Kohaku e Matsuba",
+      "bundleName": "Kohaku & Matsuba",
+      "bundleNamePT": "Kohaku e Matsuba",
+      "weapon": "Operator",
+      "edition": "Deluxe",
+      "audioUrl": "https://valorant.dyn.riotcdn.net/x/videos/release-12.09/f66e1f91-4652-7976-64ba-5d947c311a2f_default_universal.mp4"
+    },
+    {
+      "uuid": "8f82cff0-44b9-b792-8dd2-b2be8538421b",
+      "displayName": "Kohaku & Matsuba Phantom",
+      "displayNamePT": "Phantom Kohaku e Matsuba",
+      "bundleName": "Kohaku & Matsuba",
+      "bundleNamePT": "Kohaku e Matsuba",
+      "weapon": "Phantom",
+      "edition": "Deluxe",
+      "audioUrl": "https://valorant.dyn.riotcdn.net/x/videos/release-12.09/d65897f9-4add-1b8f-94cf-fba80ab9cc01_default_universal.mp4"
+    },
+    {
       "uuid": "fb9ff2b0-4d71-d53c-364e-fe98fb5a2411",
       "displayName": "Kuronami Marshal",
       "displayNamePT": "Marshal Kuronami",
@@ -1699,6 +1779,46 @@
       "weapon": "Phantom",
       "edition": "Exclusive",
       "audioUrl": "https://valorant.dyn.riotcdn.net/x/videos/release-12.09/7e97941b-48a5-bdc3-678a-f6a150ee8b71_default_universal.mp4"
+    },
+    {
+      "uuid": "7aa16eb6-45ef-1446-fdaa-5f8fbbd04bee",
+      "displayName": "Nunca Olvidados Ares",
+      "displayNamePT": "Ares Nunca Olvidados",
+      "bundleName": "Nunca Olvidados",
+      "bundleNamePT": "Nunca Olvidados",
+      "weapon": "Ares",
+      "edition": "Deluxe",
+      "audioUrl": "https://valorant.dyn.riotcdn.net/x/videos/release-12.09/16db0918-4eac-5377-fddc-ac83ef5916d7_default_universal.mp4"
+    },
+    {
+      "uuid": "9c91e507-4241-33d1-c63a-aeb9ec3d9d03",
+      "displayName": "Nunca Olvidados Bulldog",
+      "displayNamePT": "Bulldog Nunca Olvidados",
+      "bundleName": "Nunca Olvidados",
+      "bundleNamePT": "Nunca Olvidados",
+      "weapon": "Bulldog",
+      "edition": "Deluxe",
+      "audioUrl": "https://valorant.dyn.riotcdn.net/x/videos/release-12.09/73834b16-492d-29c2-d2b4-d699f533b7a4_default_universal.mp4"
+    },
+    {
+      "uuid": "a878b90b-4d32-6e85-d49e-82bfba69471f",
+      "displayName": "Nunca Olvidados Frenzy",
+      "displayNamePT": "Frenzy Nunca Olvidados",
+      "bundleName": "Nunca Olvidados",
+      "bundleNamePT": "Nunca Olvidados",
+      "weapon": "Frenzy",
+      "edition": "Deluxe",
+      "audioUrl": "https://valorant.dyn.riotcdn.net/x/videos/release-12.09/491bdf21-4983-ddd7-c53d-5492562222b9_default_universal.mp4"
+    },
+    {
+      "uuid": "6460e252-48ef-8312-6f4f-2cb5f1b56972",
+      "displayName": "Nunca Olvidados Vandal",
+      "displayNamePT": "Vandal Nunca Olvidados",
+      "bundleName": "Nunca Olvidados",
+      "bundleNamePT": "Nunca Olvidados",
+      "weapon": "Vandal",
+      "edition": "Deluxe",
+      "audioUrl": "https://valorant.dyn.riotcdn.net/x/videos/release-12.09/4fbb153c-48a9-01ea-d18c-a39f53a26e4b_default_universal.mp4"
     },
     {
       "uuid": "7da96a2a-43ce-91c2-28f9-0c95529d133e",
@@ -2531,6 +2651,46 @@
       "audioUrl": "https://valorant.dyn.riotcdn.net/x/videos/release-12.09/c3d23b5a-41df-97e0-5564-069d4d2d69cf_default_universal.mp4"
     },
     {
+      "uuid": "3fd33106-4816-c257-d27f-2b86c5d76c66",
+      "displayName": "Sarmad Frenzy",
+      "displayNamePT": "Frenzy Sarmad",
+      "bundleName": "Sarmad",
+      "bundleNamePT": "Sarmad",
+      "weapon": "Frenzy",
+      "edition": "Deluxe",
+      "audioUrl": "https://valorant.dyn.riotcdn.net/x/videos/release-12.09/7111816a-479f-7701-6229-0ebef1bea459_default_universal.mp4"
+    },
+    {
+      "uuid": "cd07ba8f-4dae-0410-582e-71acdef102ce",
+      "displayName": "Sarmad Phantom",
+      "displayNamePT": "Phantom Sarmad",
+      "bundleName": "Sarmad",
+      "bundleNamePT": "Sarmad",
+      "weapon": "Phantom",
+      "edition": "Deluxe",
+      "audioUrl": "https://valorant.dyn.riotcdn.net/x/videos/release-12.09/cea0ed9b-42bc-b6cf-c7f8-b2a8fca63d5e_default_universal.mp4"
+    },
+    {
+      "uuid": "5137dacb-4df6-b513-765b-96b9ecfc435c",
+      "displayName": "Sarmad Spectre",
+      "displayNamePT": "Spectre Sarmad",
+      "bundleName": "Sarmad",
+      "bundleNamePT": "Sarmad",
+      "weapon": "Spectre",
+      "edition": "Deluxe",
+      "audioUrl": "https://valorant.dyn.riotcdn.net/x/videos/release-12.09/0f43bbf1-4dc3-e3b3-badc-dbad5b5bed55_default_universal.mp4"
+    },
+    {
+      "uuid": "5b6b1eee-4185-8f83-9374-3391d0f0f742",
+      "displayName": "Sarmad Vandal",
+      "displayNamePT": "Vandal Sarmad",
+      "bundleName": "Sarmad",
+      "bundleNamePT": "Sarmad",
+      "weapon": "Vandal",
+      "edition": "Deluxe",
+      "audioUrl": "https://valorant.dyn.riotcdn.net/x/videos/release-12.09/feff3154-42a2-bcbb-0baf-a694c7ca36f0_default_universal.mp4"
+    },
+    {
       "uuid": "9f3e2ba6-428f-c635-67e0-b8b7d9e3c2fc",
       "displayName": "Sentinels of Light Ares",
       "displayNamePT": "Ares Sentinelas da Luz",
@@ -2871,6 +3031,46 @@
       "audioUrl": "https://valorant.dyn.riotcdn.net/x/videos/release-12.09/2bb037a4-40ca-387b-32a6-968628bc3e11_default_universal.mp4"
     },
     {
+      "uuid": "d29d764d-41ce-5a4d-0a96-7b8b91da16fd",
+      "displayName": "Titanmail Ares",
+      "displayNamePT": "Ares Titânica",
+      "bundleName": "Titanmail",
+      "bundleNamePT": "Titânica",
+      "weapon": "Ares",
+      "edition": "Deluxe",
+      "audioUrl": "https://valorant.dyn.riotcdn.net/x/videos/release-12.09/a310c7ba-4321-425f-0079-c8a07dab15b5_default_universal.mp4"
+    },
+    {
+      "uuid": "1ecb1abc-41a4-f789-39a5-4583f043d688",
+      "displayName": "Titanmail Bucky",
+      "displayNamePT": "Bucky Titânica",
+      "bundleName": "Titanmail",
+      "bundleNamePT": "Titânica",
+      "weapon": "Bucky",
+      "edition": "Deluxe",
+      "audioUrl": "https://valorant.dyn.riotcdn.net/x/videos/release-12.09/37338bf1-4967-b577-38ee-70a260ea9c47_default_universal.mp4"
+    },
+    {
+      "uuid": "324c837d-4e55-a259-0852-92bc27e724da",
+      "displayName": "Titanmail Frenzy",
+      "displayNamePT": "Frenzy Titânica",
+      "bundleName": "Titanmail",
+      "bundleNamePT": "Titânica",
+      "weapon": "Frenzy",
+      "edition": "Deluxe",
+      "audioUrl": "https://valorant.dyn.riotcdn.net/x/videos/release-12.09/1adbe917-494e-04dc-02ee-f79c45a54ba5_default_universal.mp4"
+    },
+    {
+      "uuid": "e8dc658b-4c7c-2338-facd-7d8d2813560a",
+      "displayName": "Titanmail Vandal",
+      "displayNamePT": "Vandal Titânica",
+      "bundleName": "Titanmail",
+      "bundleNamePT": "Titânica",
+      "weapon": "Vandal",
+      "edition": "Deluxe",
+      "audioUrl": "https://valorant.dyn.riotcdn.net/x/videos/release-12.09/96517680-434a-ea0e-4b2e-da94443a1b0d_default_universal.mp4"
+    },
+    {
       "uuid": "26bb8b5c-4b3f-e0f6-39f7-bfa6eae59c00",
       "displayName": "Valiant Hero Ares",
       "displayNamePT": "Ares Herói Valoroso",
@@ -2909,6 +3109,46 @@
       "weapon": "Vandal",
       "edition": "Premium",
       "audioUrl": "https://valorant.dyn.riotcdn.net/x/videos/release-12.09/4c0cf557-4af3-c2c9-8a12-38ac2f62555e_default_universal.mp4"
+    },
+    {
+      "uuid": "d3118d7c-479c-a44a-9b45-6cbe1ab42f0e",
+      "displayName": "Wonderstallion Frenzy",
+      "displayNamePT": "Frenzy Fantasticórnio",
+      "bundleName": "Wonderstallion",
+      "bundleNamePT": "Fantasticórnio",
+      "weapon": "Frenzy",
+      "edition": "Select",
+      "audioUrl": "https://valorant.dyn.riotcdn.net/x/videos/release-12.09/7b663798-4ec7-ee66-4374-d996f1d54092_default_universal.mp4"
+    },
+    {
+      "uuid": "6779d117-4a4b-d534-1f35-10a52f570694",
+      "displayName": "Wonderstallion Guardian",
+      "displayNamePT": "Guardian Fantasticórnio",
+      "bundleName": "Wonderstallion",
+      "bundleNamePT": "Fantasticórnio",
+      "weapon": "Guardian",
+      "edition": "Select",
+      "audioUrl": "https://valorant.dyn.riotcdn.net/x/videos/release-12.09/5ab911d0-405c-c838-8599-508772893245_default_universal.mp4"
+    },
+    {
+      "uuid": "a01b2a0a-4ab8-d5f9-aad8-a89d8bd0b7fb",
+      "displayName": "Wonderstallion Spectre",
+      "displayNamePT": "Spectre Fantasticórnio",
+      "bundleName": "Wonderstallion",
+      "bundleNamePT": "Fantasticórnio",
+      "weapon": "Spectre",
+      "edition": "Select",
+      "audioUrl": "https://valorant.dyn.riotcdn.net/x/videos/release-12.09/d35ab716-454e-af21-5063-908ecbe1d70f_default_universal.mp4"
+    },
+    {
+      "uuid": "e24d739f-41e9-a376-8fea-d5a5d715ebe9",
+      "displayName": "Wonderstallion Vandal",
+      "displayNamePT": "Vandal Fantasticórnio",
+      "bundleName": "Wonderstallion",
+      "bundleNamePT": "Fantasticórnio",
+      "weapon": "Vandal",
+      "edition": "Select",
+      "audioUrl": "https://valorant.dyn.riotcdn.net/x/videos/release-12.09/8521f93c-4ce4-7f1e-58ce-6b8374073ac3_default_universal.mp4"
     },
     {
       "uuid": "0666931c-4580-efd0-af47-afb9f2f72e55",
