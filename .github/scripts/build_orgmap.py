@@ -314,10 +314,17 @@ def _format_vct_title(event_name, year):
     m = re.search(r'Valorant Champions (\d+)', event_name)
     if m:
         return f'Champions {m.group(1)}'
-    # International Masters
+    # Modern Masters format: "Masters Bangkok 2025", "Masters Santiago 2026"
     m = re.search(r'Masters (\w+) (\d+)', event_name)
     if m:
         return f'Masters {m.group(1)} {m.group(2)}'
+    # Legacy Masters format: "Valorant Champions Tour Stage N: Masters <City>"
+    # (2021–2022 era — no year in event name, extract from date param)
+    m = re.search(r'Stage \d+: Masters (\w+)', event_name, re.IGNORECASE)
+    if m:
+        city = m.group(1)
+        yr   = str(year)[:4] if year else ''
+        return f'Masters {city} {yr}' if yr else f'Masters {city}'
     # Regional: always year-level (Kickoff / Stage 1 / Stage 2 / Split N all
     # collapse to the same "VCT <Region> <year>" key used in TITLE_TIERS)
     m = re.search(r'(?:VCT|Champions Tour) (\d+): (Americas|EMEA|Pacific|China)', event_name)
