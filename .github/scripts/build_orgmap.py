@@ -27,7 +27,7 @@ import os
 import re
 import sys
 import time
-from collections import defaultdict, Counter
+from collections import defaultdict
 
 # ── Secrets ───────────────────────────────────────────────────────────────────
 API_BASE = os.environ.get("VLRGG_API_URL", "").rstrip("/")
@@ -137,9 +137,6 @@ COUNTRY_MAP = {
 }
 
 TIMEOUT       = 30
-RESULTS_PAGES = 10
-MAX_MATCHES   = 5
-VCT_KEYWORDS  = ["VCT 2026", "VCT 2025"]
 
 
 def agent_to_role(agent_name):
@@ -409,85 +406,16 @@ print(f"\n  ✓ {ok_count} players fetched, {err_count} errors")
 print(f"  teamFull: {len(player_teamfull)}, country: {len(player_country)}, agents: {len(player_agents_p)}\n")
 
 
-# ── Step 2: Recent VCT match agent picks ──────────────────────────────────────
-recent_agents          = defaultdict(list)
-match_count_per_player = defaultdict(int)
-
-print(f"[Step 2] Fetching recent VCT matches ({RESULTS_PAGES} pages)...")
-
-match_ids = []
-for page in range(1, RESULTS_PAGES + 1):
-    try:
-        r = httpx.get(
-            f"{API_BASE}/v2/match",
-            params={"q": "results", "num_pages": 1, "from_page": page},
-            timeout=TIMEOUT,
-            follow_redirects=True,
-        )
-        r.raise_for_status()
-        results = r.json().get("data", {}).get("segments", [])
-        for match in results:
-            name      = match.get("tournament_name", "")
-            page_path = match.get("match_page", "")
-            if any(kw in name for kw in VCT_KEYWORDS) and page_path:
-                mid = page_path.strip("/").split("/")[0]
-                if mid.isdigit():
-                    match_ids.append(mid)
-        print(f"  Page {page}: {len(results)} results, {len(match_ids)} VCT so far")
-    except Exception as e:
-        print(f"  ✗ Results page {page}: {e}")
-
-match_ids = list(dict.fromkeys(match_ids))
-print(f"\n  Fetching details for {len(match_ids)} VCT matches...\n")
-
-for mid in match_ids:
-    try:
-        r = httpx.get(
-            f"{API_BASE}/v2/match/details",
-            params={"match_id": mid},
-            timeout=TIMEOUT,
-            follow_redirects=True,
-        )
-        r.raise_for_status()
-        seg  = (r.json().get("data", {}).get("segments") or [{}])[0]
-        maps = seg.get("maps") or []
-
-        # Collect all agent picks per player across all maps in this match.
-        # We record ONE entry per match (dominant agent), not one per map.
-        # This prevents multi-map series from inflating agent counts and
-        # causing false "Flex" classification via the secondary >= 2 rule.
-        match_picks = defaultdict(list)
-        for game_map in maps:
-            players_data = game_map.get("players") or {}
-            for side in ("team1", "team2"):
-                for p in players_data.get(side) or []:
-                    pname = (p.get("name") or "").strip().lower()
-                    agent = (p.get("agent") or "").strip()
-                    if pname and agent:
-                        match_picks[pname].append(agent)
-
-        # Commit one dominant agent per player for this match
-        for pname, agents in match_picks.items():
-            if match_count_per_player[pname] < MAX_MATCHES and agents:
-                dominant = Counter(agents).most_common(1)[0][0]
-                recent_agents[pname].append(dominant)
-                match_count_per_player[pname] += 1
-
-        time.sleep(0.4)
-    except Exception as e:
-        print(f"  ✗ match {mid}: {e}")
-
-# Stats: how many known players have recent VCT agents
-known_names = set(name_to_vlrid.keys()) | set(org_map.keys())
-players_with_recent = sum(1 for p in known_names if p in recent_agents)
-print(f"  Recent agents found for {players_with_recent} known players\n")
-
-
-# ── Step 3: Detect role — 4-tier priority ─────────────────────────────────────
-# 1. VCT match agents (most accurate, last 5 matches)
-# 2. Player endpoint agent_stats (career weighted by usage)
-# 3. 30-day stats agents
-# 4. All-time career agents
+# ── Step 2: Detect role — 3-tier priority ─────────────────────────────────────
+# 1. 30-day stats agents  (primary — large sample, still recent)
+# 2. Player endpoint agent_stats (career weighted by usage — fallback for inactive)
+# 3. All-time career agents (last resort)
+#
+# The previous approach of fetching last-5-VCT-match details was dropped:
+# - 5 matches is too small a sample (outlier games skew results)
+# - Per-map agent picks across 5 maps/match inflated counts unfairly
+# - Name collisions between regions caused cross-contamination
+# - 30d stats already covers ~30-50 map picks per player with proper aggregation
 
 role_map = {}   # name.lower() → role string
 
@@ -495,9 +423,8 @@ all_known = set(vlr_id_map[v]["name"].lower() for v in vlr_id_map) | set(org_map
 
 for pname in all_known:
     agents = (
-        recent_agents.get(pname) or
-        player_agents_p.get(pname) or
         agents_30d.get(pname) or
+        player_agents_p.get(pname) or
         agents_all.get(pname) or
         []
     )
@@ -505,15 +432,14 @@ for pname in all_known:
     if role:
         role_map[pname] = role
 
-t1 = sum(1 for p in role_map if p in recent_agents)
-t2 = sum(1 for p in role_map if p not in recent_agents and p in player_agents_p)
-t3 = sum(1 for p in role_map if p not in recent_agents and p not in player_agents_p and p in agents_30d)
-t4 = len(role_map) - t1 - t2 - t3
-print(f"[Step 3] {len(role_map)} roles detected:")
-print(f"  VCT matches: {t1} | player endpoint: {t2} | 30d stats: {t3} | all-time: {t4}\n")
+t1 = sum(1 for p in role_map if p in agents_30d)
+t2 = sum(1 for p in role_map if p not in agents_30d and p in player_agents_p)
+t3 = len(role_map) - t1 - t2
+print(f"[Step 2] {len(role_map)} roles detected:")
+print(f"  30d stats: {t1} | player endpoint: {t2} | all-time: {t3}\n")
 
 
-# ── Step 4: Liquipedia API — birthdate → age (bulk fetch) ────────────────────
+# ── Step 3: Liquipedia API — birthdate → age (bulk fetch) ────────────────────
 #
 # Free tier: 60 req/hour (~1 req/min).  Per-player loops are impossible at this
 # rate with 200+ players.  Instead we fetch ALL Valorant players in 1–3 paginated
@@ -531,9 +457,9 @@ igl_map = {}  # pname → True when Liquipedia confirms IGL role
 LIQUIPEDIA_KEY = os.environ.get("LIQUIPEDIA_API_KEY", "").strip()
 
 if not LIQUIPEDIA_KEY:
-    print("[Step 4] LIQUIPEDIA_API_KEY not set — age and IGL stay hardcoded in players.js\n")
+    print("[Step 3] LIQUIPEDIA_API_KEY not set — age and IGL stay hardcoded in players.js\n")
 else:
-    print("[Step 4] Bulk-fetching Valorant players from Liquipedia (birthdate + IGL)...")
+    print("[Step 3] Bulk-fetching Valorant players from Liquipedia (birthdate + IGL)...")
     today = _date.today()
     liq_headers = {
         "Authorization": f"Apikey {LIQUIPEDIA_KEY}",
@@ -664,7 +590,7 @@ else:
           f"({liq_no_match} players not matched on Liquipedia)\n")
 
 
-# ── Step 5: Build org-map.json ────────────────────────────────────────────────
+# ── Step 4: Build org-map.json ────────────────────────────────────────────────
 #
 # Entry format:
 #   vlrId-keyed  (String(vlrId)) → full data: teamFull, country, countryCode, role, age
