@@ -87,7 +87,7 @@ var PLAYERS_DB = [
   { id:"erde",      vlrId:29242, name:"erde",      displayName:"erde",      country:"Chile",           countryCode:"CL", team:"LOUD",          league:"VCT Americas", leagueId:"americas", age:18, role:"Controller", isIGL:true,  yearsActive:4, titles:["Nenhum"] },
   { id:"Virtyy",    vlrId:3983,  name:"Virtyy",    displayName:"Virtyy",    country:"Rep. Dominicana", countryCode:"DO", team:"LOUD",          league:"VCT Americas", leagueId:"americas", age:23, role:"Flex",                   yearsActive:5, titles:["Nenhum"] },
   { id:"lukxo",     vlrId:28716, name:"lukxo",     displayName:"lukxo",     country:"Brasil",          countryCode:"BR", team:"LOUD",          league:"VCT Americas", leagueId:"americas", age:19, role:"Duelist",                yearsActive:3, titles:["Nenhum"] },
-  { id:"cauanzin",  vlrId:6193,  name:"cauanzin",  displayName:"cauanzin",  country:"Brasil",          countryCode:"BR", team:"LOUD",          league:"VCT Americas", leagueId:"americas", age:20, role:"Initiator",              yearsActive:4, titles:["Champions 2022","VCT Americas 2022"] },
+  { id:"cauanzin",  vlrId:6193,  name:"cauanzin",  displayName:"cauanzin",  country:"Brasil",          countryCode:"BR", team:"LOUD",          league:"VCT Americas", leagueId:"americas", age:20, role:"Initiator",              yearsActive:4, titles:["VCT Americas 2023"] },
   { id:"Darker",    vlrId:10557, name:"Darker",    displayName:"Darker",    country:"Colômbia",        countryCode:"CO", team:"LOUD",          league:"VCT Americas", leagueId:"americas", age:21, role:"Flex",                   yearsActive:3, titles:["Nenhum"] },
 
   // ── KRÜ Esports ───────────────────────────────────────────
