@@ -27,7 +27,7 @@ import os
 import re
 import sys
 import time
-from collections import defaultdict
+from collections import defaultdict, Counter
 
 # ── Secrets ───────────────────────────────────────────────────────────────────
 API_BASE = os.environ.get("VLRGG_API_URL", "").rstrip("/")
@@ -182,7 +182,7 @@ def country_from_code(code):
 
 # ── Step 0: Parse players.js for vlrId mapping ────────────────────────────────
 PLAYERS_JS_PATH = os.path.normpath(
-    os.path.join(os.path.dirname(__file__), "..", "..", "js", "players.js")
+    os.path.join(os.path.dirname(__file__), "..", "..", "public", "js", "players.js")
 )
 
 # vlrId (int) → { "id": str, "name": str }
@@ -452,21 +452,26 @@ for mid in match_ids:
         seg  = (r.json().get("data", {}).get("segments") or [{}])[0]
         maps = seg.get("maps") or []
 
+        # Collect all agent picks per player across all maps in this match.
+        # We record ONE entry per match (dominant agent), not one per map.
+        # This prevents multi-map series from inflating agent counts and
+        # causing false "Flex" classification via the secondary >= 2 rule.
+        match_picks = defaultdict(list)
         for game_map in maps:
             players_data = game_map.get("players") or {}
             for side in ("team1", "team2"):
                 for p in players_data.get(side) or []:
                     pname = (p.get("name") or "").strip().lower()
                     agent = (p.get("agent") or "").strip()
-                    if pname and agent and match_count_per_player[pname] < MAX_MATCHES:
-                        recent_agents[pname].append(agent)
+                    if pname and agent:
+                        match_picks[pname].append(agent)
 
-        if maps:
-            for side in ("team1", "team2"):
-                for p in (maps[0].get("players") or {}).get(side) or []:
-                    pname = (p.get("name") or "").strip().lower()
-                    if pname:
-                        match_count_per_player[pname] += 1
+        # Commit one dominant agent per player for this match
+        for pname, agents in match_picks.items():
+            if match_count_per_player[pname] < MAX_MATCHES and agents:
+                dominant = Counter(agents).most_common(1)[0][0]
+                recent_agents[pname].append(dominant)
+                match_count_per_player[pname] += 1
 
         time.sleep(0.4)
     except Exception as e:
