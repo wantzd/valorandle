@@ -4,7 +4,8 @@ on:
   push:
     branches: [main]
     paths-ignore:
-      - 'public/data/org-map.json'   # handled by update-players.yml
+      - 'public/data/org-map.json'   # handled by update-players.yml (direct FTP)
+      - 'public/data/skins-db.json'  # handled by update-skins.yml (direct FTP)
       - '.github/**'
       - 'README.md'
       - '.gitignore'
