@@ -22,7 +22,7 @@ const OUT   = join(__dir, '..', 'public', 'data', 'abilities-db.json');
 const BASE  = 'https://valorant-api.com/v1';
 
 // Slot → keyboard key mapping
-const SLOT_KEY = { Ability1: 'C', Ability2: 'Q', Grenade: 'E', Ultimate: 'X' };
+const SLOT_KEY = { Grenade: 'C', Ability1: 'Q', Ability2: 'E', Ultimate: 'X' };
 
 // Normalize role display names to internal English keys
 const ROLE_NORM = {
