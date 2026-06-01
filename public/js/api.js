@@ -4,9 +4,9 @@
   "use strict";
 
   const ORG_MAP_URL    = "./data/org-map.json";
-  const CACHE_DATA_KEY = "valorandle_api_cache_v2";
-  const CACHE_EXP_KEY  = "valorandle_api_cache_exp";
-  const CACHE_TTL_MS   = 7 * 24 * 60 * 60 * 1000; // 7 days
+  const CACHE_DATA_KEY = "valorandle_api_cache_v3";
+  const CACHE_EXP_KEY  = "valorandle_api_cache_exp_v3";
+  const CACHE_TTL_MS   = 24 * 60 * 60 * 1000; // 24 hours — titles update weekly, keep cache fresh
 
   function getCached() {
     try {
