@@ -325,12 +325,17 @@ def _format_vct_title(event_name, year):
         city = m.group(1)
         yr   = str(year)[:4] if year else ''
         return f'Masters {city} {yr}' if yr else f'Masters {city}'
-    # Regional: always year-level (Kickoff / Stage 1 / Stage 2 / Split N all
-    # collapse to the same "VCT <Region> <year>" key used in TITLE_TIERS)
-    m = re.search(r'(?:VCT|Champions Tour) (\d+): (Americas|EMEA|Pacific|China)', event_name)
+    # Regional: preserve Kickoff / Stage N suffix when present
+    # e.g. "VCT 2026: Americas Kickoff"  → "VCT Americas Kickoff 2026"
+    #      "VCT 2026: Americas Stage 1"  → "VCT Americas Stage 1 2026"
+    #      "VCT 2023: Americas"          → "VCT Americas 2023"
+    m = re.search(r'(?:VCT|Champions Tour) (\d+): (Americas|EMEA|Pacific|China)(.*)', event_name)
     if m:
         year_str = m.group(1)
         region   = m.group(2)
+        stage    = m.group(3).strip()   # "Kickoff", "Stage 1", "Stage 2", or ""
+        if stage:
+            return f'VCT {region} {stage} {year_str}'
         return f'VCT {region} {year_str}'
     return event_name
 
