@@ -139,9 +139,16 @@ export function skinSearch(allSkins, query, excludeUuids = new Set(), lang = 'pt
 //   [bundle, weapon, edition, act]
 // status: 'correct' | 'wrong'
 // hint:   '↑' | '↓' | null (direction arrows for ordered columns)
+// Strip wave suffix ("Araxys 2.0" → "Araxys", "RGX 11z Pro 3.0" → "RGX 11z Pro")
+function baseBundleName(name) {
+  return name.replace(/\s+\d+\.0$/, '').trim();
+}
+
 export function compareSkins(guess, target, patches, lang = 'pt-BR') {
-  const bundleOk = guess.bundleName === target.bundleName;
-  const weaponOk = guess.weapon     === target.weapon;
+  const bundleOk   = guess.bundleName === target.bundleName;
+  const bundleClose = !bundleOk &&
+    baseBundleName(guess.bundleName) === baseBundleName(target.bundleName);
+  const weaponOk = guess.weapon === target.weapon;
 
   const gEd = EDITION_ORDER[guess.edition] || 0;
   const tEd = EDITION_ORDER[target.edition] || 0;
@@ -161,7 +168,7 @@ export function compareSkins(guess, target, patches, lang = 'pt-BR') {
     {
       attr: 'bundle',
       value: gBundleDisplay,
-      status: bundleOk ? 'correct' : 'wrong',
+      status: bundleOk ? 'correct' : bundleClose ? 'close' : 'wrong',
       hint: null,
     },
     {

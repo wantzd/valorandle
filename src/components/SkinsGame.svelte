@@ -649,6 +649,7 @@
                     style="--ci:{ci + 1}"
                     class:flip-new={g.isNew}
                     class:correct={cell.status === 'correct'}
+                    class:close={cell.status === 'close'}
                     class:wrong={cell.status === 'wrong'}
                   >
                     {#if cell.attr === 'edition' && editionIcons[cell.value]}
@@ -1010,8 +1011,9 @@
     align-items:center; justify-content:center; gap:3px;
     text-align:center; min-height:56px;
   }
-  .guess-cell.correct { background:var(--green-bg); border-color:var(--green-bd); }
-  .guess-cell.wrong   { background:var(--red-dim);  border-color:var(--red-bd); }
+  .guess-cell.correct { background:var(--green-bg);  border-color:var(--green-bd); }
+  .guess-cell.close   { background:var(--yellow-bg); border-color:var(--yellow-bd); }
+  .guess-cell.wrong   { background:var(--red-dim);   border-color:var(--red-bd); }
 
   /* ── Cell flip-reveal animation ─────────────────────────────────────────── */
   /*
@@ -1046,6 +1048,7 @@
   .edition-icon { width:32px; height:32px; object-fit:contain; display:block; }
   .cell-hint { font-family:var(--font-mono); font-size:0.9rem; font-weight:700; line-height:1; }
   .correct .cell-hint { color:var(--green); }
+  .close   .cell-hint { color:var(--yellow); }
   .wrong   .cell-hint { color:var(--red); }
 
   /* ── Result panel ────────────────────────────────────────────────────────── */
