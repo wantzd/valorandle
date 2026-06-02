@@ -161,11 +161,35 @@ const ROLE_GROUPS = {
 
 const TITLE_TIERS = {
   S: ["Champions 2021", "Champions 2022", "Champions 2023", "Champions 2024", "Champions 2025"],
-  A: ["Masters Reykjavik 2021", "Masters Berlim 2021", "Masters Reykjavik 2022",
-      "Masters Copenhagen 2022", "Masters Tokyo 2023", "Masters Shanghai 2024",
-      "Masters Bangkok 2025", "Masters Santiago 2026",
-      "VCT Americas 2022", "VCT Americas 2023", "VCT Americas 2024", "VCT Americas 2025",
-      "VCT Americas 2026"]
+  A: [
+    // Masters (international)
+    "Masters Reykjavik 2021", "Masters Berlin 2021",
+    "Masters Reykjavik 2022", "Masters Copenhagen 2022",
+    "Masters Tokyo 2023",
+    "Masters Shanghai 2024",
+    "Masters Bangkok 2025", "Masters Toronto 2025",
+    "Masters Santiago 2026",
+    // VCT Americas
+    "VCT Americas 2022", "VCT Americas 2023",
+    "VCT Americas Kickoff 2024", "VCT Americas Stage 1 2024", "VCT Americas Stage 2 2024",
+    "VCT Americas Kickoff 2025", "VCT Americas Stage 1 2025", "VCT Americas Stage 2 2025",
+    "VCT Americas Kickoff 2026", "VCT Americas Stage 1 2026", "VCT Americas Stage 2 2026",
+    // VCT EMEA
+    "VCT EMEA 2023",
+    "VCT EMEA Kickoff 2024", "VCT EMEA Stage 1 2024", "VCT EMEA Stage 2 2024",
+    "VCT EMEA Kickoff 2025", "VCT EMEA Stage 1 2025", "VCT EMEA Stage 2 2025",
+    "VCT EMEA Kickoff 2026", "VCT EMEA Stage 1 2026", "VCT EMEA Stage 2 2026",
+    // VCT Pacific
+    "VCT Pacific 2023",
+    "VCT Pacific Kickoff 2024", "VCT Pacific Stage 1 2024", "VCT Pacific Stage 2 2024",
+    "VCT Pacific Kickoff 2025", "VCT Pacific Stage 1 2025", "VCT Pacific Stage 2 2025",
+    "VCT Pacific Kickoff 2026", "VCT Pacific Stage 1 2026", "VCT Pacific Stage 2 2026",
+    // VCT China
+    "VCT China 2023",
+    "VCT China Kickoff 2024", "VCT China Stage 1 2024", "VCT China Stage 2 2024",
+    "VCT China Kickoff 2025", "VCT China Stage 1 2025", "VCT China Stage 2 2025",
+    "VCT China Kickoff 2026", "VCT China Stage 1 2026", "VCT China Stage 2 2026",
+  ]
 };
 
 function getTitleTier(title) {
