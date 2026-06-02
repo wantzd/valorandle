@@ -445,8 +445,8 @@ all_known = set(vlr_id_map[v]["name"].lower() for v in vlr_id_map) | set(org_map
 
 for pname in all_known:
     agents = (
-        player_agents_p.get(pname) or
         agents_30d.get(pname) or
+        player_agents_p.get(pname) or
         agents_all.get(pname) or
         []
     )
@@ -454,11 +454,11 @@ for pname in all_known:
     if role:
         role_map[pname] = role
 
-t1 = sum(1 for p in role_map if p in player_agents_p)
-t2 = sum(1 for p in role_map if p not in player_agents_p and p in agents_30d)
+t1 = sum(1 for p in role_map if p in agents_30d)
+t2 = sum(1 for p in role_map if p not in agents_30d and p in player_agents_p)
 t3 = len(role_map) - t1 - t2
 print(f"[Step 2] {len(role_map)} roles detected:")
-print(f"  career stats: {t1} | 30d stats: {t2} | all-time: {t3}\n")
+print(f"  30d stats: {t1} | career stats: {t2} | all-time: {t3}\n")
 
 
 # ── Step 3: Liquipedia API — birthdate → age (bulk fetch) ────────────────────

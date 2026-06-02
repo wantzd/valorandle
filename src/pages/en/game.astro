@@ -325,7 +325,7 @@ import ProPlayersGame from '../../components/ProPlayersGame.svelte';
         if (ok)       h += `<span class="tip-row ok">Correct!</span>`;
         else if (mid) h += `<span class="tip-row mid">Same group</span>`;
         else          h += `<span class="tip-row bad">Different group</span>`;
-        h += `<span class="tip-note">Based on last 5 official matches</span>`;
+        h += `<span class="tip-note">Role based on the player's last 30 days of activity</span>`;
       } else if (fb.attr === "titles") {
         if (fb.fullList && fb.fullList.length > 0) fb.fullList.forEach(tt => { h += `<span class="tip-row">— ${tt}</span>`; });
         else h += `<span class="tip-row">${t.noTitles}</span>`;
