@@ -2229,40 +2229,43 @@
       "VCT China Stage 1 2025"
     ]
   },
+  "zayce": {
+    "role": "Duelist"
+  },
   "kadiri": {
     "age": 18,
     "role": "Sentinel"
   },
-  "zayce": {
-    "role": "Duelist"
+  "bonobo": {
+    "role": "Initiator"
   },
   "seoldam": {
     "age": 25,
     "role": "Duelist"
   },
-  "bonobo": {
-    "role": "Initiator"
-  },
   "devicehp": {
     "role": "Duelist"
   },
+  "kassielsy": {
+    "role": "Flex"
+  },
   "boni": {
     "age": 22,
-    "role": "Duelist"
-  },
-  "ion": {
     "role": "Duelist"
   },
   "jduh": {
     "age": 24,
     "role": "IGL/Controller"
   },
-  "dodonut": {
-    "age": 21,
+  "ion": {
     "role": "Duelist"
   },
   "kachoww": {
     "age": 17,
+    "role": "Duelist"
+  },
+  "dodonut": {
+    "age": 21,
     "role": "Duelist"
   },
   "fireballops": {
@@ -2273,52 +2276,49 @@
     "age": 21,
     "role": "Sentinel"
   },
-  "kassielsy": {
-    "role": "Flex"
+  "fizzy": {
+    "age": 25,
+    "role": "Controller"
   },
   "bucute": {
     "age": 18,
     "role": "Controller"
   },
-  "fizzy": {
-    "age": 25,
-    "role": "Controller"
-  },
-  "hinataa": {
-    "role": "Duelist"
-  },
-  "cakeo": {
-    "role": "Initiator"
-  },
-  "kozzy": {
-    "age": 16,
-    "role": "Duelist"
+  "kubfu": {
+    "role": "Flex"
   },
   "globex": {
     "age": 20,
     "role": "Duelist"
   },
+  "kozzy": {
+    "age": 16,
+    "role": "Duelist"
+  },
   "vita": {
     "role": "Duelist"
   },
-  "kubfu": {
-    "role": "Flex"
+  "cakeo": {
+    "role": "Initiator"
   },
   "f1cio": {
     "age": 20,
     "role": "Controller"
   },
-  "melya": {
-    "age": 20,
-    "role": "Controller"
-  },
-  "gsr": {
-    "age": 17,
-    "role": "Initiator"
+  "hinataa": {
+    "role": "Duelist"
   },
   "sonofcar": {
     "age": 21,
     "role": "Duelist"
+  },
+  "apinya": {
+    "age": 22,
+    "role": "Initiator"
+  },
+  "gsr": {
+    "age": 17,
+    "role": "Initiator"
   },
   "swerl": {
     "age": 21,
@@ -2327,160 +2327,137 @@
   "arcto": {
     "role": "Duelist"
   },
-  "apinya": {
-    "age": 22,
-    "role": "Initiator"
+  "melya": {
+    "age": 20,
+    "role": "Controller"
+  },
+  "baza": {
+    "role": "Duelist"
+  },
+  "oroni": {
+    "role": "Sentinel"
   },
   "starbound": {
     "age": 24,
     "role": "Sentinel"
   },
-  "baza": {
-    "role": "Duelist"
+  "jelly": {
+    "age": 21,
+    "role": "Initiator"
   },
   "tofu": {
     "role": "Initiator"
-  },
-  "oroni": {
-    "role": "Sentinel"
   },
   "frz": {
     "age": 25,
     "role": "Duelist"
   },
-  "sickrey": {
-    "age": 23,
-    "role": "Initiator"
-  },
   "frostt": {
     "role": "Flex"
   },
-  "imvietnamesegirl": {
-    "role": "Duelist"
-  },
-  "jelly": {
-    "age": 21,
+  "sickrey": {
+    "age": 23,
     "role": "Initiator"
-  },
-  "saul": {
-    "role": "Controller"
   },
   "pa1ze": {
     "age": 22,
     "role": "Duelist"
   },
-  "chuchu": {
-    "role": "Duelist"
+  "saul": {
+    "role": "Controller"
+  },
+  "hoangbao": {
+    "role": "Controller"
+  },
+  "niz": {
+    "age": 23,
+    "role": "Controller"
   },
   "yesican": {
     "age": 29,
     "role": "IGL/Initiator"
   },
-  "asianvyn": {
-    "role": "Initiator"
-  },
-  "m4ndzin": {
-    "age": 27,
-    "role": "Controller"
-  },
-  "vania": {
-    "age": 22,
-    "role": "Controller"
-  },
-  "nismo": {
-    "age": 32,
-    "role": "Flex"
-  },
-  "furbsa": {
+  "mathi": {
+    "age": 21,
     "role": "Duelist"
   },
   "kyu": {
     "age": 22,
     "role": "Initiator"
   },
-  "niz": {
-    "age": 23,
+  "nismo": {
+    "age": 32,
+    "role": "Flex"
+  },
+  "m4ndzin": {
+    "age": 27,
     "role": "Controller"
+  },
+  "asianvyn": {
+    "role": "Initiator"
   },
   "nail": {
     "role": "Sentinel"
   },
-  "mathi": {
-    "age": 21,
-    "role": "Duelist"
-  },
-  "hoangbao": {
+  "vania": {
+    "age": 22,
     "role": "Controller"
   },
-  "noia": {
-    "age": 21,
-    "role": "Sentinel"
+  "furbsa": {
+    "role": "Duelist"
   },
   "marti": {
     "age": 21,
     "role": "Controller"
   },
+  "novae": {
+    "role": "Duelist"
+  },
   "ptc": {
     "age": 27,
     "role": "Duelist"
   },
-  "novae": {
-    "role": "Duelist"
-  },
-  "roxthi": {
+  "noia": {
+    "age": 21,
     "role": "Sentinel"
-  },
-  "endoist": {
-    "role": "Duelist"
-  },
-  "minh2": {
-    "role": "Duelist"
-  },
-  "reazy": {
-    "age": 26,
-    "role": "Controller"
-  },
-  "vašek": {
-    "age": 25,
-    "role": "Flex"
   },
   "laz": {
     "age": 30,
     "role": "Sentinel"
   },
-  "ecco": {
+  "vašek": {
+    "age": 25,
+    "role": "Flex"
+  },
+  "roxthi": {
     "role": "Sentinel"
+  },
+  "minh2": {
+    "role": "Duelist"
+  },
+  "endoist": {
+    "role": "Duelist"
   },
   "simond4rk": {
     "age": 25,
-    "role": "Duelist"
-  },
-  "77even": {
     "role": "Duelist"
   },
   "celasun": {
     "age": 19,
     "role": "Sentinel"
   },
+  "77even": {
+    "role": "Duelist"
+  },
+  "reazy": {
+    "age": 26,
+    "role": "Controller"
+  },
   "sunflower": {
     "age": 17,
     "role": "Controller"
   },
-  "elite": {
-    "age": 21,
-    "role": "Sentinel"
-  },
-  "ryry": {
-    "role": "Duelist"
-  },
-  "proxh": {
-    "age": 23,
-    "role": "Controller"
-  },
-  "taraaaaaaaaaaaaa": {
-    "role": "Duelist"
-  },
-  "senor": {
+  "ecco": {
     "role": "Sentinel"
   },
   "onob": {
@@ -2490,50 +2467,45 @@
     "age": 25,
     "role": "Controller"
   },
+  "czester": {
+    "age": 20,
+    "role": "Flex"
+  },
+  "proxh": {
+    "age": 23,
+    "role": "Controller"
+  },
+  "bizerra": {
+    "age": 23,
+    "role": "Initiator"
+  },
+  "senor": {
+    "role": "Sentinel"
+  },
   "slathom999": {
     "role": "Controller"
+  },
+  "elite": {
+    "age": 21,
+    "role": "Sentinel"
   },
   "kadoom": {
     "age": 21,
     "role": "Duelist"
   },
-  "czester": {
-    "age": 20,
-    "role": "Flex"
-  },
-  "lew": {
-    "age": 27,
-    "role": "Flex"
-  },
-  "pr1ck": {
-    "age": 23,
-    "role": "Flex"
-  },
-  "powerpixele": {
-    "age": 22,
-    "role": "Initiator"
-  },
-  "whitecat": {
+  "ryry": {
     "role": "Duelist"
   },
-  "kamyk": {
-    "age": 22,
-    "role": "Controller"
-  },
-  "rezet": {
+  "taraaaaaaaaaaaaa": {
     "role": "Duelist"
-  },
-  "moose": {
-    "age": 28,
-    "role": "Sentinel"
-  },
-  "icy": {
-    "age": 23,
-    "role": "Controller"
   },
   "evv": {
     "age": 20,
     "role": "Initiator"
+  },
+  "moose": {
+    "age": 28,
+    "role": "Sentinel"
   },
   "serial": {
     "role": "Flex"
@@ -2541,9 +2513,35 @@
   "active": {
     "role": "Duelist"
   },
+  "pr1ck": {
+    "age": 23,
+    "role": "Flex"
+  },
   "dark3st": {
     "age": 25,
     "role": "IGL/Flex"
+  },
+  "whitecat": {
+    "role": "Duelist"
+  },
+  "lew": {
+    "age": 27,
+    "role": "Flex"
+  },
+  "icy": {
+    "age": 23,
+    "role": "Controller"
+  },
+  "powerpixele": {
+    "age": 22,
+    "role": "Initiator"
+  },
+  "rezet": {
+    "role": "Duelist"
+  },
+  "kamyk": {
+    "age": 22,
+    "role": "Controller"
   },
   "kicks": {
     "age": 20,
@@ -2553,111 +2551,89 @@
     "age": 16,
     "role": "Duelist"
   },
-  "takas": {
-    "age": 25,
-    "role": "Duelist"
-  },
-  "fair": {
-    "role": "Controller"
-  },
-  "feta": {
-    "age": 22,
-    "role": "Duelist"
-  },
-  "kaduester": {
-    "role": "Duelist"
-  },
-  "jesse": {
-    "age": 23,
-    "role": "Controller"
-  },
-  "toozy": {
-    "age": 20,
-    "role": "Controller"
-  },
-  "mystizip": {
-    "age": 19,
-    "role": "Controller"
-  },
-  "niekk": {
-    "role": "Controller"
-  },
-  "glowstick": {
-    "role": "Initiator"
-  },
-  "leen": {
-    "age": 19,
-    "role": "Flex"
-  },
-  "quint": {
-    "role": "Controller"
-  },
-  "shiro": {
-    "role": "Initiator"
-  },
-  "zanks": {
-    "role": "Duelist"
-  },
-  "florescent": {
-    "age": 19,
+  "qck": {
     "role": "Duelist"
   },
   "purity": {
     "age": 22,
     "role": "Duelist"
   },
-  "hoops": {
+  "glowstick": {
+    "role": "Initiator"
+  },
+  "toozy": {
+    "age": 20,
+    "role": "Controller"
+  },
+  "jesse": {
+    "age": 23,
+    "role": "Controller"
+  },
+  "fair": {
+    "role": "Controller"
+  },
+  "quint": {
     "role": "Controller"
   },
   "wozy": {
+    "role": "Duelist"
+  },
+  "kaduester": {
+    "role": "Duelist"
+  },
+  "feta": {
+    "age": 22,
+    "role": "Duelist"
+  },
+  "shiro": {
+    "role": "Initiator"
+  },
+  "jade": {
+    "role": "Duelist"
+  },
+  "niekk": {
+    "role": "Controller"
+  },
+  "leen": {
+    "age": 19,
+    "role": "Flex"
+  },
+  "zanks": {
+    "role": "Duelist"
+  },
+  "fw": {
+    "role": "Controller"
+  },
+  "kuroo": {
+    "role": "Sentinel"
+  },
+  "eearslan": {
     "role": "Duelist"
   },
   "derrek": {
     "age": 28,
     "role": "Initiator"
   },
-  "qck": {
-    "role": "Duelist"
-  },
-  "kuroo": {
-    "role": "Sentinel"
-  },
-  "jade": {
-    "role": "Duelist"
-  },
-  "eearslan": {
-    "role": "Duelist"
-  },
-  "fw": {
+  "hoops": {
     "role": "Controller"
   },
-  "buld": {
+  "florescent": {
+    "age": 19,
+    "role": "Duelist"
+  },
+  "takas": {
     "age": 25,
-    "role": "IGL/Initiator"
+    "role": "Duelist"
   },
-  "rayundaunted": {
-    "role": "Sentinel"
-  },
-  "atlas": {
-    "role": "Flex"
-  },
-  "xenom": {
-    "age": 23,
+  "mystizip": {
+    "age": 19,
     "role": "Controller"
-  },
-  "nexi": {
-    "age": 25,
-    "role": "Sentinel"
-  },
-  "karma": {
-    "age": 24,
-    "role": "Flex"
   },
   "sizo": {
     "role": "Sentinel"
   },
-  "amy": {
-    "age": 21,
+  "nexi": {
+    "age": 25,
     "role": "Sentinel"
   },
   "star": {
@@ -2667,21 +2643,41 @@
     "age": 25,
     "role": "Flex"
   },
+  "karma": {
+    "age": 24,
+    "role": "Flex"
+  },
+  "atlas": {
+    "role": "Flex"
+  },
+  "buld": {
+    "age": 25,
+    "role": "IGL/Initiator"
+  },
+  "xenom": {
+    "age": 23,
+    "role": "Controller"
+  },
+  "rayundaunted": {
+    "role": "Sentinel"
+  },
+  "amy": {
+    "age": 21,
+    "role": "Sentinel"
+  },
+  "georggyyy": {
+    "age": 25,
+    "role": "Flex"
+  },
+  "alexis": {
+    "age": 23,
+    "role": "Initiator"
+  },
   "itachi": {
     "role": "Duelist"
   },
-  "mammal": {
-    "role": "Initiator"
-  },
-  "loathe": {
-    "role": "Controller"
-  },
-  "scram": {
-    "role": "Initiator"
-  },
-  "akita": {
-    "age": 19,
-    "role": "Duelist"
+  "monkey business": {
+    "role": "Sentinel"
   },
   "tesseract": {
     "role": "Initiator"
@@ -2690,12 +2686,22 @@
     "age": 20,
     "role": "Sentinel"
   },
-  "d3ffo": {
-    "age": 24,
-    "role": "Sentinel"
-  },
   "veyron": {
     "role": "Sentinel"
+  },
+  "akita": {
+    "age": 19,
+    "role": "Duelist"
+  },
+  "biggiecheese": {
+    "age": 22,
+    "role": "Controller"
+  },
+  "mammal": {
+    "role": "Initiator"
+  },
+  "scram": {
+    "role": "Initiator"
   },
   "stallion": {
     "role": "Controller"
@@ -2706,20 +2712,37 @@
   "13rd": {
     "role": "Duelist"
   },
-  "alexis": {
-    "age": 23,
-    "role": "Initiator"
-  },
-  "georggyyy": {
-    "age": 25,
-    "role": "Flex"
-  },
-  "biggiecheese": {
-    "age": 22,
+  "loathe": {
     "role": "Controller"
   },
-  "monkey business": {
+  "d3ffo": {
+    "age": 24,
     "role": "Sentinel"
+  },
+  "bard0lf": {
+    "age": 23,
+    "role": "Flex"
+  },
+  "enzo": {
+    "age": 30,
+    "role": "Flex"
+  },
+  "wtex": {
+    "age": 17,
+    "role": "Duelist"
+  },
+  "doffy": {
+    "role": "Duelist"
+  },
+  "bob": {
+    "age": 25,
+    "role": "Duelist"
+  },
+  "puffy panda": {
+    "role": "Initiator"
+  },
+  "vanitas": {
+    "role": "Initiator"
   },
   "sleepyaria": {
     "role": "Duelist"
@@ -2731,132 +2754,90 @@
   "hasagiii": {
     "role": "Controller"
   },
-  "bard0lf": {
-    "age": 23,
-    "role": "Flex"
-  },
-  "puffy panda": {
+  "liza": {
     "role": "Initiator"
-  },
-  "bob": {
-    "age": 25,
-    "role": "Duelist"
-  },
-  "enzo": {
-    "age": 30,
-    "role": "Flex"
-  },
-  "vanitas": {
-    "role": "Initiator"
-  },
-  "doffy": {
-    "role": "Duelist"
   },
   "gmd": {
     "age": 25,
     "role": "Controller"
   },
-  "liza": {
+  "wens": {
+    "age": 20,
     "role": "Initiator"
   },
-  "wtex": {
-    "age": 17,
-    "role": "Duelist"
+  "yigox": {
+    "age": 18,
+    "role": "Sentinel"
   },
-  "edith": {
-    "age": 20,
-    "role": "Duelist"
+  "mali": {
+    "age": 19,
+    "role": "Initiator"
+  },
+  "kumi": {
+    "age": 21,
+    "role": "Sentinel"
+  },
+  "ducduog": {
+    "role": "Initiator"
+  },
+  "eli": {
+    "age": 26,
+    "role": "Sentinel"
+  },
+  "swifty": {
+    "role": "Controller"
+  },
+  "kibojn": {
+    "age": 21,
+    "role": "Initiator"
+  },
+  "devilasxa": {
+    "age": 24,
+    "role": "Flex"
   },
   "minimise": {
     "age": 23,
+    "role": "Initiator"
+  },
+  "twilight": {
+    "age": 22,
+    "role": "Initiator"
+  },
+  "azys": {
+    "age": 24,
+    "role": "Flex"
+  },
+  "devy": {
     "role": "Initiator"
   },
   "adora": {
     "age": 25,
     "role": "Duelist"
   },
-  "azys": {
-    "age": 24,
-    "role": "Flex"
-  },
-  "kumi": {
-    "age": 21,
+  "haby": {
     "role": "Sentinel"
   },
-  "gbz": {
-    "role": "Controller"
-  },
-  "devilasxa": {
-    "age": 24,
-    "role": "Flex"
-  },
-  "mali": {
-    "age": 19,
-    "role": "Initiator"
-  },
-  "wens": {
+  "edith": {
     "age": 20,
-    "role": "Initiator"
+    "role": "Duelist"
   },
   "azury": {
     "age": 21,
     "role": "Initiator"
   },
-  "devy": {
-    "role": "Initiator"
-  },
-  "kibojn": {
-    "age": 21,
-    "role": "Initiator"
+  "gbz": {
+    "role": "Controller"
   },
   "quacker": {
     "role": "Duelist"
-  },
-  "yigox": {
-    "age": 18,
-    "role": "Sentinel"
-  },
-  "eli": {
-    "age": 26,
-    "role": "Sentinel"
-  },
-  "ducduog": {
-    "role": "Initiator"
-  },
-  "bizerra": {
-    "age": 23,
-    "role": "Initiator"
-  },
-  "haby": {
-    "role": "Sentinel"
-  },
-  "swifty": {
-    "role": "Controller"
   },
   "tonza": {
     "age": 17,
     "role": "Duelist"
   },
-  "twilight": {
+  "wildfire": {
     "age": 22,
-    "role": "Initiator"
-  },
-  "luky": {
-    "role": "Duelist"
-  },
-  "soufy": {
-    "role": "Controller"
-  },
-  "magnum": {
-    "age": 24,
-    "role": "IGL/Duelist"
-  },
-  "140": {
-    "role": "Controller"
-  },
-  "spaz": {
-    "age": 22,
-    "role": "Controller"
+    "role": "Flex"
   },
   "joliinaa": {
     "role": "Duelist"
@@ -2864,72 +2845,74 @@
   "saintclaws": {
     "role": "Duelist"
   },
-  "infiltrator": {
-    "age": 22,
+  "wanzeru": {
+    "age": 18,
     "role": "Duelist"
+  },
+  "magnum": {
+    "age": 24,
+    "role": "IGL/Duelist"
+  },
+  "luky": {
+    "role": "Duelist"
+  },
+  "spaz": {
+    "age": 22,
+    "role": "Controller"
   },
   "sorex": {
     "age": 18,
     "role": "Controller"
   },
-  "wildfire": {
-    "age": 22,
-    "role": "Flex"
-  },
   "yearn": {
     "role": "Sentinel"
   },
-  "wanzeru": {
-    "age": 18,
-    "role": "Duelist"
-  },
-  "yutaro": {
-    "role": "Sentinel"
-  },
-  "recoil": {
-    "age": 21,
-    "role": "Initiator"
-  },
-  "exa": {
-    "age": 17,
+  "140": {
     "role": "Controller"
   },
-  "foreign": {
-    "role": "Sentinel"
+  "infiltrator": {
+    "age": 22,
+    "role": "Duelist"
   },
-  "alca": {
-    "age": 24,
-    "role": "Initiator"
+  "soufy": {
+    "role": "Controller"
+  },
+  "shondex": {
+    "age": 20,
+    "role": "Controller"
   },
   "tiezzi": {
+    "role": "Duelist"
+  },
+  "dth": {
+    "role": "Controller"
+  },
+  "decoy": {
+    "age": 18,
     "role": "Duelist"
   },
   "screwface": {
     "age": 26,
     "role": "Sentinel"
   },
-  "ken": {
-    "age": 20,
-    "role": "Sentinel"
+  "alca": {
+    "age": 24,
+    "role": "Initiator"
   },
-  "dth": {
+  "exa": {
+    "age": 17,
     "role": "Controller"
   },
   "sevire": {
     "age": 24,
     "role": "Duelist"
   },
-  "avey": {
-    "age": 18,
-    "role": "Controller"
-  },
-  "v1c": {
-    "age": 21,
-    "role": "Controller"
-  },
-  "stunna": {
-    "age": 20,
+  "trinity": {
     "role": "Duelist"
+  },
+  "zander": {
+    "age": 24,
+    "role": "Controller"
   },
   "hotsauz": {
     "age": 27,
@@ -2939,280 +2922,258 @@
     "age": 19,
     "role": "Controller"
   },
-  "shondex": {
+  "stunna": {
     "age": 20,
-    "role": "Controller"
-  },
-  "neptunee": {
-    "role": "Sentinel"
-  },
-  "decoy": {
-    "age": 18,
-    "role": "Duelist"
-  },
-  "reslyde": {
-    "role": "Duelist"
-  },
-  "deminatix": {
-    "age": 25,
-    "role": "Flex"
-  },
-  "tokameite": {
-    "age": 23,
-    "role": "Initiator"
-  },
-  "vsoul": {
-    "role": "Duelist"
-  },
-  "trinity": {
     "role": "Duelist"
   },
   "gabbydiz": {
     "role": "Controller"
   },
-  "nami": {
-    "age": 24,
-    "role": "IGL/Controller"
+  "avey": {
+    "age": 18,
+    "role": "Controller"
+  },
+  "recoil": {
+    "age": 21,
+    "role": "Initiator"
+  },
+  "foreign": {
+    "role": "Sentinel"
+  },
+  "vsoul": {
+    "role": "Duelist"
   },
   "zamal": {
     "role": "Duelist"
   },
-  "zander": {
-    "age": 24,
-    "role": "Controller"
+  "neptunee": {
+    "role": "Sentinel"
   },
-  "kaoticc": {
-    "role": "Duelist"
-  },
-  "dau7": {
-    "role": "Duelist"
-  },
-  "qu1ckz": {
-    "age": 19,
+  "tokameite": {
+    "age": 23,
     "role": "Initiator"
   },
-  "lewn": {
+  "ken": {
+    "age": 20,
+    "role": "Sentinel"
+  },
+  "deminatix": {
+    "age": 25,
+    "role": "Flex"
+  },
+  "v1c": {
+    "age": 21,
+    "role": "Controller"
+  },
+  "reslyde": {
     "role": "Duelist"
   },
-  "spyzera": {
-    "role": "Flex"
+  "yutaro": {
+    "role": "Sentinel"
   },
-  "r1sen": {
-    "age": 20,
-    "role": "Flex"
+  "nami": {
+    "age": 24,
+    "role": "IGL/Controller"
   },
-  "wezzy": {
+  "shinnok": {
     "age": 18,
+    "role": "Duelist"
+  },
+  "davih": {
+    "age": 23,
+    "role": "Controller"
+  },
+  "lux9": {
+    "age": 22,
+    "role": "Duelist"
+  },
+  "joxjo": {
+    "age": 28,
+    "role": "IGL/Initiator"
+  },
+  "burzzy": {
+    "age": 21,
     "role": "Flex"
   },
   "fluxxy": {
     "age": 23,
     "role": "Controller"
   },
-  "max": {
-    "role": "Initiator"
-  },
-  "shinnok": {
-    "age": 18,
+  "kaoticc": {
     "role": "Duelist"
-  },
-  "murza": {
-    "age": 18,
-    "role": "Flex"
-  },
-  "nakya": {
-    "age": 23,
-    "role": "Duelist"
-  },
-  "rod": {
-    "role": "Initiator"
   },
   "sacred": {
     "age": 19,
     "role": "Sentinel"
   },
-  "h1ber": {
-    "age": 28,
-    "role": "Initiator"
-  },
-  "burzzy": {
-    "age": 21,
+  "wezzy": {
+    "age": 18,
     "role": "Flex"
   },
-  "joxjo": {
-    "age": 28,
-    "role": "IGL/Initiator"
+  "spyzera": {
+    "role": "Flex"
   },
-  "davih": {
-    "age": 23,
-    "role": "Controller"
+  "lewn": {
+    "role": "Duelist"
   },
-  "hoody": {
-    "age": 27,
+  "qu1ckz": {
+    "age": 19,
     "role": "Initiator"
   },
-  "roses": {
-    "role": "Controller"
+  "nakya": {
+    "age": 23,
+    "role": "Duelist"
   },
-  "natz": {
-    "age": 24,
-    "role": "Controller"
+  "r1sen": {
+    "age": 20,
+    "role": "Flex"
+  },
+  "murza": {
+    "age": 18,
+    "role": "Flex"
   },
   "heartless": {
     "role": "Initiator"
-  },
-  "shintaro": {
-    "role": "Duelist"
-  },
-  "lux9": {
-    "age": 22,
-    "role": "Duelist"
   },
   "berryx": {
     "age": 17,
     "role": "Initiator"
   },
-  "zeyno": {
-    "age": 17,
+  "hoody": {
+    "age": 27,
+    "role": "Initiator"
+  },
+  "h1ber": {
+    "age": 28,
+    "role": "Initiator"
+  },
+  "natz": {
+    "age": 24,
     "role": "Controller"
   },
-  "styron": {
-    "age": 24,
+  "max": {
     "role": "Initiator"
   },
-  "pmc": {
-    "role": "Flex"
-  },
-  "samed": {
-    "age": 19,
-    "role": "Duelist"
-  },
-  "gdzin": {
-    "role": "Duelist"
-  },
-  "deadink": {
-    "age": 24,
-    "role": "Duelist"
-  },
-  "smoke": {
-    "role": "Duelist"
-  },
-  "renz": {
-    "age": 24,
-    "role": "Initiator"
-  },
-  "jakee": {
-    "age": 23,
+  "roses": {
     "role": "Controller"
   },
-  "famsii": {
-    "age": 22,
+  "rod": {
     "role": "Initiator"
-  },
-  "b1sk": {
-    "age": 25,
-    "role": "Duelist"
-  },
-  "nia": {
-    "age": 33,
-    "role": "Duelist"
-  },
-  "banger": {
-    "age": 25,
-    "role": "Sentinel"
-  },
-  "tek": {
-    "role": "Duelist"
   },
   "vuxqt": {
     "age": 25,
-    "role": "Controller"
-  },
-  "jademwah": {
-    "age": 23,
-    "role": "IGL/Flex"
-  },
-  "zenox": {
-    "role": "Duelist"
-  },
-  "dre": {
-    "role": "Sentinel"
-  },
-  "sarahcat": {
-    "role": "Sentinel"
-  },
-  "minty": {
-    "age": 25,
-    "role": "Sentinel"
-  },
-  "solada": {
-    "age": 18,
-    "role": "Duelist"
-  },
-  "karam1l": {
-    "age": 27,
-    "role": "Sentinel"
-  },
-  "brinks": {
-    "age": 26,
-    "role": "Initiator"
-  },
-  "kimbo": {
-    "role": "Flex"
-  },
-  "net": {
-    "age": 23,
     "role": "Controller"
   },
   "runner": {
     "age": 22,
     "role": "Duelist"
   },
+  "gdzin": {
+    "role": "Duelist"
+  },
   "doma": {
     "age": 22,
     "role": "Duelist"
   },
-  "corsa": {
-    "age": 21,
+  "renz": {
+    "age": 24,
+    "role": "Initiator"
+  },
+  "b1sk": {
+    "age": 25,
     "role": "Duelist"
   },
-  "zoriental": {
+  "zenox": {
     "role": "Duelist"
+  },
+  "famsii": {
+    "age": 22,
+    "role": "Initiator"
+  },
+  "net": {
+    "age": 23,
+    "role": "Controller"
+  },
+  "kimbo": {
+    "role": "Flex"
+  },
+  "karam1l": {
+    "age": 27,
+    "role": "Sentinel"
+  },
+  "samed": {
+    "age": 19,
+    "role": "Duelist"
+  },
+  "nia": {
+    "age": 33,
+    "role": "Duelist"
+  },
+  "solada": {
+    "age": 18,
+    "role": "Duelist"
+  },
+  "sarahcat": {
+    "role": "Sentinel"
+  },
+  "smoke": {
+    "role": "Duelist"
+  },
+  "banger": {
+    "age": 25,
+    "role": "Sentinel"
+  },
+  "pmc": {
+    "role": "Flex"
+  },
+  "brinks": {
+    "age": 26,
+    "role": "Initiator"
+  },
+  "dre": {
+    "role": "Sentinel"
+  },
+  "tek": {
+    "role": "Duelist"
+  },
+  "minty": {
+    "age": 25,
+    "role": "Sentinel"
+  },
+  "jademwah": {
+    "age": 23,
+    "role": "IGL/Flex"
+  },
+  "jakee": {
+    "age": 23,
+    "role": "Controller"
+  },
+  "zeyno": {
+    "age": 17,
+    "role": "Controller"
+  },
+  "deadink": {
+    "age": 24,
+    "role": "Duelist"
+  },
+  "ruso": {
+    "age": 23,
+    "role": "Duelist"
+  },
+  "parscofield": {
+    "role": "Controller"
+  },
+  "weegle": {
+    "role": "Flex"
   },
   "water": {
     "age": 20,
     "role": "Duelist"
   },
-  "qutionerx": {
-    "age": 25,
-    "role": "Sentinel"
-  },
   "esuh": {
     "role": "Flex"
   },
-  "parscofield": {
-    "role": "Controller"
-  },
-  "zyppan": {
-    "age": 23,
-    "role": "Duelist"
-  },
-  "luca": {
-    "age": 19,
-    "role": "Flex"
-  },
-  "kolosha": {
-    "age": 18,
-    "role": "Duelist"
-  },
-  "weegle": {
-    "role": "Flex"
-  },
-  "big tonka t": {
-    "role": "Controller"
-  },
-  "zeek": {
-    "age": 24,
+  "zoriental": {
     "role": "Duelist"
   },
   "mikee": {
@@ -3222,226 +3183,236 @@
   "kada": {
     "role": "Duelist"
   },
-  "ruso": {
-    "age": 23,
+  "zeek": {
+    "age": 24,
     "role": "Duelist"
   },
-  "marceline": {
-    "role": "Duelist"
-  },
-  "zynd": {
-    "age": 26,
+  "qutionerx": {
+    "age": 25,
     "role": "Sentinel"
   },
-  "tayo": {
+  "corsa": {
+    "age": 21,
     "role": "Duelist"
   },
-  "miradaninja": {
-    "age": 17,
-    "role": "Sentinel"
-  },
-  "datakiller": {
-    "role": "Initiator"
-  },
-  "rexxtoned": {
-    "age": 19,
-    "role": "Sentinel"
-  },
-  "dapr": {
-    "age": 27,
-    "role": "Initiator"
-  },
-  "envy2k": {
-    "age": 23,
-    "role": "Duelist"
-  },
-  "vantik": {
+  "big tonka t": {
     "role": "Controller"
   },
-  "andersin": {
-    "age": 29,
-    "role": "Controller"
-  },
-  "squirmor": {
-    "role": "Controller"
-  },
-  "yellowflash": {
-    "role": "Duelist"
-  },
-  "shaimon": {
+  "kolosha": {
     "age": 18,
-    "role": "Controller"
+    "role": "Duelist"
+  },
+  "luca": {
+    "age": 19,
+    "role": "Flex"
+  },
+  "zyppan": {
+    "age": 23,
+    "role": "Duelist"
   },
   "izana": {
     "age": 20,
     "role": "Sentinel"
   },
+  "shaimon": {
+    "age": 18,
+    "role": "Controller"
+  },
+  "zynd": {
+    "age": 26,
+    "role": "Sentinel"
+  },
   "never": {
     "role": "Duelist"
   },
-  "nini": {
+  "dapr": {
+    "age": 27,
+    "role": "Initiator"
+  },
+  "squirmor": {
+    "role": "Controller"
+  },
+  "marceline": {
+    "role": "Duelist"
+  },
+  "rexxtoned": {
+    "age": 19,
+    "role": "Sentinel"
+  },
+  "nemui": {
+    "role": "Flex"
+  },
+  "miradaninja": {
+    "age": 17,
+    "role": "Sentinel"
+  },
+  "andersin": {
+    "age": 29,
+    "role": "Controller"
+  },
+  "vantik": {
     "role": "Controller"
   },
   "nayte": {
     "age": 23,
     "role": "Initiator"
   },
+  "yellowflash": {
+    "role": "Duelist"
+  },
+  "natasha": {
+    "age": 25,
+    "role": "Sentinel"
+  },
+  "tayo": {
+    "role": "Duelist"
+  },
+  "datakiller": {
+    "role": "Initiator"
+  },
+  "nini": {
+    "role": "Controller"
+  },
+  "envy2k": {
+    "age": 23,
+    "role": "Duelist"
+  },
   "diky": {
     "age": 18,
     "role": "IGL/Controller"
   },
-  "nemui": {
-    "role": "Flex"
+  "dyl": {
+    "role": "Sentinel"
   },
-  "zelyd": {
-    "role": "Flex"
+  "zimo": {
+    "age": 22,
+    "role": "Controller"
+  },
+  "surf": {
+    "age": 22,
+    "role": "Duelist"
+  },
+  "soren": {
+    "age": 22,
+    "role": "Sentinel"
+  },
+  "doozy": {
+    "role": "Duelist"
   },
   "lyda": {
     "age": 24,
     "role": "Duelist"
   },
-  "mimi": {
-    "age": 28,
-    "role": "IGL/Flex"
-  },
-  "doozy": {
+  "surge": {
     "role": "Duelist"
   },
-  "side": {
-    "role": "Sentinel"
+  "wolfen": {
+    "age": 22,
+    "role": "Flex"
   },
-  "blueowl": {
+  "syratch": {
+    "role": "Flex"
+  },
+  "crus": {
+    "role": "Initiator"
+  },
+  "vince": {
+    "age": 21,
+    "role": "IGL/Flex"
+  },
+  "werlass": {
+    "age": 22,
+    "role": "Flex"
+  },
+  "jinwoo": {
+    "role": "Duelist"
+  },
+  "skyppervz": {
+    "age": 19,
+    "role": "IGL/Initiator"
+  },
+  "m1key": {
+    "role": "Controller"
+  },
+  "benjii": {
+    "age": 23,
     "role": "Controller"
   },
   "eva": {
     "age": 22,
     "role": "Initiator"
   },
-  "surge": {
-    "role": "Duelist"
+  "side": {
+    "role": "Sentinel"
   },
-  "syratch": {
-    "role": "Flex"
-  },
-  "surf": {
-    "age": 22,
-    "role": "Duelist"
-  },
-  "zimo": {
-    "age": 22,
+  "klamran": {
     "role": "Controller"
+  },
+  "mimi": {
+    "age": 28,
+    "role": "IGL/Flex"
   },
   "raz": {
     "age": 19,
     "role": "Duelist"
   },
-  "crus": {
-    "role": "Initiator"
+  "nature": {
+    "age": 24,
+    "role": "Sentinel"
   },
   "dynamic": {
     "role": "Sentinel"
   },
-  "jinwoo": {
-    "role": "Duelist"
+  "blueowl": {
+    "role": "Controller"
   },
   "marky": {
     "age": 23,
     "role": "Initiator"
   },
-  "dyl": {
-    "role": "Sentinel"
-  },
-  "m1key": {
+  "brilliance": {
     "role": "Controller"
-  },
-  "werlass": {
-    "age": 22,
-    "role": "Flex"
-  },
-  "skyppervz": {
-    "age": 19,
-    "role": "IGL/Initiator"
-  },
-  "wolfen": {
-    "age": 22,
-    "role": "Flex"
-  },
-  "vince": {
-    "age": 21,
-    "role": "IGL/Flex"
-  },
-  "klamran": {
-    "role": "Controller"
-  },
-  "nature": {
-    "age": 24,
-    "role": "Sentinel"
-  },
-  "benjii": {
-    "age": 23,
-    "role": "Controller"
-  },
-  "soren": {
-    "age": 22,
-    "role": "Sentinel"
-  },
-  "leo": {
-    "age": 22,
-    "role": "Flex"
-  },
-  "australis": {
-    "role": "Duelist"
   },
   "samsi": {
     "age": 24,
     "role": "Duelist"
   },
-  "muddy": {
-    "role": "Duelist"
-  },
-  "lian": {
-    "role": "Initiator"
-  },
-  "tuli": {
-    "age": 26,
-    "role": "Duelist"
-  },
-  "k0rupt": {
-    "age": 22,
-    "role": "IGL/Flex"
+  "avery": {
+    "role": "Flex"
   },
   "linlin": {
     "role": "Controller"
   },
-  "yuki": {
-    "role": "Flex"
-  },
-  "brilliance": {
-    "role": "Controller"
-  },
-  "avery": {
-    "role": "Flex"
-  },
-  "vipex": {
+  "muddy": {
     "role": "Duelist"
-  },
-  "olizera": {
-    "age": 23,
-    "role": "Sentinel"
-  },
-  "snowing": {
-    "role": "Initiator"
-  },
-  "cyro": {
-    "role": "Sentinel"
   },
   "mepeezy": {
     "age": 19,
     "role": "Duelist"
   },
-  "wild0reoo": {
-    "age": 23,
+  "tuli": {
+    "age": 26,
     "role": "Duelist"
+  },
+  "cyro": {
+    "role": "Sentinel"
+  },
+  "snowing": {
+    "role": "Initiator"
+  },
+  "k0rupt": {
+    "age": 22,
+    "role": "IGL/Flex"
+  },
+  "australis": {
+    "role": "Duelist"
+  },
+  "albaladejo": {
+    "role": "Initiator"
+  },
+  "ianto": {
+    "age": 20,
+    "role": "Sentinel"
   },
   "anita": {
     "age": 18,
@@ -3450,36 +3421,33 @@
   "khs": {
     "role": "Initiator"
   },
-  "ianto": {
-    "age": 20,
+  "olizera": {
+    "age": 23,
     "role": "Sentinel"
   },
-  "mozz1e": {
-    "role": "Sentinel"
+  "leo": {
+    "age": 22,
+    "role": "Flex"
   },
-  "miu": {
-    "role": "Sentinel"
-  },
-  "orbital": {
+  "lian": {
     "role": "Initiator"
   },
-  "waddles": {
+  "vipex": {
     "role": "Duelist"
+  },
+  "wild0reoo": {
+    "age": 23,
+    "role": "Duelist"
+  },
+  "yuki": {
+    "role": "Flex"
+  },
+  "floga": {
+    "role": "Controller"
   },
   "musashi": {
     "age": 25,
     "role": "IGL/Initiator"
-  },
-  "synx": {
-    "role": "Initiator"
-  },
-  "kohliii": {
-    "age": 22,
-    "role": "Controller"
-  },
-  "bdog": {
-    "age": 23,
-    "role": "Duelist"
   },
   "raised": {
     "role": "Duelist"
@@ -3487,57 +3455,56 @@
   "foe": {
     "role": "Duelist"
   },
-  "duck": {
-    "age": 27,
+  "bdog": {
+    "age": 23,
     "role": "Duelist"
   },
+  "orbital": {
+    "role": "Initiator"
+  },
+  "miu": {
+    "role": "Sentinel"
+  },
   "ayble": {
+    "role": "Duelist"
+  },
+  "styron": {
+    "age": 24,
+    "role": "Initiator"
+  },
+  "waddles": {
     "role": "Duelist"
   },
   "anesilia": {
     "age": 23,
     "role": "Initiator"
   },
-  "glance": {
-    "age": 27,
-    "role": "Initiator"
-  },
-  "rotten1": {
-    "role": "Initiator"
+  "xxif": {
+    "role": "Sentinel"
   },
   "sovano": {
     "role": "Duelist"
   },
-  "stonezy": {
-    "age": 20,
-    "role": "Duelist"
-  },
-  "xxif": {
-    "role": "Sentinel"
-  },
-  "noble": {
+  "synx": {
     "role": "Initiator"
+  },
+  "illumi": {
+    "role": "Duelist"
   },
   "ncslasher": {
     "age": 24,
     "role": "Duelist"
   },
-  "floga": {
-    "role": "Controller"
-  },
   "louboutin": {
     "age": 23,
     "role": "Sentinel"
   },
-  "kevzii": {
+  "noble": {
     "role": "Initiator"
   },
-  "practo": {
-    "age": 20,
-    "role": "Sentinel"
-  },
-  "illumi": {
-    "role": "Duelist"
+  "kohliii": {
+    "age": 22,
+    "role": "Controller"
   },
   "zoestol": {
     "age": 22,
@@ -3546,84 +3513,79 @@
   "om3y": {
     "role": "Duelist"
   },
-  "expmoe": {
-    "role": "Controller"
+  "rotten1": {
+    "role": "Initiator"
   },
-  "dara": {
-    "role": "Controller"
-  },
-  "gyen": {
+  "practo": {
     "age": 20,
-    "role": "Controller"
+    "role": "Sentinel"
   },
-  "jiex": {
-    "age": 23,
-    "role": "IGL/Initiator"
+  "mozz1e": {
+    "role": "Sentinel"
   },
-  "scar": {
-    "age": 25,
-    "role": "Controller"
-  },
-  "ch1ps": {
+  "glance": {
+    "age": 27,
     "role": "Initiator"
   },
-  "nora": {
+  "duck": {
+    "age": 27,
     "role": "Duelist"
   },
-  "299": {
-    "role": "Duelist"
-  },
-  "misu": {
-    "age": 19,
-    "role": "Flex"
-  },
-  "terror": {
-    "role": "Initiator"
-  },
-  "oasis": {
-    "role": "Flex"
-  },
-  "yaboilewis": {
-    "age": 24,
+  "stonezy": {
+    "age": 20,
     "role": "Duelist"
   },
   "karizma": {
     "role": "Controller"
   },
-  "hyuse": {
-    "age": 22,
-    "role": "Duelist"
-  },
-  "nobita": {
-    "age": 24,
-    "role": "Initiator"
+  "misu": {
+    "age": 19,
+    "role": "Flex"
   },
   "chiwa": {
     "age": 28,
     "role": "Sentinel"
   },
+  "expmoe": {
+    "role": "Controller"
+  },
+  "terror": {
+    "role": "Initiator"
+  },
+  "nora": {
+    "role": "Duelist"
+  },
+  "yaboilewis": {
+    "age": 24,
+    "role": "Duelist"
+  },
+  "oasis": {
+    "role": "Flex"
+  },
   "kabzi": {
     "age": 19,
     "role": "Controller"
-  },
-  "icie": {
-    "role": "Duelist"
-  },
-  "sh1n": {
-    "role": "Controller"
-  },
-  "ryker": {
-    "role": "Duelist"
-  },
-  "ronga": {
-    "role": "Flex"
   },
   "geeza": {
     "age": 25,
     "role": "Flex"
   },
-  "boomy": {
+  "sh1n": {
+    "role": "Controller"
+  },
+  "ch1ps": {
+    "role": "Initiator"
+  },
+  "cuz": {
     "role": "Duelist"
+  },
+  "padisah": {
+    "age": 22,
+    "role": "Sentinel"
+  },
+  "batujnax": {
+    "age": 20,
+    "role": "Initiator"
   },
   "ange": {
     "age": 24,
@@ -3635,69 +3597,91 @@
   "pacifist": {
     "role": "Initiator"
   },
+  "boomy": {
+    "role": "Duelist"
+  },
+  "hyuse": {
+    "age": 22,
+    "role": "Duelist"
+  },
   "dihawk": {
     "role": "Duelist"
   },
-  "cuz": {
+  "dara": {
+    "role": "Controller"
+  },
+  "gyen": {
+    "age": 20,
+    "role": "Controller"
+  },
+  "ronga": {
+    "role": "Flex"
+  },
+  "299": {
     "role": "Duelist"
   },
-  "batujnax": {
-    "age": 20,
-    "role": "Initiator"
-  },
-  "padisah": {
-    "age": 22,
-    "role": "Sentinel"
-  },
-  "cohburg": {
+  "jiex": {
     "age": 23,
+    "role": "IGL/Initiator"
+  },
+  "nobita": {
+    "age": 24,
     "role": "Initiator"
   },
-  "ness": {
+  "scar": {
     "age": 25,
     "role": "Controller"
   },
-  "lmemore": {
-    "age": 23,
-    "role": "Initiator"
-  },
-  "martin": {
-    "role": "Sentinel"
-  },
-  "cracko": {
+  "icie": {
     "role": "Duelist"
   },
-  "charod": {
-    "role": "Flex"
+  "ryker": {
+    "role": "Duelist"
+  },
+  "huphh": {
+    "role": "Duelist"
   },
   "aleksandar": {
     "age": 24,
+    "role": "Sentinel"
+  },
+  "velora": {
     "role": "Sentinel"
   },
   "scottie": {
     "age": 22,
     "role": "Controller"
   },
-  "yuta": {
-    "age": 25,
+  "drz": {
+    "role": "Duelist"
+  },
+  "charod": {
     "role": "Flex"
   },
-  "huphh": {
+  "zanatsu": {
+    "age": 23,
     "role": "Duelist"
-  },
-  "ahm4xx": {
-    "role": "Duelist"
-  },
-  "twigz": {
-    "role": "Sentinel"
   },
   "ndg": {
     "age": 21,
     "role": "Initiator"
   },
-  "migodd": {
-    "age": 21,
-    "role": "Initiator"
+  "kel": {
+    "role": "Duelist"
+  },
+  "ja": {
+    "age": 27,
+    "role": "Sentinel"
+  },
+  "paradox": {
+    "age": 26,
+    "role": "Duelist"
+  },
+  "vii": {
+    "role": "Flex"
+  },
+  "twigz": {
+    "role": "Sentinel"
   },
   "unfake": {
     "age": 29,
@@ -3706,89 +3690,112 @@
   "hasagi": {
     "role": "Duelist"
   },
+  "hehehellen": {
+    "role": "Controller"
+  },
+  "cohburg": {
+    "age": 23,
+    "role": "Initiator"
+  },
   "spike": {
     "role": "Flex"
   },
-  "stellar": {
-    "age": 29,
-    "role": "Sentinel"
-  },
-  "ja": {
-    "age": 27,
-    "role": "Sentinel"
-  },
-  "zanatsu": {
-    "age": 23,
-    "role": "Duelist"
-  },
-  "kel": {
-    "role": "Duelist"
-  },
-  "paradox": {
-    "age": 26,
-    "role": "Duelist"
-  },
-  "velora": {
-    "role": "Sentinel"
+  "ness": {
+    "age": 25,
+    "role": "Controller"
   },
   "2ge": {
     "age": 24,
     "role": "Initiator"
   },
+  "lmemore": {
+    "age": 23,
+    "role": "Initiator"
+  },
+  "ahm4xx": {
+    "role": "Duelist"
+  },
+  "yuta": {
+    "age": 25,
+    "role": "Flex"
+  },
   "gek": {
     "role": "Sentinel"
   },
-  "drz": {
-    "role": "Duelist"
-  },
-  "fezisss": {
-    "age": 23,
-    "role": "Controller"
-  },
-  "moobs": {
-    "age": 24,
+  "stellar": {
+    "age": 29,
     "role": "Sentinel"
   },
-  "xiaofeng": {
-    "role": "Flex"
-  },
-  "alert": {
-    "age": 24,
-    "role": "Duelist"
-  },
-  "bibi": {
-    "age": 26,
-    "role": "Initiator"
-  },
-  "slammed": {
-    "role": "Flex"
-  },
-  "narky": {
-    "age": 17,
-    "role": "Duelist"
-  },
-  "safiaa": {
-    "age": 22,
+  "martin": {
     "role": "Sentinel"
   },
-  "azza": {
-    "role": "Initiator"
-  },
-  "tricky": {
-    "age": 20,
-    "role": "Sentinel"
-  },
-  "titoune": {
-    "age": 20,
+  "cracko": {
     "role": "Duelist"
   },
-  "azul": {
-    "age": 23,
+  "migodd": {
+    "age": 21,
     "role": "Initiator"
   },
   "grahams": {
     "age": 20,
     "role": "Flex"
+  },
+  "safiaa": {
+    "age": 22,
+    "role": "Sentinel"
+  },
+  "moobs": {
+    "age": 24,
+    "role": "Sentinel"
+  },
+  "tricky": {
+    "age": 20,
+    "role": "Sentinel"
+  },
+  "kajuks": {
+    "age": 21,
+    "role": "Initiator"
+  },
+  "alert": {
+    "age": 24,
+    "role": "Duelist"
+  },
+  "ip0tt": {
+    "age": 27,
+    "role": "Duelist"
+  },
+  "titoune": {
+    "age": 20,
+    "role": "Duelist"
+  },
+  "ef1ss": {
+    "age": 18,
+    "role": "Controller"
+  },
+  "azza": {
+    "role": "Initiator"
+  },
+  "sarah": {
+    "age": 23,
+    "role": "Duelist"
+  },
+  "narky": {
+    "age": 17,
+    "role": "Duelist"
+  },
+  "slammed": {
+    "role": "Flex"
+  },
+  "azul": {
+    "age": 23,
+    "role": "Initiator"
+  },
+  "krysme": {
+    "age": 25,
+    "role": "Controller"
+  },
+  "kramarick": {
+    "role": "Controller"
   },
   "strame": {
     "role": "Sentinel"
@@ -3800,23 +3807,12 @@
   "ghost": {
     "role": "Duelist"
   },
-  "kajuks": {
-    "age": 21,
+  "bibi": {
+    "age": 26,
     "role": "Initiator"
-  },
-  "kramarick": {
-    "role": "Controller"
   },
   "ren george": {
     "role": "Duelist"
-  },
-  "ip0tt": {
-    "age": 27,
-    "role": "Duelist"
-  },
-  "ef1ss": {
-    "age": 18,
-    "role": "Controller"
   },
   "calamity": {
     "role": "Duelist"
@@ -3824,58 +3820,12 @@
   "cowpie867": {
     "role": "Sentinel"
   },
-  "sarah": {
+  "fezisss": {
     "age": 23,
-    "role": "Duelist"
-  },
-  "javelin": {
-    "age": 20,
-    "role": "IGL/Initiator"
-  },
-  "ixi": {
-    "role": "Duelist"
-  },
-  "zeask": {
-    "age": 19,
-    "role": "Duelist"
-  },
-  "anva": {
-    "age": 21,
-    "role": "Initiator"
-  },
-  "ducq": {
-    "role": "Initiator"
-  },
-  "demi": {
-    "role": "Flex"
-  },
-  "mitsu": {
     "role": "Controller"
-  },
-  "looxie": {
-    "age": 25,
-    "role": "IGL/Sentinel"
-  },
-  "vina": {
-    "role": "Initiator"
-  },
-  "karina": {
-    "age": 26,
-    "role": "Initiator"
-  },
-  "fate": {
-    "role": "Controller"
-  },
-  "governor": {
-    "age": 22,
-    "role": "Duelist"
   },
   "beeb": {
     "role": "Flex"
-  },
-  "influx": {
-    "age": 17,
-    "role": "Initiator"
   },
   "blahst": {
     "role": "Controller"
@@ -3883,8 +3833,55 @@
   "clapie": {
     "role": "Duelist"
   },
-  "azume": {
+  "ducq": {
+    "role": "Initiator"
+  },
+  "fate": {
     "role": "Controller"
+  },
+  "looxie": {
+    "age": 25,
+    "role": "IGL/Sentinel"
+  },
+  "influx": {
+    "age": 17,
+    "role": "Initiator"
+  },
+  "javelin": {
+    "age": 20,
+    "role": "IGL/Initiator"
+  },
+  "demi": {
+    "role": "Flex"
+  },
+  "mitsu": {
+    "role": "Controller"
+  },
+  "zeask": {
+    "age": 19,
+    "role": "Duelist"
+  },
+  "ixi": {
+    "role": "Duelist"
+  },
+  "karina": {
+    "age": 26,
+    "role": "Initiator"
+  },
+  "vina": {
+    "role": "Initiator"
+  },
+  "governor": {
+    "age": 22,
+    "role": "Duelist"
+  },
+  "anva": {
+    "age": 21,
+    "role": "Initiator"
+  },
+  "reblyik": {
+    "age": 21,
+    "role": "Sentinel"
   },
   "wilted": {
     "role": "Controller"
@@ -3892,8 +3889,33 @@
   "rozster": {
     "role": "Duelist"
   },
-  "reblyik": {
+  "kestrel": {
     "age": 21,
+    "role": "Initiator"
+  },
+  "ibonata": {
+    "age": 20,
+    "role": "IGL/Initiator"
+  },
+  "darxcioo": {
+    "role": "Duelist"
+  },
+  "retrq": {
+    "age": 25,
+    "role": "Flex"
+  },
+  "howl": {
+    "role": "Duelist"
+  },
+  "kkoruna": {
+    "role": "Duelist"
+  },
+  "guardy": {
+    "age": 22,
+    "role": "Sentinel"
+  },
+  "kouf": {
+    "age": 23,
     "role": "Sentinel"
   },
   "borkum": {
@@ -3903,29 +3925,13 @@
   "dancingdino371": {
     "role": "Controller"
   },
-  "kouf": {
-    "age": 23,
-    "role": "Sentinel"
-  },
-  "barck": {
-    "age": 20,
+  "saiz": {
+    "age": 22,
     "role": "Controller"
   },
   "tomaszy": {
     "age": 20,
     "role": "Duelist"
-  },
-  "retrq": {
-    "age": 25,
-    "role": "Flex"
-  },
-  "saiz": {
-    "age": 22,
-    "role": "Controller"
-  },
-  "guardy": {
-    "age": 22,
-    "role": "Sentinel"
   },
   "benderr": {
     "role": "Controller"
@@ -3933,126 +3939,98 @@
   "jvoh": {
     "role": "Duelist"
   },
-  "darxcioo": {
-    "role": "Duelist"
-  },
-  "kestrel": {
-    "age": 21,
-    "role": "Initiator"
-  },
-  "kkoruna": {
-    "role": "Duelist"
-  },
-  "ibonata": {
+  "barck": {
     "age": 20,
-    "role": "IGL/Initiator"
+    "role": "Controller"
   },
-  "howl": {
-    "role": "Duelist"
-  },
-  "xeon": {
-    "age": 29,
-    "role": "Sentinel"
-  },
-  "zhong": {
-    "role": "Initiator"
+  "azume": {
+    "role": "Controller"
   },
   "bunnybee": {
     "role": "Duelist"
   },
-  "drky": {
-    "age": 24,
-    "role": "Initiator"
-  },
-  "hassan": {
-    "age": 17,
-    "role": "Sentinel"
-  },
-  "tenshi": {
-    "age": 24,
-    "role": "Initiator"
-  },
-  "carmine": {
-    "role": "Controller"
-  },
-  "laeno": {
-    "role": "Sentinel"
-  },
-  "reze": {
-    "role": "Controller"
-  },
   "blessed": {
     "age": 21,
-    "role": "Initiator"
-  },
-  "booey": {
-    "role": "Duelist"
-  },
-  "mazen": {
-    "role": "Duelist"
-  },
-  "calsushi": {
     "role": "Initiator"
   },
   "miku": {
     "age": 23,
     "role": "Duelist"
   },
-  "kaza": {
-    "role": "Flex"
+  "laeno": {
+    "role": "Sentinel"
   },
-  "jazzyk1ns": {
-    "age": 21,
+  "carmine": {
+    "role": "Controller"
+  },
+  "fengshui": {
+    "role": "Initiator"
+  },
+  "drky": {
+    "age": 24,
+    "role": "Initiator"
+  },
+  "reze": {
+    "role": "Controller"
+  },
+  "lethal": {
+    "role": "Initiator"
+  },
+  "tenshi": {
+    "age": 24,
     "role": "Initiator"
   },
   "lilboi": {
     "role": "Controller"
   },
+  "booey": {
+    "role": "Duelist"
+  },
+  "ft": {
+    "role": "Sentinel"
+  },
+  "hassan": {
+    "age": 17,
+    "role": "Sentinel"
+  },
+  "mazen": {
+    "role": "Duelist"
+  },
+  "xeon": {
+    "age": 29,
+    "role": "Sentinel"
+  },
   "knzy": {
     "age": 27,
     "role": "IGL/Controller"
   },
-  "fengshui": {
+  "jazzyk1ns": {
+    "age": 21,
     "role": "Initiator"
   },
-  "lethal": {
+  "zhong": {
     "role": "Initiator"
+  },
+  "xiaofeng": {
+    "role": "Flex"
+  },
+  "calsushi": {
+    "role": "Initiator"
+  },
+  "kaza": {
+    "role": "Flex"
   },
   "evilzinho": {
-    "role": "Duelist"
-  },
-  "deathblade": {
     "role": "Duelist"
   },
   "haerin": {
     "role": "Controller"
   },
-  "juliano": {
-    "age": 32,
-    "role": "Controller"
-  },
-  "gia": {
-    "role": "Controller"
-  },
-  "ft": {
-    "role": "Sentinel"
-  },
-  "archiw0w": {
-    "age": 21,
-    "role": "Initiator"
+  "deathblade": {
+    "role": "Duelist"
   },
   "emman": {
     "age": 26,
-    "role": "Initiator"
-  },
-  "annie": {
-    "age": 29,
-    "role": "Initiator"
-  },
-  "myhn": {
-    "role": "Controller"
-  },
-  "grimreaper874": {
     "role": "Initiator"
   },
   "molsi": {
@@ -4063,135 +4041,151 @@
     "age": 20,
     "role": "Duelist"
   },
+  "myhn": {
+    "role": "Controller"
+  },
+  "gia": {
+    "role": "Controller"
+  },
+  "annie": {
+    "age": 29,
+    "role": "Initiator"
+  },
   "addi": {
     "age": 21,
     "role": "Flex"
   },
-  "kipperman": {
-    "age": 23,
-    "role": "Duelist"
+  "juliano": {
+    "age": 32,
+    "role": "Controller"
   },
-  "thuy": {
-    "age": 26,
-    "role": "Sentinel"
+  "grimreaper874": {
+    "role": "Initiator"
+  },
+  "archiw0w": {
+    "age": 21,
+    "role": "Initiator"
   },
   "rezq": {
     "age": 19,
     "role": "Initiator"
   },
-  "stride": {
-    "role": "Duelist"
-  },
-  "monsi": {
-    "age": 23,
-    "role": "IGL/Controller"
-  },
   "yuno": {
     "age": 21,
     "role": "Controller"
   },
-  "j0n": {
-    "role": "Controller"
+  "thuy": {
+    "age": 26,
+    "role": "Sentinel"
+  },
+  "kipperman": {
+    "age": 23,
+    "role": "Duelist"
   },
   "k9lyos": {
     "age": 18,
     "role": "Sentinel"
   },
-  "strongtallguy62": {
+  "stride": {
+    "role": "Duelist"
+  },
+  "darm": {
+    "role": "Flex"
+  },
+  "hf2": {
     "role": "Initiator"
+  },
+  "sumi": {
+    "role": "Sentinel"
   },
   "facade": {
     "role": "Sentinel"
-  },
-  "yokam": {
-    "role": "Duelist"
   },
   "batenkh": {
     "age": 19,
     "role": "Initiator"
   },
-  "hf2": {
-    "role": "Initiator"
-  },
   "november": {
     "role": "Initiator"
   },
-  "darm": {
-    "role": "Flex"
+  "strongtallguy62": {
+    "role": "Initiator"
   },
-  "sumi": {
-    "role": "Sentinel"
-  },
-  "tr0ma": {
-    "age": 17,
+  "yokam": {
     "role": "Duelist"
+  },
+  "j0n": {
+    "role": "Controller"
+  },
+  "monsi": {
+    "age": 23,
+    "role": "IGL/Controller"
+  },
+  "sarie": {
+    "role": "Sentinel"
   },
   "wertlle": {
     "role": "Sentinel"
-  },
-  "snake": {
-    "role": "Initiator"
   },
   "racoone": {
     "age": 25,
     "role": "Initiator"
   },
-  "melvin": {
+  "tr0ma": {
+    "age": 17,
     "role": "Duelist"
-  },
-  "alkyia": {
-    "age": 20,
-    "role": "Duelist"
-  },
-  "b1n": {
-    "role": "Duelist"
-  },
-  "jubs": {
-    "age": 23,
-    "role": "Controller"
-  },
-  "natank": {
-    "age": 27,
-    "role": "Controller"
-  },
-  "g1tch2": {
-    "role": "Initiator"
-  },
-  "elyxo": {
-    "role": "Controller"
-  },
-  "iluri": {
-    "age": 29,
-    "role": "IGL/Sentinel"
   },
   "miyori": {
     "age": 21,
     "role": "Flex"
   },
+  "b1n": {
+    "role": "Duelist"
+  },
   "prti": {
     "age": 28,
     "role": "IGL/Flex"
   },
-  "sarie": {
-    "role": "Sentinel"
+  "iluri": {
+    "age": 29,
+    "role": "IGL/Sentinel"
   },
-  "renlix": {
+  "natank": {
+    "age": 27,
+    "role": "Controller"
+  },
+  "alkyia": {
+    "age": 20,
+    "role": "Duelist"
+  },
+  "elyxo": {
+    "role": "Controller"
+  },
+  "jubs": {
+    "age": 23,
+    "role": "Controller"
+  },
+  "melvin": {
+    "role": "Duelist"
+  },
+  "g1tch2": {
     "role": "Initiator"
+  },
+  "snake": {
+    "role": "Initiator"
+  },
+  "pamstou": {
+    "role": "Duelist"
   },
   "cherrys": {
     "role": "Sentinel"
   },
-  "picklespear": {
+  "kospa1n": {
+    "age": 16,
     "role": "Duelist"
   },
-  "miyara": {
-    "role": "Initiator"
-  },
-  "nemvtuber": {
-    "role": "Initiator"
-  },
-  "caiobaz": {
-    "role": "Flex"
+  "flashh": {
+    "role": "Duelist"
   },
   "smokea": {
     "age": 22,
@@ -4201,202 +4195,212 @@
     "age": 25,
     "role": "Sentinel"
   },
-  "pamstou": {
+  "picklespear": {
     "role": "Duelist"
   },
-  "flashh": {
-    "role": "Duelist"
+  "caiobaz": {
+    "role": "Flex"
+  },
+  "renlix": {
+    "role": "Initiator"
+  },
+  "nemvtuber": {
+    "role": "Initiator"
   },
   "zjk147": {
-    "role": "Duelist"
-  },
-  "johnieboy": {
-    "age": 23,
-    "role": "Duelist"
-  },
-  "paura": {
-    "age": 28,
-    "role": "IGL/Sentinel"
-  },
-  "kospa1n": {
-    "age": 16,
     "role": "Duelist"
   },
   "lidyuh": {
     "role": "Controller"
   },
-  "garv": {
+  "paura": {
+    "age": 28,
+    "role": "IGL/Sentinel"
+  },
+  "johnieboy": {
+    "age": 23,
+    "role": "Duelist"
+  },
+  "miyara": {
     "role": "Initiator"
+  },
+  "zeka": {
+    "role": "Duelist"
+  },
+  "userz": {
+    "role": "Initiator"
+  },
+  "canady": {
+    "role": "Duelist"
   },
   "fit1nho": {
     "age": 26,
     "role": "Duelist"
   },
-  "cobra": {
-    "role": "Initiator"
-  },
-  "jippo": {
-    "role": "Initiator"
-  },
   "bishepss": {
     "age": 22,
     "role": "IGL/Controller"
   },
-  "destrian": {
-    "age": 27,
-    "role": "Initiator"
+  "quens1on": {
+    "role": "Sentinel"
   },
-  "userz": {
+  "rain": {
+    "age": 31,
+    "role": "Controller"
+  },
+  "garv": {
     "role": "Initiator"
   },
   "khaalid": {
     "age": 22,
     "role": "IGL/Initiator"
   },
-  "quens1on": {
-    "role": "Sentinel"
-  },
-  "daiki": {
-    "age": 21,
-    "role": "IGL/Flex"
-  },
-  "creamz": {
-    "role": "Flex"
+  "cobra": {
+    "role": "Initiator"
   },
   "joshee": {
     "role": "Duelist"
   },
-  "rain": {
-    "age": 31,
-    "role": "Controller"
-  },
-  "canady": {
-    "role": "Duelist"
-  },
-  "zeka": {
-    "role": "Duelist"
-  },
-  "sayu": {
-    "role": "Duelist"
-  },
-  "fukuken": {
+  "jippo": {
     "role": "Initiator"
   },
-  "toki": {
-    "role": "Duelist"
-  },
-  "drepeex": {
-    "age": 20,
-    "role": "Sentinel"
-  },
-  "bumble": {
+  "creamz": {
     "role": "Flex"
   },
-  "iansn": {
+  "destrian": {
+    "age": 27,
+    "role": "Initiator"
+  },
+  "sexychristian": {
     "role": "Initiator"
   },
   "deadly10": {
     "age": 23,
     "role": "Duelist"
   },
-  "sexychristian": {
-    "role": "Initiator"
+  "sayu": {
+    "role": "Duelist"
+  },
+  "drepeex": {
+    "age": 20,
+    "role": "Sentinel"
   },
   "bazz": {
     "age": 26,
     "role": "IGL/Controller"
   },
+  "iansn": {
+    "role": "Initiator"
+  },
+  "toki": {
+    "role": "Duelist"
+  },
+  "flamezz": {
+    "role": "Controller"
+  },
   "flyuh": {
     "age": 22,
     "role": "IGL/Initiator"
   },
-  "amens": {
-    "role": "Flex"
+  "myxinhnhat": {
+    "role": "Duelist"
   },
   "elab0rate": {
     "age": 25,
     "role": "Duelist"
   },
-  "myxinhnhat": {
-    "role": "Duelist"
+  "fukuken": {
+    "role": "Initiator"
+  },
+  "bumble": {
+    "role": "Flex"
   },
   "nowaxxzang": {
     "role": "IGL/Controller"
   },
+  "daiki": {
+    "age": 21,
+    "role": "IGL/Flex"
+  },
   "baze": {
     "role": "Flex"
   },
-  "flamezz": {
-    "role": "Controller"
-  },
-  "nicksz": {
-    "age": 22,
-    "role": "Controller"
-  },
   "redgar": {
     "age": 28,
-    "role": "IGL/Initiator"
-  },
-  "demon": {
-    "age": 24,
-    "role": "Duelist"
-  },
-  "santnas": {
-    "role": "Duelist"
-  },
-  "valio": {
-    "role": "Controller"
-  },
-  "leooo": {
-    "role": "Sentinel"
-  },
-  "mersa": {
-    "age": 25,
     "role": "IGL/Initiator"
   },
   "gobera": {
     "age": 25,
     "role": "Flex"
   },
-  "awkua": {
-    "age": 22,
-    "role": "Flex"
-  },
   "killerjohnson77": {
     "role": "Sentinel"
   },
-  "jung": {
+  "demon": {
+    "age": 24,
+    "role": "Duelist"
+  },
+  "valio": {
     "role": "Controller"
+  },
+  "mersa": {
+    "age": 25,
+    "role": "IGL/Initiator"
+  },
+  "mrspudbutt": {
+    "role": "Initiator"
+  },
+  "nicksz": {
+    "age": 22,
+    "role": "Controller"
+  },
+  "santnas": {
+    "role": "Duelist"
+  },
+  "leooo": {
+    "role": "Sentinel"
+  },
+  "awkua": {
+    "age": 22,
+    "role": "Flex"
   },
   "lunafox": {
     "age": 26,
     "role": "Controller"
   },
-  "mrspudbutt": {
-    "role": "Initiator"
-  },
-  "nez": {
-    "role": "Initiator"
-  },
-  "khaikky": {
+  "joojina": {
+    "age": 25,
     "role": "Duelist"
   },
   "yappa": {
     "role": "Initiator"
   },
-  "joojina": {
-    "age": 25,
+  "khaikky": {
     "role": "Duelist"
   },
-  "helas": {
-    "age": 21,
-    "role": "Duelist"
+  "raven": {
+    "role": "Sentinel"
   },
   "caelia": {
     "age": 16,
     "role": "Initiator"
   },
+  "theia": {
+    "age": 27,
+    "role": "IGL/Controller"
+  },
+  "helas": {
+    "age": 21,
+    "role": "Duelist"
+  },
+  "nefi": {
+    "age": 22,
+    "role": "Initiator"
+  },
   "walli": {
+    "role": "Initiator"
+  },
+  "nez": {
     "role": "Initiator"
   },
   "docent": {
@@ -4407,29 +4411,8 @@
     "age": 26,
     "role": "IGL/Initiator"
   },
-  "theia": {
-    "age": 27,
-    "role": "IGL/Controller"
-  },
-  "raven": {
-    "role": "Sentinel"
-  },
-  "nefi": {
-    "age": 22,
-    "role": "Initiator"
-  },
-  "makaveli": {
-    "age": 33,
-    "role": "Controller"
-  },
-  "jayjay": {
-    "role": "Duelist"
-  },
   "cunhaa": {
     "role": "Flex"
-  },
-  "sherb": {
-    "role": "Sentinel"
   },
   "may": {
     "role": "Sentinel"
@@ -4438,16 +4421,29 @@
     "age": 23,
     "role": "Flex"
   },
-  "ray4c": {
-    "age": 22,
-    "role": "Duelist"
-  },
   "brave": {
     "age": 22,
     "role": "Flex"
   },
+  "makaveli": {
+    "age": 33,
+    "role": "Controller"
+  },
+  "sherb": {
+    "role": "Sentinel"
+  },
   "xavier": {
     "role": "Initiator"
+  },
+  "ray4c": {
+    "age": 22,
+    "role": "Duelist"
+  },
+  "jayjay": {
+    "role": "Duelist"
+  },
+  "her": {
+    "role": "Sentinel"
   },
   "v1nny": {
     "age": 29,
@@ -4457,25 +4453,18 @@
     "age": 22,
     "role": "IGL/Flex"
   },
-  "kyun": {
-    "role": "Initiator"
-  },
-  "her": {
-    "role": "Sentinel"
-  },
-  "laddermoves": {
-    "role": "Flex"
-  },
-  "satellite": {
-    "age": 20,
+  "lendary": {
     "role": "Duelist"
   },
-  "cutepenguin41": {
-    "role": "Sentinel"
+  "kyun": {
+    "role": "Initiator"
   },
   "isaa": {
     "age": 22,
     "role": "Controller"
+  },
+  "cutepenguin41": {
+    "role": "Sentinel"
   },
   "hyjinx": {
     "role": "Controller"
@@ -4484,7 +4473,30 @@
     "age": 24,
     "role": "Duelist"
   },
+  "satellite": {
+    "age": 20,
+    "role": "Duelist"
+  },
+  "lay": {
+    "role": "Initiator"
+  },
+  "laddermoves": {
+    "role": "Flex"
+  },
   "frogfurger": {
+    "role": "Initiator"
+  },
+  "psyche": {
+    "role": "Duelist"
+  },
+  "xalleby": {
+    "role": "Duelist"
+  },
+  "nidxvilco": {
+    "age": 21,
+    "role": "Controller"
+  },
+  "battison": {
     "role": "Initiator"
   },
   "bai": {
@@ -4494,29 +4506,15 @@
     "age": 26,
     "role": "Flex"
   },
-  "xalleby": {
-    "role": "Duelist"
-  },
-  "psyche": {
-    "role": "Duelist"
-  },
-  "nidxvilco": {
-    "age": 21,
-    "role": "Controller"
-  },
   "azazin": {
     "age": 20,
     "role": "Duelist"
   },
-  "battison": {
-    "role": "Initiator"
-  },
   "yeetmachine": {
     "role": "Sentinel"
   },
-  "tim": {
-    "age": 24,
-    "role": "Controller"
+  "tootsie": {
+    "role": "Initiator"
   },
   "jawad": {
     "role": "Sentinel"
@@ -4524,23 +4522,24 @@
   "strahlen": {
     "role": "Flex"
   },
-  "tootsie": {
-    "role": "Initiator"
-  },
   "kash": {
     "role": "Initiator"
+  },
+  "tim": {
+    "age": 24,
+    "role": "Controller"
   },
   "blossi": {
     "age": 25,
     "role": "IGL/Sentinel"
   },
-  "demek": {
-    "age": 22,
-    "role": "Duelist"
-  },
   "moothie": {
     "age": 28,
     "role": "Flex"
+  },
+  "demek": {
+    "age": 22,
+    "role": "Duelist"
   },
   "gh2k4": {
     "role": "Duelist"
@@ -4550,9 +4549,6 @@
   },
   "hazard": {
     "role": "Duelist"
-  },
-  "bn": {
-    "role": "Controller"
   },
   "kakashiii": {
     "role": "Sentinel"
@@ -4569,20 +4565,20 @@
   "jawsy": {
     "role": "Duelist"
   },
+  "revenge": {
+    "role": "Flex"
+  },
   "jrayn": {
     "age": 22,
     "role": "Initiator"
   },
-  "revenge": {
-    "role": "Flex"
+  "allen": {
+    "age": 22,
+    "role": "Controller"
   },
   "tony": {
     "age": 32,
     "role": "Duelist"
-  },
-  "allen": {
-    "age": 22,
-    "role": "Controller"
   },
   "b3zginn": {
     "role": "Duelist"
@@ -4593,11 +4589,11 @@
   "tfuc": {
     "role": "Initiator"
   },
-  "kladenstein": {
-    "role": "Duelist"
-  },
   "fnoob": {
     "role": "Initiator"
+  },
+  "kladenstein": {
+    "role": "Duelist"
   },
   "nafeh": {
     "role": "Flex"
@@ -12234,6 +12230,9 @@
   "arixa": {
     "role": "Duelist"
   },
+  "imvietnamesegirl": {
+    "role": "Duelist"
+  },
   "enerii": {
     "age": 22,
     "role": "Duelist"
@@ -12285,6 +12284,9 @@
   },
   "s a t o r": {
     "role": "Sentinel"
+  },
+  "chuchu": {
+    "role": "Duelist"
   },
   "khosoko": {
     "role": "Duelist"
@@ -12453,7 +12455,13 @@
     "age": 26,
     "role": "IGL/Controller"
   },
+  "zelyd": {
+    "role": "Flex"
+  },
   "warwick": {
+    "role": "Duelist"
+  },
+  "dau7": {
     "role": "Duelist"
   },
   "owen": {
@@ -12530,6 +12538,9 @@
   },
   "yuchan": {
     "role": "Controller"
+  },
+  "kevzii": {
+    "role": "Initiator"
   },
   "kntz": {
     "age": 28,
@@ -12698,6 +12709,9 @@
     "age": 28,
     "role": "Duelist"
   },
+  "amens": {
+    "role": "Flex"
+  },
   "yuvi": {
     "role": "Flex"
   },
@@ -12822,6 +12836,9 @@
   },
   "piety": {
     "role": "Initiator"
+  },
+  "shintaro": {
+    "role": "Duelist"
   },
   "l0sttt": {
     "role": "Initiator"
@@ -13988,6 +14005,9 @@
   "delend": {
     "role": "Controller"
   },
+  "jung": {
+    "role": "Controller"
+  },
   "immutable": {
     "role": "Duelist"
   },
@@ -14772,6 +14792,9 @@
   },
   "smx": {
     "role": "Initiator"
+  },
+  "bn": {
+    "role": "Controller"
   },
   "batghost": {
     "role": "Sentinel"
@@ -16091,25 +16114,25 @@
     "age": 26,
     "role": "Duelist"
   },
+  "dods": {
+    "age": 20,
+    "role": "Initiator"
+  },
   "needy": {
     "role": "Duelist"
+  },
+  "arcane": {
+    "role": "Initiator"
   },
   "basic": {
     "age": 19,
     "role": "Initiator"
   },
-  "dods": {
-    "age": 20,
-    "role": "Initiator"
-  },
-  "arcane": {
-    "role": "Initiator"
-  },
   "biel": {
     "role": "Initiator"
   },
-  "conir": {
-    "age": 28,
+  "heat": {
+    "age": 23,
     "role": "Flex"
   },
   "lula molusco": {
@@ -16118,65 +16141,57 @@
   "fish": {
     "role": "Initiator"
   },
-  "nzr": {
-    "role": "Initiator"
-  },
-  "heat": {
-    "age": 23,
-    "role": "Flex"
-  },
   "pavel": {
     "role": "Flex"
   },
-  "high": {
-    "role": "Duelist"
+  "nzr": {
+    "role": "Initiator"
+  },
+  "conir": {
+    "age": 28,
+    "role": "Flex"
+  },
+  "docks": {
+    "role": "Flex"
   },
   "pancada": {
     "age": 26,
     "role": "Controller"
   },
-  "docks": {
-    "role": "Flex"
+  "high": {
+    "role": "Duelist"
   },
   "krain": {
     "age": 26,
     "role": "Initiator"
   },
-  "skz": {
-    "age": 24,
-    "role": "Initiator"
-  },
-  "isaac9": {
-    "role": "Controller"
-  },
   "lkashi": {
     "role": "Sentinel"
   },
-  "jnt": {
-    "role": "Flex"
-  },
-  "antg": {
-    "age": 23,
-    "role": "Flex"
+  "isaac9": {
+    "role": "Controller"
   },
   "pkx": {
     "age": 23,
     "role": "Sentinel"
   },
-  "siduzord": {
-    "age": 26,
-    "role": "IGL/Initiator"
+  "antg": {
+    "age": 23,
+    "role": "Flex"
+  },
+  "jnt": {
+    "role": "Flex"
+  },
+  "skz": {
+    "age": 24,
+    "role": "Initiator"
+  },
+  "rglmeister": {
+    "role": "Controller"
   },
   "ghoul33": {
     "age": 18,
     "role": "Duelist"
-  },
-  "tkzin": {
-    "age": 18,
-    "role": "Duelist"
-  },
-  "rglmeister": {
-    "role": "Controller"
   },
   "cidzzz": {
     "age": 26,
@@ -16186,41 +16201,71 @@
     "age": 27,
     "role": "Sentinel"
   },
+  "tkzin": {
+    "age": 18,
+    "role": "Duelist"
+  },
+  "siduzord": {
+    "age": 26,
+    "role": "IGL/Initiator"
+  },
+  "turkish": {
+    "role": "Sentinel"
+  },
   "guhrvn": {
     "age": 26,
+    "role": "Controller"
+  },
+  "rajadajj": {
+    "role": "Sentinel"
+  },
+  "melissa": {
+    "role": "Initiator"
+  },
+  "txddy": {
     "role": "Controller"
   },
   "forbanz": {
     "age": 24,
     "role": "Duelist"
   },
-  "rajadajj": {
-    "role": "Sentinel"
-  },
   "leozin": {
     "role": "Duelist"
-  },
-  "txddy": {
-    "role": "Controller"
-  },
-  "turkish": {
-    "role": "Sentinel"
   },
   "ceegu1n": {
     "role": "Controller"
   },
-  "melissa": {
-    "role": "Initiator"
+  "pxs": {
+    "age": 24,
+    "role": "Duelist"
+  },
+  "jayz": {
+    "role": "Controller"
+  },
+  "tisora": {
+    "age": 23,
+    "role": "Duelist"
+  },
+  "overthink": {
+    "role": "Duelist"
+  },
+  "bld": {
+    "age": 34,
+    "role": "Sentinel"
   },
   "spasz": {
     "role": "Controller"
   },
-  "liazzi": {
-    "age": 21,
-    "role": "Sentinel"
+  "askia": {
+    "age": 24,
+    "role": "Duelist"
   },
   "gustt1nha": {
     "role": "Initiator"
+  },
+  "liazzi": {
+    "age": 21,
+    "role": "Sentinel"
   },
   "waved": {
     "age": 20,
@@ -16230,51 +16275,16 @@
     "age": 31,
     "role": "IGL/Initiator"
   },
-  "overthink": {
-    "role": "Duelist"
-  },
-  "pxs": {
-    "age": 24,
-    "role": "Duelist"
-  },
-  "bld": {
-    "age": 34,
-    "role": "Sentinel"
-  },
-  "tisora": {
-    "age": 23,
-    "role": "Duelist"
-  },
-  "jayz": {
-    "role": "Controller"
-  },
-  "askia": {
-    "age": 24,
-    "role": "Duelist"
-  },
   "pancc": {
     "age": 28,
     "role": "Flex"
-  },
-  "nevoy": {
-    "role": "Sentinel"
-  },
-  "prince": {
-    "role": "Flex"
-  },
-  "lewa": {
-    "role": "Sentinel"
   },
   "drakonz": {
     "age": 29,
     "role": "Sentinel"
   },
-  "loss": {
-    "role": "Duelist"
-  },
-  "xand": {
-    "age": 31,
-    "role": "Duelist"
+  "lewa": {
+    "role": "Sentinel"
   },
   "palla": {
     "age": 20,
@@ -16283,64 +16293,104 @@
   "above": {
     "role": "Controller"
   },
+  "nevoy": {
+    "role": "Sentinel"
+  },
   "celin": {
     "role": "Controller"
   },
-  "khalil": {
-    "age": 22,
-    "role": "Controller"
+  "prince": {
+    "role": "Flex"
   },
-  "gui": {
+  "xand": {
+    "age": 31,
+    "role": "Duelist"
+  },
+  "loss": {
     "role": "Duelist"
   },
   "made": {
     "role": "Controller"
   },
-  "h1perz": {
-    "role": "Flex"
-  },
   "fx": {
     "role": "Initiator"
-  },
-  "romi": {
-    "age": 30,
-    "role": "Duelist"
-  },
-  "vengeance": {
-    "role": "Flex"
-  },
-  "xikaz": {
-    "role": "Controller"
-  },
-  "mrleonan": {
-    "role": "Sentinel"
   },
   "phc": {
     "age": 20,
     "role": "Controller"
   },
-  "furq": {
+  "romi": {
+    "age": 30,
+    "role": "Duelist"
+  },
+  "gui": {
+    "role": "Duelist"
+  },
+  "khalil": {
+    "age": 22,
+    "role": "Controller"
+  },
+  "xikaz": {
+    "role": "Controller"
+  },
+  "faelzin": {
+    "role": "Sentinel"
+  },
+  "matheuzin": {
     "role": "Sentinel"
   },
   "loweed": {
     "role": "Controller"
   },
-  "zakkv": {
-    "role": "Flex"
-  },
-  "matheuzin": {
-    "role": "Sentinel"
-  },
   "yeah": {
     "age": 22,
     "role": "Duelist"
   },
-  "faelzin": {
+  "mrleonan": {
     "role": "Sentinel"
   },
-  "pollo": {
-    "age": 24,
+  "h1perz": {
+    "role": "Flex"
+  },
+  "furq": {
+    "role": "Sentinel"
+  },
+  "zakkv": {
+    "role": "Flex"
+  },
+  "vengeance": {
+    "role": "Flex"
+  },
+  "brnwowzk1": {
+    "age": 27,
+    "role": "Duelist"
+  },
+  "landzin": {
+    "role": "Controller"
+  },
+  "havoc": {
+    "age": 20,
     "role": "Initiator"
+  },
+  "kon4n": {
+    "age": 27,
+    "role": "Duelist"
+  },
+  "htr": {
+    "role": "Initiator"
+  },
+  "fatmarino": {
+    "role": "Duelist"
+  },
+  "bizinha": {
+    "role": "Initiator"
+  },
+  "lowz": {
+    "role": "Duelist"
+  },
+  "guuih": {
+    "age": 27,
+    "role": "Sentinel"
   },
   "propszin": {
     "role": "Sentinel"
@@ -16348,73 +16398,69 @@
   "mxnor": {
     "role": "Initiator"
   },
-  "chase": {
-    "age": 27,
+  "sayuri": {
+    "age": 25,
     "role": "Initiator"
   },
-  "htr": {
+  "pollo": {
+    "age": 24,
     "role": "Initiator"
-  },
-  "kon4n": {
-    "age": 27,
-    "role": "Duelist"
-  },
-  "fatmarino": {
-    "role": "Duelist"
-  },
-  "havoc": {
-    "age": 20,
-    "role": "Initiator"
-  },
-  "lowz": {
-    "role": "Duelist"
-  },
-  "jzz": {
-    "age": 22,
-    "role": "Duelist"
-  },
-  "taka": {
-    "role": "Initiator"
-  },
-  "bizinha": {
-    "role": "Initiator"
-  },
-  "guuih": {
-    "age": 27,
-    "role": "Sentinel"
   },
   "b4rtin": {
     "age": 24,
     "role": "Controller"
   },
-  "landzin": {
-    "role": "Controller"
-  },
-  "brnwowzk1": {
+  "chase": {
     "age": 27,
-    "role": "Duelist"
+    "role": "Initiator"
+  },
+  "taka": {
+    "role": "Initiator"
   },
   "snw": {
     "age": 23,
+    "role": "Sentinel"
+  },
+  "jzz": {
+    "age": 22,
+    "role": "Duelist"
+  },
+  "allie": {
+    "role": "Controller"
+  },
+  "theusz": {
+    "role": "Initiator"
+  },
+  "fzkk": {
+    "role": "Duelist"
+  },
+  "zap": {
+    "age": 28,
+    "role": "IGL/Sentinel"
+  },
+  "mxm": {
     "role": "Sentinel"
   },
   "isa1": {
     "age": 22,
     "role": "Flex"
   },
+  "natale": {
+    "role": "Sentinel"
+  },
   "biazik": {
     "age": 21,
     "role": "Initiator"
   },
+  "tokky": {
+    "role": "Sentinel"
+  },
+  "pryze": {
+    "age": 27,
+    "role": "Initiator"
+  },
   "foox": {
     "role": "Flex"
-  },
-  "gtn": {
-    "role": "Flex"
-  },
-  "sayuri": {
-    "age": 25,
-    "role": "Initiator"
   },
   "khtex": {
     "role": "Flex"
@@ -16425,112 +16471,106 @@
   "vhz": {
     "role": "Flex"
   },
-  "pryze": {
-    "age": 27,
-    "role": "Initiator"
-  },
-  "theusz": {
-    "role": "Initiator"
+  "gtn": {
+    "role": "Flex"
   },
   "kylo": {
     "role": "Duelist"
   },
-  "mxm": {
-    "role": "Sentinel"
-  },
-  "fzkk": {
-    "role": "Duelist"
-  },
-  "natasha": {
-    "age": 25,
-    "role": "Sentinel"
-  },
-  "natale": {
-    "role": "Sentinel"
-  },
-  "zap": {
-    "age": 28,
-    "role": "IGL/Sentinel"
-  },
-  "tokky": {
-    "role": "Sentinel"
-  },
   "lkshow": {
-    "role": "Initiator"
-  },
-  "gabitê": {
-    "role": "Controller"
-  },
-  "wzl": {
     "role": "Initiator"
   },
   "sanoj": {
     "role": "Duelist"
   },
-  "kaah": {
-    "role": "Sentinel"
+  "hide": {
+    "role": "Initiator"
+  },
+  "luid": {
+    "role": "Initiator"
   },
   "naxy": {
     "age": 27,
     "role": "Sentinel"
   },
-  "zaninzs": {
+  "rich": {
+    "age": 22,
     "role": "Initiator"
+  },
+  "gabitê": {
+    "role": "Controller"
   },
   "mgl": {
     "role": "Flex"
+  },
+  "kaah": {
+    "role": "Sentinel"
   },
   "sw": {
     "age": 23,
     "role": "Sentinel"
   },
-  "theozy": {
-    "role": "Duelist"
-  },
-  "rich": {
-    "age": 22,
+  "wzl": {
     "role": "Initiator"
-  },
-  "ecard": {
-    "role": "Duelist"
-  },
-  "hide": {
-    "role": "Initiator"
-  },
-  "rodd": {
-    "role": "Duelist"
   },
   "shelbyn": {
-    "role": "Controller"
-  },
-  "luid": {
-    "role": "Initiator"
-  },
-  "tuyz": {
-    "age": 22,
     "role": "Controller"
   },
   "duht": {
     "age": 23,
     "role": "Duelist"
   },
-  "kodafoca": {
+  "rodd": {
     "role": "Duelist"
   },
-  "ant": {
-    "role": "Sentinel"
+  "zaninzs": {
+    "role": "Initiator"
+  },
+  "tuyz": {
+    "age": 22,
+    "role": "Controller"
+  },
+  "theozy": {
+    "role": "Duelist"
+  },
+  "ecard": {
+    "role": "Duelist"
   },
   "ctc": {
     "role": "Initiator"
   },
-  "lorri": {
-    "role": "Duelist"
+  "mixyce": {
+    "role": "Initiator"
+  },
+  "mattyx": {
+    "age": 29,
+    "role": "Initiator"
+  },
+  "pepa": {
+    "role": "Controller"
   },
   "isla": {
     "role": "Flex"
   },
-  "mixyce": {
+  "kodafoca": {
+    "role": "Duelist"
+  },
+  "tixinha": {
+    "age": 36,
+    "role": "Flex"
+  },
+  "pmdr1": {
+    "role": "Duelist"
+  },
+  "gaabxx": {
     "role": "Initiator"
+  },
+  "rnd": {
+    "role": "Sentinel"
+  },
+  "woddy": {
+    "age": 22,
+    "role": "IGL/Initiator"
   },
   "desire": {
     "role": "Initiator"
@@ -16541,134 +16581,106 @@
   "denaro": {
     "role": "Initiator"
   },
-  "pepa": {
-    "role": "Controller"
-  },
-  "falcone": {
-    "role": "Controller"
-  },
-  "woddy": {
-    "age": 22,
-    "role": "IGL/Initiator"
-  },
-  "drn": {
-    "age": 25,
-    "role": "Controller"
-  },
-  "mattyx": {
-    "age": 29,
-    "role": "Initiator"
-  },
-  "tixinha": {
-    "age": 36,
-    "role": "Flex"
-  },
-  "allie": {
-    "role": "Controller"
-  },
   "tockers": {
     "age": 29,
     "role": "Initiator"
   },
-  "gaabxx": {
-    "role": "Initiator"
-  },
-  "rnd": {
+  "ant": {
     "role": "Sentinel"
   },
   "davizn": {
     "role": "Duelist"
   },
-  "mizzy": {
-    "role": "Controller"
-  },
-  "pmdr1": {
-    "role": "Duelist"
-  },
-  "kwn": {
-    "role": "Duelist"
-  },
-  "sutecas": {
-    "age": 28,
+  "falcone": {
     "role": "Controller"
   },
   "effetic": {
     "role": "Duelist"
   },
-  "light": {
+  "mizzy": {
+    "role": "Controller"
+  },
+  "sutecas": {
+    "age": 28,
+    "role": "Controller"
+  },
+  "drn": {
+    "age": 25,
+    "role": "Controller"
+  },
+  "kwn": {
+    "role": "Duelist"
+  },
+  "lorri": {
+    "role": "Duelist"
+  },
+  "ayxrus": {
     "role": "Controller"
   },
   "vit9ine": {
     "role": "Sentinel"
   },
-  "bezn1": {
-    "age": 28,
+  "mdg": {
+    "role": "Initiator"
+  },
+  "rood": {
+    "age": 29,
     "role": "Flex"
+  },
+  "golias": {
+    "role": "Initiator"
   },
   "nandinh0": {
     "role": "Sentinel"
   },
-  "ryotzz": {
-    "age": 32,
-    "role": "Sentinel"
-  },
-  "bnhardneja": {
-    "role": "Duelist"
-  },
-  "mdg": {
+  "tayhuhu": {
+    "age": 26,
     "role": "Initiator"
   },
   "glym": {
     "age": 27,
     "role": "Flex"
   },
-  "tayhuhu": {
-    "age": 26,
-    "role": "Initiator"
+  "light": {
+    "role": "Controller"
+  },
+  "bnhardneja": {
+    "role": "Duelist"
+  },
+  "bezn1": {
+    "age": 28,
+    "role": "Flex"
   },
   "swag": {
     "age": 22,
     "role": "IGL/Sentinel"
   },
-  "golias": {
-    "role": "Initiator"
-  },
   "nyang": {
     "age": 28,
     "role": "Controller"
+  },
+  "ryotzz": {
+    "age": 32,
+    "role": "Sentinel"
   },
   "fznnn": {
     "age": 30,
     "role": "Sentinel"
   },
-  "rood": {
-    "age": 29,
-    "role": "Flex"
-  },
-  "ayxrus": {
-    "role": "Controller"
-  },
-  "belky": {
-    "age": 32,
-    "role": "Controller"
-  },
-  "smk": {
-    "role": "Controller"
-  },
-  "lovex": {
-    "role": "Duelist"
-  },
-  "peixeh": {
-    "role": "Initiator"
-  },
-  "edudz": {
-    "role": "Duelist"
+  "saalped": {
+    "role": "Sentinel"
   },
   "sant": {
     "role": "Initiator"
   },
-  "saalped": {
-    "role": "Sentinel"
+  "lovex": {
+    "role": "Duelist"
+  },
+  "space panda": {
+    "role": "Initiator"
+  },
+  "gbl": {
+    "role": "Controller"
   },
   "v1xen": {
     "age": 27,
@@ -16677,84 +16689,84 @@
   "kenkayyy": {
     "role": "Initiator"
   },
+  "peixeh": {
+    "role": "Initiator"
+  },
+  "belky": {
+    "age": 32,
+    "role": "Controller"
+  },
   "bruxo": {
     "role": "Sentinel"
   },
-  "space panda": {
-    "role": "Initiator"
+  "smk": {
+    "role": "Controller"
+  },
+  "edudz": {
+    "role": "Duelist"
   },
   "gabriel": {
     "role": "Controller"
   },
-  "gbl": {
-    "role": "Controller"
+  "lolo": {
+    "role": "Initiator"
   },
-  "evilkyk": {
-    "age": 30,
+  "stefanie": {
+    "age": 27,
+    "role": "Initiator"
+  },
+  "bnj": {
     "role": "Initiator"
   },
   "czewick": {
     "age": 20,
     "role": "Duelist"
   },
-  "bnj": {
+  "lz": {
+    "age": 22,
+    "role": "Controller"
+  },
+  "guima": {
+    "role": "Duelist"
+  },
+  "maverick": {
     "role": "Initiator"
+  },
+  "vene": {
+    "role": "Flex"
   },
   "gabee": {
     "age": 27,
     "role": "Duelist"
   },
-  "m4ze": {
+  "wilfps": {
+    "role": "Sentinel"
+  },
+  "evilkyk": {
+    "age": 30,
     "role": "Initiator"
   },
-  "jzn": {
-    "role": "Duelist"
+  "kring": {
+    "role": "Initiator"
   },
-  "guima": {
-    "role": "Duelist"
-  },
-  "stefanie": {
-    "age": 27,
+  "ericzn": {
     "role": "Initiator"
   },
   "jow": {
     "age": 25,
     "role": "Initiator"
   },
-  "nether": {
-    "role": "Initiator"
-  },
-  "lolo": {
-    "role": "Initiator"
-  },
-  "ericzn": {
-    "role": "Initiator"
-  },
-  "lz": {
-    "age": 22,
-    "role": "Controller"
-  },
-  "kring": {
-    "role": "Initiator"
-  },
-  "maverick": {
-    "role": "Initiator"
-  },
-  "wilfps": {
-    "role": "Sentinel"
-  },
   "nilo": {
     "role": "Flex"
   },
-  "vene": {
-    "role": "Flex"
-  },
-  "fuzari": {
-    "age": 29,
-    "role": "Sentinel"
-  },
-  "dmt": {
+  "jzn": {
     "role": "Duelist"
+  },
+  "m4ze": {
+    "role": "Initiator"
+  },
+  "nether": {
+    "role": "Initiator"
   },
   "flainzz": {
     "role": "Sentinel"
@@ -16762,60 +16774,74 @@
   "vitrix": {
     "role": "Initiator"
   },
-  "hunterx": {
-    "role": "Initiator"
+  "nocz": {
+    "role": "Controller"
   },
-  "igaum": {
+  "lucks": {
     "role": "Sentinel"
   },
   "showliana": {
     "age": 33,
     "role": "IGL/Initiator"
   },
-  "insano": {
-    "role": "Duelist"
-  },
-  "jonn": {
-    "role": "Duelist"
-  },
-  "lucks": {
-    "role": "Sentinel"
-  },
-  "nocz": {
-    "role": "Controller"
+  "hunterx": {
+    "role": "Initiator"
   },
   "leeoloos": {
     "role": "Controller"
   },
-  "vigo": {
-    "role": "Controller"
+  "insano": {
+    "role": "Duelist"
   },
-  "rdo": {
+  "fuzari": {
+    "age": 29,
     "role": "Sentinel"
+  },
+  "jonn": {
+    "role": "Duelist"
+  },
+  "dmt": {
+    "role": "Duelist"
+  },
+  "igaum": {
+    "role": "Sentinel"
+  },
+  "mnds": {
+    "age": 27,
+    "role": "Controller"
   },
   "killa": {
     "role": "Sentinel"
   },
-  "bruninej": {
-    "role": "Flex"
-  },
   "jules": {
     "age": 24,
+    "role": "Sentinel"
+  },
+  "vigo": {
+    "role": "Controller"
+  },
+  "kid": {
     "role": "Initiator"
+  },
+  "rdo": {
+    "role": "Sentinel"
+  },
+  "drago": {
+    "age": 30,
+    "role": "Sentinel"
+  },
+  "falcomer": {
+    "role": "Initiator"
+  },
+  "jotag": {
+    "role": "Controller"
   },
   "tinchoff": {
     "age": 26,
     "role": "Sentinel"
   },
-  "poti": {
-    "role": "Controller"
-  },
-  "jotag": {
-    "role": "Controller"
-  },
-  "drago": {
-    "age": 30,
-    "role": "Sentinel"
+  "ind1n": {
+    "role": "Duelist"
   },
   "stwz1": {
     "role": "Initiator"
@@ -16823,47 +16849,20 @@
   "rst": {
     "role": "Controller"
   },
-  "kid": {
-    "role": "Initiator"
+  "poti": {
+    "role": "Controller"
   },
-  "falcomer": {
-    "role": "Initiator"
+  "bruninej": {
+    "role": "Flex"
   },
-  "ind1n": {
+  "veroneze": {
     "role": "Duelist"
   },
-  "mnds": {
-    "age": 27,
-    "role": "Controller"
-  },
-  "krysme": {
-    "age": 25,
-    "role": "Controller"
+  "celinett": {
+    "role": "Sentinel"
   },
   "ginilson": {
     "role": "Sentinel"
-  },
-  "bladez": {
-    "role": "Flex"
-  },
-  "ryuzin": {
-    "role": "Controller"
-  },
-  "mazin": {
-    "age": 26,
-    "role": "IGL/Flex"
-  },
-  "winter": {
-    "role": "Sentinel"
-  },
-  "riquen": {
-    "role": "Initiator"
-  },
-  "cryy": {
-    "role": "Controller"
-  },
-  "shoqqz": {
-    "role": "Duelist"
   },
   "jotinha": {
     "age": 25,
@@ -16876,35 +16875,58 @@
     "age": 32,
     "role": "IGL/Controller"
   },
-  "veroneze": {
-    "role": "Duelist"
-  },
-  "mittens": {
+  "cryy": {
     "role": "Controller"
   },
-  "lissa": {
-    "age": 21,
-    "role": "Sentinel"
-  },
-  "celinett": {
-    "role": "Sentinel"
-  },
-  "jot1nha": {
+  "riquen": {
     "role": "Initiator"
+  },
+  "bladez": {
+    "role": "Flex"
+  },
+  "mazin": {
+    "age": 26,
+    "role": "IGL/Flex"
+  },
+  "ryuzin": {
+    "role": "Controller"
   },
   "nat1": {
     "age": 33,
     "role": "Initiator"
   },
-  "nany": {
+  "lissa": {
+    "age": 21,
+    "role": "Sentinel"
+  },
+  "shoqqz": {
+    "role": "Duelist"
+  },
+  "mittens": {
+    "role": "Controller"
+  },
+  "winter": {
+    "role": "Sentinel"
+  },
+  "jot1nha": {
     "role": "Initiator"
+  },
+  "magic": {
+    "role": "Duelist"
+  },
+  "francez": {
+    "role": "Controller"
   },
   "murizzz": {
     "age": 26,
     "role": "IGL/Duelist"
   },
-  "magic": {
-    "role": "Duelist"
+  "kalita": {
+    "age": 25,
+    "role": "Controller"
+  },
+  "nany": {
+    "role": "Initiator"
   },
   "leakk0": {
     "role": "Duelist"
@@ -16913,113 +16935,127 @@
     "age": 24,
     "role": "Initiator"
   },
-  "spm": {
-    "role": "Controller"
-  },
-  "francez": {
-    "role": "Controller"
-  },
-  "kalita": {
-    "age": 25,
-    "role": "Controller"
-  },
   "znajder": {
     "role": "Duelist"
   },
-  "tooug": {
-    "role": "Initiator"
+  "spm": {
+    "role": "Controller"
   },
-  "hagon": {
-    "role": "Initiator"
-  },
-  "vinizin": {
-    "role": "Duelist"
-  },
-  "lule": {
-    "age": 23,
+  "mandyt": {
     "role": "Duelist"
   },
   "luiza": {
     "age": 21,
     "role": "Initiator"
   },
-  "flg1": {
+  "lule": {
+    "age": 23,
+    "role": "Duelist"
+  },
+  "zam": {
+    "role": "Flex"
+  },
+  "vinizin": {
+    "role": "Duelist"
+  },
+  "tooug": {
     "role": "Initiator"
   },
   "fra": {
     "role": "Sentinel"
   },
-  "zam": {
-    "role": "Flex"
+  "nanzin": {
+    "role": "Initiator"
   },
-  "mandyt": {
-    "role": "Duelist"
-  },
-  "shyz": {
-    "age": 30,
-    "role": "Duelist"
-  },
-  "vii": {
-    "role": "Duelist"
-  },
-  "slag": {
-    "role": "Controller"
-  },
-  "rhz": {
+  "flg1": {
     "role": "Initiator"
   },
   "adverso": {
     "age": 28,
     "role": "IGL/Initiator"
   },
+  "slag": {
+    "role": "Controller"
+  },
   "jayp": {
     "age": 22,
     "role": "Duelist"
   },
-  "albaladejo": {
+  "shyz": {
+    "age": 30,
+    "role": "Duelist"
+  },
+  "hagon": {
     "role": "Initiator"
   },
   "luskka": {
     "role": "Initiator"
   },
-  "nanzin": {
+  "rhz": {
     "role": "Initiator"
-  },
-  "leonzhet": {
-    "role": "Initiator"
-  },
-  "let": {
-    "role": "Duelist"
-  },
-  "gattizada": {
-    "role": "Initiator"
-  },
-  "jacobin": {
-    "role": "Initiator"
-  },
-  "dml": {
-    "role": "Duelist"
-  },
-  "larischz": {
-    "age": 31,
-    "role": "Sentinel"
   },
   "tak1": {
     "age": 26,
     "role": "Flex"
   },
-  "axeddy": {
-    "age": 23,
+  "jacobin": {
     "role": "Initiator"
   },
   "giacomin": {
     "role": "Controller"
   },
+  "larischz": {
+    "age": 31,
+    "role": "Sentinel"
+  },
+  "dml": {
+    "role": "Duelist"
+  },
+  "let": {
+    "role": "Duelist"
+  },
+  "leonzhet": {
+    "role": "Initiator"
+  },
+  "gattizada": {
+    "role": "Initiator"
+  },
+  "axeddy": {
+    "age": 23,
+    "role": "Initiator"
+  },
+  "cheeze": {
+    "role": "Controller"
+  },
+  "maciel": {
+    "role": "Sentinel"
+  },
+  "lukzera": {
+    "age": 28,
+    "role": "Controller"
+  },
+  "dgk": {
+    "role": "Controller"
+  },
   "novi": {
     "role": "Flex"
   },
-  "artru": {
+  "shizue": {
     "role": "Controller"
+  },
+  "vhl": {
+    "role": "Controller"
+  },
+  "sergio kitchens": {
+    "role": "Flex"
+  },
+  "pleets": {
+    "age": 31,
+    "role": "Controller"
+  },
+  "pannshi": {
+    "age": 32,
+    "role": "Flex"
   },
   "ryoz": {
     "role": "Flex"
@@ -17027,87 +17063,39 @@
   "covas": {
     "role": "Initiator"
   },
-  "sergio kitchens": {
-    "role": "Flex"
-  },
-  "cheeze": {
+  "artru": {
     "role": "Controller"
   },
-  "shizue": {
-    "role": "Controller"
-  },
-  "maciel": {
-    "role": "Sentinel"
-  },
-  "vhl": {
-    "role": "Controller"
-  },
-  "pannshi": {
-    "age": 32,
-    "role": "Flex"
-  },
-  "lukzera": {
-    "age": 28,
-    "role": "Controller"
-  },
-  "pleets": {
-    "age": 31,
-    "role": "Controller"
-  },
-  "dgk": {
-    "role": "Controller"
-  },
-  "mgs": {
-    "role": "Duelist"
-  },
-  "badgal": {
+  "injaguar": {
     "role": "Initiator"
   },
   "campolina": {
     "role": "Initiator"
   },
-  "injaguar": {
-    "role": "Initiator"
-  },
-  "mizi": {
-    "role": "Flex"
+  "mgs": {
+    "role": "Duelist"
   },
   "txozin": {
+    "role": "Flex"
+  },
+  "badgal": {
+    "role": "Initiator"
+  },
+  "antunes": {
+    "role": "Controller"
+  },
+  "mizi": {
     "role": "Flex"
   },
   "dimas": {
     "role": "Sentinel"
   },
-  "antunes": {
-    "role": "Controller"
-  },
-  "lendary": {
-    "role": "Duelist"
-  },
   "daniops": {
     "role": "Controller"
-  },
-  "myssen": {
-    "age": 30,
-    "role": "IGL/Sentinel"
-  },
-  "gak": {
-    "role": "Initiator"
-  },
-  "mindle": {
-    "role": "Initiator"
   },
   "nanah": {
     "age": 29,
     "role": "Controller"
-  },
-  "urango": {
-    "age": 21,
-    "role": "IGL/Initiator"
-  },
-  "ablej": {
-    "age": 27,
-    "role": "Initiator"
   },
   "dess": {
     "role": "Flex"
@@ -17115,14 +17103,32 @@
   "patip": {
     "role": "Initiator"
   },
+  "ablej": {
+    "age": 27,
+    "role": "Initiator"
+  },
+  "mindle": {
+    "role": "Initiator"
+  },
+  "urango": {
+    "age": 21,
+    "role": "IGL/Initiator"
+  },
+  "gak": {
+    "role": "Initiator"
+  },
+  "myssen": {
+    "age": 30,
+    "role": "IGL/Sentinel"
+  },
+  "vini": {
+    "role": "Flex"
+  },
   "kakajesus": {
     "role": "Sentinel"
   },
-  "szk": {
-    "role": "Initiator"
-  },
-  "chadu": {
-    "role": "Controller"
+  "muri": {
+    "role": "Duelist"
   },
   "peixinho": {
     "role": "Duelist"
@@ -17133,26 +17139,35 @@
   "blastz": {
     "role": "Initiator"
   },
-  "helkii": {
-    "role": "Controller"
-  },
   "marcelintb": {
     "role": "Controller"
-  },
-  "hehehellen": {
-    "role": "Controller"
-  },
-  "muri": {
-    "role": "Duelist"
-  },
-  "vini": {
-    "role": "Flex"
   },
   "str0nda": {
     "role": "Initiator"
   },
-  "hugofar": {
+  "chadu": {
+    "role": "Controller"
+  },
+  "szk": {
+    "role": "Initiator"
+  },
+  "helkii": {
+    "role": "Controller"
+  },
+  "fz": {
+    "role": "Flex"
+  },
+  "pvs": {
+    "role": "Flex"
+  },
+  "hannabacon": {
     "role": "Sentinel"
+  },
+  "4dr": {
+    "role": "Sentinel"
+  },
+  "ori": {
+    "role": "Initiator"
   },
   "isafx": {
     "role": "Duelist"
@@ -17161,27 +17176,15 @@
     "age": 19,
     "role": "Duelist"
   },
-  "arial": {
-    "age": 24,
-    "role": "Flex"
-  },
-  "fz": {
-    "role": "Flex"
-  },
   "dragzikw": {
     "role": "Flex"
   },
-  "4dr": {
+  "hugofar": {
     "role": "Sentinel"
   },
-  "pvs": {
+  "arial": {
+    "age": 24,
     "role": "Flex"
-  },
-  "hannabacon": {
-    "role": "Sentinel"
-  },
-  "ori": {
-    "role": "Initiator"
   },
   "emuhleet": {
     "age": 35,
@@ -17190,19 +17193,25 @@
   "l4cerr": {
     "role": "Initiator"
   },
+  "galaxy": {
+    "role": "Controller"
+  },
   "caiozin": {
     "role": "Flex"
   },
-  "kzr": {
+  "davizao": {
     "role": "Initiator"
   },
-  "davizao": {
+  "kzr": {
     "role": "Initiator"
   },
   "djjoka": {
     "role": "Sentinel"
   },
-  "galaxy": {
+  "aninha": {
+    "role": "Flex"
+  },
+  "trajan1sk": {
     "role": "Controller"
   },
   "fer": {
@@ -17211,12 +17220,6 @@
   "cellax": {
     "age": 24,
     "role": "Duelist"
-  },
-  "aninha": {
-    "role": "Flex"
-  },
-  "trajan1sk": {
-    "role": "Controller"
   },
   "mcn": {
     "role": "Sentinel"
@@ -17229,8 +17232,8 @@
     "age": 27,
     "role": "Initiator"
   },
-  "headzera": {
-    "role": "Initiator"
+  "anazik": {
+    "role": "Duelist"
   },
   "vtrg0d": {
     "role": "Sentinel"
@@ -17238,8 +17241,11 @@
   "natyzinha": {
     "role": "Initiator"
   },
-  "anazik": {
-    "role": "Duelist"
+  "fame": {
+    "role": "Sentinel"
+  },
+  "headzera": {
+    "role": "Initiator"
   },
   "jhow": {
     "age": 29,
@@ -17247,16 +17253,6 @@
   },
   "smokay": {
     "role": "Sentinel"
-  },
-  "fame": {
-    "role": "Sentinel"
-  },
-  "blu": {
-    "age": 31,
-    "role": "Sentinel"
-  },
-  "ayumi": {
-    "role": "Initiator"
   },
   "ank": {
     "role": "Initiator"
@@ -17267,13 +17263,17 @@
   "jpl": {
     "role": "Initiator"
   },
+  "blu": {
+    "age": 31,
+    "role": "Sentinel"
+  },
   "fly": {
     "role": "Flex"
   },
   "scherbi": {
     "role": "Sentinel"
   },
-  "lay": {
+  "gabi": {
     "role": "Duelist"
   },
   "lopesboy": {
@@ -17282,38 +17282,35 @@
   "rotex": {
     "role": "Controller"
   },
-  "gabi": {
-    "role": "Duelist"
-  },
   "hina": {
-    "role": "Controller"
-  },
-  "guiih9": {
-    "role": "Initiator"
-  },
-  "morari": {
-    "role": "Duelist"
-  },
-  "frozen": {
-    "role": "Duelist"
-  },
-  "ripmel": {
-    "role": "Controller"
-  },
-  "lua c": {
     "role": "Controller"
   },
   "mathias": {
     "role": "Flex"
   },
-  "gigika": {
-    "role": "Flex"
+  "morari": {
+    "role": "Duelist"
+  },
+  "lua c": {
+    "role": "Controller"
+  },
+  "ripmel": {
+    "role": "Controller"
+  },
+  "ayumi": {
+    "role": "Initiator"
+  },
+  "frozen": {
+    "role": "Duelist"
+  },
+  "guiih9": {
+    "role": "Initiator"
   },
   "bielmonster": {
     "role": "Initiator"
   },
-  "vevs": {
-    "role": "Controller"
+  "gigika": {
+    "role": "Flex"
   },
   "zaxdeus": {
     "role": "Sentinel"
@@ -17321,7 +17318,10 @@
   "biscoit1n": {
     "role": "Initiator"
   },
-  "apple": {
+  "gabe": {
+    "role": "Initiator"
+  },
+  "depppx": {
     "role": "Initiator"
   },
   "pernalonga": {
@@ -17330,49 +17330,49 @@
   "owchet": {
     "role": "Sentinel"
   },
-  "depppx": {
+  "apple": {
     "role": "Initiator"
   },
-  "gabe": {
-    "role": "Initiator"
-  },
-  "lugn": {
-    "role": "Controller"
-  },
-  "misty": {
-    "role": "Initiator"
+  "pinelli": {
+    "role": "Sentinel"
   },
   "freya": {
     "age": 23,
     "role": "Initiator"
   },
-  "drakz": {
-    "role": "Duelist"
-  },
-  "pinelli": {
-    "role": "Sentinel"
+  "misty": {
+    "role": "Initiator"
   },
   "delevingne": {
     "role": "Duelist"
   },
-  "mor3na": {
+  "lugn": {
+    "role": "Controller"
+  },
+  "drakz": {
+    "role": "Duelist"
+  },
+  "vevs": {
     "role": "Controller"
   },
   "fluyr": {
     "age": 34,
     "role": "Sentinel"
   },
-  "maze": {
-    "role": "Flex"
-  },
   "babzzz": {
     "role": "Sentinel"
   },
-  "macizin": {
-    "role": "Duelist"
+  "maze": {
+    "role": "Flex"
+  },
+  "mor3na": {
+    "role": "Controller"
   },
   "erin": {
     "role": "Initiator"
+  },
+  "macizin": {
+    "role": "Duelist"
   },
   "arctichies": {
     "role": "Controller"
@@ -17383,14 +17383,17 @@
   "peso": {
     "role": "Controller"
   },
+  "luyta": {
+    "role": "Sentinel"
+  },
   "chr": {
     "role": "Sentinel"
   },
   "setrexz": {
     "role": "Initiator"
   },
-  "luyta": {
-    "role": "Sentinel"
+  "trwizy": {
+    "role": "Initiator"
   },
   "quintbia": {
     "role": "Initiator"
@@ -17399,26 +17402,26 @@
     "age": 32,
     "role": "Controller"
   },
-  "hanna": {
-    "role": "Controller"
-  },
   "fiufiu": {
     "role": "Flex"
+  },
+  "hanna": {
+    "role": "Controller"
   },
   "nuuh": {
     "role": "Duelist"
   },
-  "kisa": {
-    "role": "Flex"
-  },
   "aura": {
     "role": "Flex"
   },
-  "lezinha": {
-    "role": "Controller"
+  "kisa": {
+    "role": "Flex"
   },
   "campos": {
     "role": "Duelist"
+  },
+  "lezinha": {
+    "role": "Controller"
   },
   "akemy": {
     "age": 29,
@@ -17430,23 +17433,23 @@
   "anne": {
     "role": "Initiator"
   },
-  "patochovsk": {
-    "role": "Flex"
-  },
-  "rhamurti": {
-    "role": "Initiator"
-  },
-  "masu": {
-    "role": "Flex"
+  "doubleee": {
+    "role": "Sentinel"
   },
   "nikkolan": {
     "role": "Duelist"
   },
-  "doubleee": {
-    "role": "Sentinel"
+  "rhamurti": {
+    "role": "Initiator"
   },
   "cad": {
     "role": "Duelist"
+  },
+  "masu": {
+    "role": "Flex"
+  },
+  "patochovsk": {
+    "role": "Flex"
   },
   "miko": {
     "role": "Duelist"
@@ -19343,15 +19346,15 @@
     "age": 21,
     "role": "Duelist"
   },
-  "malibu": {
-    "role": "Initiator"
+  "kiara": {
+    "role": "Flex"
   },
   "consu": {
     "age": 31,
     "role": "Controller"
   },
-  "kiara": {
-    "role": "Flex"
+  "malibu": {
+    "role": "Initiator"
   },
   "c4lypso": {
     "age": 31,
@@ -19367,53 +19370,50 @@
   "bahzar": {
     "role": "Sentinel"
   },
+  "vaz": {
+    "role": "Controller"
+  },
+  "naxa": {
+    "role": "Duelist"
+  },
   "flow3r": {
     "role": "Duelist"
   },
   "s0nsuz": {
     "role": "Flex"
   },
-  "naxa": {
-    "role": "Duelist"
-  },
-  "vaz": {
+  "sadeem": {
     "role": "Controller"
   },
   "unstable": {
     "role": "IGL/Duelist"
   },
-  "sadeem": {
-    "role": "Controller"
-  },
-  "wire": {
-    "role": "Duelist"
-  },
   "coalz": {
     "role": "Flex"
-  },
-  "l4ce": {
-    "role": "Initiator"
   },
   "wrld": {
     "role": "Duelist"
   },
-  "brookelynn": {
-    "role": "Sentinel"
+  "wire": {
+    "role": "Duelist"
+  },
+  "l4ce": {
+    "role": "Initiator"
   },
   "aleksandra": {
     "role": "Flex"
   },
-  "sarvo": {
-    "role": "Duelist"
-  },
-  "sayfposting": {
-    "role": "Duelist"
+  "brookelynn": {
+    "role": "Sentinel"
   },
   "bella": {
     "age": 28,
     "role": "Flex"
   },
-  "lea": {
+  "sayfposting": {
+    "role": "Duelist"
+  },
+  "sarvo": {
     "role": "Duelist"
   },
   "dano": {
@@ -19425,50 +19425,63 @@
   "katarina": {
     "role": "Duelist"
   },
-  "caydia": {
+  "lea": {
+    "role": "Duelist"
+  },
+  "lazylion": {
     "role": "Sentinel"
   },
   "bethany": {
     "role": "Initiator"
   },
-  "lazylion": {
-    "role": "Sentinel"
-  },
   "83y0nd1357": {
     "role": "Duelist"
   },
-  "esmé": {
-    "role": "Controller"
-  },
-  "zena": {
-    "role": "Initiator"
-  },
-  "hannah": {
+  "caydia": {
     "role": "Sentinel"
   },
-  "snackbox": {
+  "esmé": {
     "role": "Controller"
   },
   "pickles": {
     "role": "Duelist"
   },
-  "tiff": {
+  "zena": {
     "role": "Initiator"
   },
   "ferret": {
     "role": "Controller"
   },
+  "tiff": {
+    "role": "Initiator"
+  },
+  "snackbox": {
+    "role": "Controller"
+  },
+  "hannah": {
+    "role": "Sentinel"
+  },
+  "karie": {
+    "age": 19,
+    "role": "Duelist"
+  },
   "nicky": {
     "role": "Controller"
   },
-  "genssj": {
-    "role": "Duelist"
+  "alannah": {
+    "role": "Sentinel"
   },
-  "sogiulia": {
+  "colby": {
     "role": "Initiator"
   },
   "soto": {
     "role": "Controller"
+  },
+  "sogiulia": {
+    "role": "Initiator"
+  },
+  "dmo": {
+    "role": "Duelist"
   },
   "chair": {
     "role": "Initiator"
@@ -19477,17 +19490,10 @@
     "age": 26,
     "role": "Sentinel"
   },
-  "dmo": {
+  "genssj": {
     "role": "Duelist"
   },
-  "alannah": {
-    "role": "Sentinel"
-  },
-  "karie": {
-    "age": 19,
-    "role": "Duelist"
-  },
-  "colby": {
+  "cath": {
     "role": "Initiator"
   },
   "akemi": {
@@ -19497,24 +19503,24 @@
     "age": 22,
     "role": "Initiator"
   },
-  "mal": {
-    "role": "Flex"
-  },
-  "amelist": {
-    "role": "Controller"
-  },
   "blue": {
     "role": "Sentinel"
   },
   "muff1nkat": {
     "role": "Initiator"
   },
+  "amelist": {
+    "role": "Controller"
+  },
+  "mal": {
+    "role": "Flex"
+  },
   "micaela": {
     "age": 22,
     "role": "Duelist"
   },
-  "cath": {
-    "role": "Initiator"
+  "bae": {
+    "role": "Flex"
   },
   "cuteasa": {
     "role": "Sentinel"
@@ -19523,25 +19529,29 @@
     "age": 21,
     "role": "Sentinel"
   },
-  "bae": {
-    "role": "Flex"
-  },
   "twilights": {
     "role": "Controller"
+  },
+  "juw": {
+    "age": 23,
+    "role": "Duelist"
   },
   "sonder": {
     "age": 21,
     "role": "Duelist"
   },
-  "afino": {
-    "role": "Initiator"
-  },
   "rosa": {
     "role": "Duelist"
   },
-  "juw": {
-    "age": 23,
+  "afino": {
+    "role": "Initiator"
+  },
+  "ponix": {
+    "age": 22,
     "role": "Duelist"
+  },
+  "itnothan": {
+    "role": "Initiator"
   },
   "watermelon_froots66": {
     "role": "Controller"
@@ -19549,17 +19559,16 @@
   "hyperz": {
     "role": "Duelist"
   },
-  "venture": {
-    "age": 23,
-    "role": "Duelist"
-  },
-  "ponix": {
-    "age": 22,
-    "role": "Duelist"
+  "emluo": {
+    "role": "Sentinel"
   },
   "karra": {
     "age": 21,
     "role": "Controller"
+  },
+  "venture": {
+    "age": 23,
+    "role": "Duelist"
   },
   "kook": {
     "role": "Duelist"
@@ -19567,38 +19576,8 @@
   "toadfish": {
     "role": "Sentinel"
   },
-  "emluo": {
-    "role": "Sentinel"
-  },
-  "itnothan": {
-    "role": "Initiator"
-  },
-  "lessa": {
-    "role": "Sentinel"
-  },
-  "harper": {
-    "role": "Sentinel"
-  },
-  "sam": {
-    "age": 29,
-    "role": "Flex"
-  },
   "superkat": {
     "role": "Duelist"
-  },
-  "kazler": {
-    "age": 20,
-    "role": "Initiator"
-  },
-  "katsumi": {
-    "age": 25,
-    "role": "Controller"
-  },
-  "anniedro": {
-    "role": "Flex"
-  },
-  "panday": {
-    "role": "Sentinel"
   },
   "fish fear me": {
     "role": "Sentinel"
@@ -19606,17 +19585,37 @@
   "icee": {
     "role": "Duelist"
   },
+  "panday": {
+    "role": "Sentinel"
+  },
+  "sam": {
+    "age": 29,
+    "role": "Flex"
+  },
+  "lessa": {
+    "role": "Sentinel"
+  },
   "patitop": {
     "role": "Sentinel"
   },
-  "sader": {
-    "role": "Duelist"
+  "anniedro": {
+    "role": "Flex"
+  },
+  "katsumi": {
+    "age": 25,
+    "role": "Controller"
+  },
+  "harper": {
+    "role": "Sentinel"
+  },
+  "kazler": {
+    "age": 20,
+    "role": "Initiator"
   },
   "citrus": {
     "role": "Initiator"
   },
-  "yue": {
-    "age": 30,
+  "sader": {
     "role": "Duelist"
   },
   "lauguz": {
@@ -19625,80 +19624,72 @@
   "clawdia": {
     "role": "Duelist"
   },
-  "cbui": {
-    "role": "Controller"
+  "yue": {
+    "age": 30,
+    "role": "Duelist"
   },
-  "cami": {
-    "role": "Controller"
-  },
-  "valentina": {
+  "rayse": {
     "role": "Duelist"
   },
   "keiti": {
     "age": 25,
     "role": "Duelist"
   },
-  "rayse": {
+  "valentina": {
     "role": "Duelist"
+  },
+  "cami": {
+    "role": "Controller"
+  },
+  "cbui": {
+    "role": "Controller"
+  },
+  "shaz": {
+    "role": "Controller"
+  },
+  "halthox": {
+    "role": "Initiator"
   },
   "shmeaty": {
     "age": 25,
     "role": "Duelist"
   },
-  "home": {
-    "age": 30,
-    "role": "Duelist"
+  "yeji": {
+    "role": "Flex"
   },
   "ennui": {
     "role": "Duelist"
   },
+  "luny": {
+    "role": "Controller"
+  },
   "asomy": {
     "role": "Flex"
-  },
-  "flossie": {
-    "age": 33,
-    "role": "IGL/Sentinel"
   },
   "kyujinn": {
     "role": "Sentinel"
   },
-  "shaz": {
-    "role": "Controller"
+  "home": {
+    "age": 30,
+    "role": "Duelist"
   },
-  "mayzin": {
-    "role": "Flex"
-  },
-  "halthox": {
+  "blod": {
+    "age": 22,
     "role": "Initiator"
   },
   "yelz": {
     "age": 20,
     "role": "Controller"
   },
-  "luny": {
-    "role": "Controller"
+  "flossie": {
+    "age": 33,
+    "role": "IGL/Sentinel"
   },
-  "yeji": {
+  "mayzin": {
     "role": "Flex"
   },
-  "blod": {
-    "age": 22,
-    "role": "Initiator"
-  },
-  "awpi": {
-    "role": "Initiator"
-  },
-  "logic": {
-    "role": "Initiator"
-  },
-  "qrthur": {
-    "role": "Initiator"
-  },
-  "alexaishot": {
-    "role": "Controller"
-  },
-  "zidian": {
-    "role": "Initiator"
+  "vernina": {
+    "role": "Sentinel"
   },
   "buffala": {
     "age": 21,
@@ -19707,112 +19698,124 @@
   "hayyel": {
     "role": "Initiator"
   },
+  "logic": {
+    "role": "Initiator"
+  },
   "rue": {
     "age": 23,
     "role": "Initiator"
   },
+  "alexaishot": {
+    "role": "Controller"
+  },
   "tconda": {
     "role": "Duelist"
   },
-  "vernina": {
-    "role": "Sentinel"
+  "awpi": {
+    "role": "Initiator"
   },
-  "kr1sp": {
-    "role": "Sentinel"
+  "qrthur": {
+    "role": "Initiator"
   },
-  "teapot": {
+  "zidian": {
+    "role": "Initiator"
+  },
+  "kis": {
     "role": "Flex"
   },
   "cyn": {
     "role": "Initiator"
   },
-  "miaf": {
-    "role": "Controller"
-  },
-  "kis": {
-    "role": "Flex"
-  },
-  "kiddo": {
-    "role": "Controller"
-  },
-  "k1m": {
+  "kr1sp": {
     "role": "Sentinel"
-  },
-  "skyress": {
-    "role": "Duelist"
-  },
-  "maddie": {
-    "role": "Initiator"
   },
   "sereen": {
     "age": 23,
     "role": "Controller"
   },
-  "rise": {
-    "role": "Controller"
+  "mili": {
+    "age": 22,
+    "role": "Initiator"
   },
   "bungee": {
     "age": 23,
     "role": "Duelist"
   },
-  "mili": {
-    "age": 22,
+  "miaf": {
+    "role": "Controller"
+  },
+  "skyress": {
+    "role": "Duelist"
+  },
+  "kiddo": {
+    "role": "Controller"
+  },
+  "teapot": {
+    "role": "Flex"
+  },
+  "maddie": {
     "role": "Initiator"
+  },
+  "k1m": {
+    "role": "Sentinel"
   },
   "kp": {
     "age": 26,
     "role": "IGL/Initiator"
   },
-  "ariel": {
+  "rise": {
     "role": "Controller"
-  },
-  "slaze": {
-    "role": "Initiator"
-  },
-  "ixhsq": {
-    "role": "Controller"
-  },
-  "xyro": {
-    "role": "Duelist"
   },
   "gabby": {
     "role": "Sentinel"
-  },
-  "benita": {
-    "age": 33,
-    "role": "Initiator"
-  },
-  "babysoap": {
-    "role": "Controller"
-  },
-  "mle": {
-    "age": 21,
-    "role": "Controller"
-  },
-  "weewee": {
-    "role": "Flex"
-  },
-  "ltomlee": {
-    "role": "Flex"
-  },
-  "yanbry": {
-    "role": "Initiator"
-  },
-  "hotaru": {
-    "role": "Controller"
-  },
-  "neru": {
-    "role": "Initiator"
-  },
-  "mars": {
-    "role": "Initiator"
   },
   "supiree": {
     "age": 21,
     "role": "Duelist"
   },
+  "ariel": {
+    "role": "Controller"
+  },
+  "ixhsq": {
+    "role": "Controller"
+  },
+  "neru": {
+    "role": "Initiator"
+  },
+  "hotaru": {
+    "role": "Controller"
+  },
+  "weewee": {
+    "role": "Flex"
+  },
+  "slaze": {
+    "role": "Initiator"
+  },
+  "mars": {
+    "role": "Initiator"
+  },
+  "yanbry": {
+    "role": "Initiator"
+  },
+  "xyro": {
+    "role": "Duelist"
+  },
   "subiboo": {
     "role": "Sentinel"
+  },
+  "mle": {
+    "age": 21,
+    "role": "Controller"
+  },
+  "babysoap": {
+    "role": "Controller"
+  },
+  "benita": {
+    "age": 33,
+    "role": "Initiator"
+  },
+  "ltomlee": {
+    "role": "Flex"
   },
   "gill x2": {
     "role": "Duelist"
@@ -19820,34 +19823,8 @@
   "valusia": {
     "role": "Initiator"
   },
-  "kxtieoh": {
-    "role": "Initiator"
-  },
-  "raquinuki": {
-    "role": "Controller"
-  },
-  "grimoire": {
-    "age": 20,
-    "role": "Flex"
-  },
   "refinnej": {
     "age": 28,
-    "role": "Sentinel"
-  },
-  "ballooncat": {
-    "age": 20,
-    "role": "Duelist"
-  },
-  "arianarchist": {
-    "role": "Flex"
-  },
-  "karidana": {
-    "role": "Initiator"
-  },
-  "summertime": {
-    "role": "IGL/Initiator"
-  },
-  "ghostlyjinx": {
     "role": "Sentinel"
   },
   "soggyseal278": {
@@ -19856,102 +19833,92 @@
   "cindy": {
     "role": "Flex"
   },
+  "summertime": {
+    "role": "IGL/Initiator"
+  },
   "nabiki": {
     "role": "Initiator"
   },
-  "kitkat": {
+  "karidana": {
     "role": "Initiator"
   },
-  "kay": {
-    "role": "Initiator"
-  },
-  "yumi": {
-    "role": "Initiator"
-  },
-  "maegumi": {
+  "grimoire": {
+    "age": 20,
     "role": "Flex"
   },
-  "atisca": {
-    "role": "Duelist"
+  "raquinuki": {
+    "role": "Controller"
   },
-  "suerte": {
-    "role": "Duelist"
+  "kxtieoh": {
+    "role": "Initiator"
   },
-  "korosu": {
-    "age": 22,
+  "arianarchist": {
+    "role": "Flex"
+  },
+  "ghostlyjinx": {
+    "role": "Sentinel"
+  },
+  "ballooncat": {
+    "age": 20,
     "role": "Duelist"
   },
   "pyro": {
     "age": 20,
     "role": "Sentinel"
   },
-  "maryna": {
-    "age": 21,
-    "role": "Controller"
+  "atisca": {
+    "role": "Duelist"
   },
   "carlee": {
     "role": "Duelist"
   },
-  "hollywood": {
-    "role": "Initiator"
+  "maegumi": {
+    "role": "Flex"
   },
-  "chloezera": {
+  "kay": {
     "role": "Sentinel"
   },
-  "lynn": {
+  "suerte": {
     "role": "Duelist"
+  },
+  "yumi": {
+    "role": "Initiator"
+  },
+  "maryna": {
+    "age": 21,
+    "role": "Controller"
+  },
+  "anqh": {
+    "role": "Initiator"
   },
   "reshi": {
     "age": 28,
     "role": "Flex"
   },
-  "anqh": {
+  "korosu": {
+    "age": 22,
+    "role": "Duelist"
+  },
+  "chloezera": {
+    "role": "Sentinel"
+  },
+  "hollywood": {
     "role": "Initiator"
+  },
+  "kitkat": {
+    "role": "Initiator"
+  },
+  "lynn": {
+    "role": "Duelist"
   },
   "hachi": {
     "role": "Controller"
   },
-  "saas": {
-    "role": "Initiator"
-  },
-  "rosetta": {
-    "role": "Controller"
-  },
-  "iris": {
+  "nury": {
     "role": "Initiator"
   },
   "summ3r": {
     "role": "Duelist"
-  },
-  "amnesia": {
-    "role": "Sentinel"
-  },
-  "princessicy": {
-    "role": "Flex"
-  },
-  "tiraye": {
-    "role": "Controller"
-  },
-  "panchill": {
-    "role": "Sentinel"
-  },
-  "ptero": {
-    "role": "Sentinel"
-  },
-  "simulacra": {
-    "role": "Controller"
-  },
-  "ch0mpy": {
-    "role": "Duelist"
-  },
-  "kaya": {
-    "role": "Initiator"
-  },
-  "zoue": {
-    "role": "Controller"
-  },
-  "nury": {
-    "role": "Initiator"
   },
   "valu": {
     "role": "Initiator"
@@ -19959,25 +19926,67 @@
   "angel": {
     "role": "Initiator"
   },
-  "cia": {
-    "role": "Duelist"
+  "saas": {
+    "role": "Initiator"
   },
-  "snackie": {
+  "simulacra": {
+    "role": "Controller"
+  },
+  "zoue": {
+    "role": "Controller"
+  },
+  "panchill": {
     "role": "Sentinel"
   },
-  "jen": {
-    "age": 23,
+  "ch0mpy": {
+    "role": "Duelist"
+  },
+  "rosetta": {
+    "role": "Controller"
+  },
+  "iris": {
+    "role": "Initiator"
+  },
+  "ptero": {
+    "role": "Sentinel"
+  },
+  "princessicy": {
     "role": "Flex"
   },
-  "saikiwi": {
-    "role": "Duelist"
+  "kaya": {
+    "role": "Initiator"
+  },
+  "amnesia": {
+    "role": "Sentinel"
+  },
+  "tiraye": {
+    "role": "Controller"
+  },
+  "levy": {
+    "role": "Controller"
+  },
+  "alexe1337": {
+    "role": "Flex"
   },
   "ataraxia": {
     "age": 23,
     "role": "Flex"
   },
-  "svv": {
+  "snackie": {
     "role": "Sentinel"
+  },
+  "saikiwi": {
+    "role": "Duelist"
+  },
+  "flop1na": {
+    "role": "Initiator"
+  },
+  "cia": {
+    "role": "Duelist"
+  },
+  "andrehs": {
+    "age": 31,
+    "role": "IGL/Initiator"
   },
   "tura": {
     "age": 23,
@@ -19986,66 +19995,72 @@
   "leah": {
     "role": "Flex"
   },
-  "alexe1337": {
+  "remas": {
+    "role": "Sentinel"
+  },
+  "jen": {
+    "age": 23,
     "role": "Flex"
   },
   "zeukos": {
     "role": "Flex"
   },
-  "andrehs": {
-    "age": 31,
-    "role": "IGL/Initiator"
-  },
-  "flop1na": {
-    "role": "Initiator"
-  },
-  "remas": {
-    "role": "Sentinel"
-  },
-  "jia": {
-    "role": "Flex"
-  },
-  "ayoeclipse": {
+  "irene": {
     "role": "Controller"
   },
-  "irene": {
+  "svv": {
+    "role": "Sentinel"
+  },
+  "ayoeclipse": {
     "role": "Controller"
   },
   "athxna": {
     "role": "Initiator"
   },
-  "levy": {
-    "role": "Controller"
-  },
-  "rage": {
-    "age": 29,
-    "role": "Controller"
-  },
-  "sal": {
-    "role": "Sentinel"
-  },
-  "meleliita": {
+  "jia": {
     "role": "Flex"
   },
   "aniemal": {
     "role": "Sentinel"
   },
-  "slandy": {
-    "age": 27,
-    "role": "Initiator"
+  "almndra": {
+    "role": "Controller"
   },
-  "risorah": {
-    "age": 26,
+  "sal": {
+    "role": "Sentinel"
+  },
+  "nana": {
     "role": "Duelist"
+  },
+  "rage": {
+    "age": 29,
+    "role": "Controller"
+  },
+  "sabooboo": {
+    "age": 19,
+    "role": "Controller"
+  },
+  "meleliita": {
+    "role": "Flex"
   },
   "madi": {
     "role": "Duelist"
   },
+  "singg": {
+    "role": "Flex"
+  },
+  "array": {
+    "role": "Initiator"
+  },
+  "speq": {
+    "role": "Initiator"
+  },
   "nila": {
     "role": "Sentinel"
   },
-  "prix": {
-    "role": "Controller"
+  "slandy": {
+    "age": 27,
+    "role": "Initiator"
   },
   "dip": {
     "age": 23,
@@ -20054,90 +20069,69 @@
   "calvrix": {
     "role": "Sentinel"
   },
-  "almndra": {
+  "prix": {
     "role": "Controller"
   },
-  "array": {
-    "role": "Initiator"
-  },
-  "sabooboo": {
-    "age": 19,
-    "role": "Controller"
-  },
-  "speq": {
-    "role": "Initiator"
-  },
-  "singg": {
-    "role": "Flex"
-  },
-  "nana": {
+  "risorah": {
+    "age": 26,
     "role": "Duelist"
-  },
-  "guterwoman": {
-    "role": "Sentinel"
-  },
-  "aurelia": {
-    "role": "Sentinel"
-  },
-  "melsm": {
-    "role": "Initiator"
-  },
-  "kaeukii": {
-    "role": "Duelist"
-  },
-  "island": {
-    "role": "Duelist"
-  },
-  "carmen": {
-    "role": "Flex"
-  },
-  "paototito": {
-    "role": "Controller"
-  },
-  "daiyana": {
-    "age": 27,
-    "role": "Flex"
-  },
-  "nirvana": {
-    "age": 22,
-    "role": "Duelist"
-  },
-  "sythrine": {
-    "role": "Duelist"
-  },
-  "adenina": {
-    "age": 28,
-    "role": "IGL/Controller"
-  },
-  "f6em": {
-    "role": "Flex"
-  },
-  "bunnyhuh": {
-    "role": "Flex"
-  },
-  "fel": {
-    "role": "Duelist"
-  },
-  "gigi": {
-    "role": "Initiator"
   },
   "nati": {
     "age": 22,
     "role": "Initiator"
   },
-  "saraya": {
+  "melsm": {
     "role": "Initiator"
+  },
+  "island": {
+    "role": "Duelist"
   },
   "vossu": {
     "age": 25,
     "role": "IGL/Initiator"
   },
+  "sythrine": {
+    "role": "Duelist"
+  },
+  "paototito": {
+    "role": "Controller"
+  },
+  "adenina": {
+    "age": 28,
+    "role": "IGL/Controller"
+  },
+  "carmen": {
+    "role": "Flex"
+  },
+  "kaeukii": {
+    "role": "Duelist"
+  },
+  "silv": {
+    "role": "Controller"
+  },
+  "gigi": {
+    "role": "Initiator"
+  },
+  "nirvana": {
+    "age": 22,
+    "role": "Duelist"
+  },
   "artstar": {
     "age": 31,
     "role": "Sentinel"
   },
-  "9ouls": {
-    "role": "Initiator"
+  "f6em": {
+    "role": "Flex"
+  },
+  "fel": {
+    "role": "Duelist"
+  },
+  "daiyana": {
+    "age": 27,
+    "role": "Flex"
+  },
+  "bunnyhuh": {
+    "role": "Flex"
   },
   "seoul": {
     "role": "Sentinel"
@@ -20146,20 +20140,35 @@
     "age": 32,
     "role": "Duelist"
   },
-  "silv": {
-    "role": "Controller"
+  "saraya": {
+    "role": "Initiator"
   },
-  "vale": {
+  "9ouls": {
+    "role": "Initiator"
+  },
+  "aurelia": {
     "role": "Sentinel"
   },
-  "menna": {
+  "guterwoman": {
+    "role": "Sentinel"
+  },
+  "cloudzzy": {
     "role": "Duelist"
+  },
+  "highkeyangel": {
+    "role": "Duelist"
+  },
+  "kazz": {
+    "role": "Controller"
   },
   "amber": {
     "role": "Initiator"
   },
-  "cloudzzy": {
-    "role": "Duelist"
+  "ciao": {
+    "role": "Flex"
+  },
+  "mae": {
+    "role": "Sentinel"
   },
   "shuuren": {
     "age": 29,
@@ -20168,291 +20177,261 @@
   "starriebun": {
     "role": "Flex"
   },
+  "menna": {
+    "role": "Duelist"
+  },
   "ketarys": {
     "role": "Controller"
   },
-  "ciao": {
-    "role": "Flex"
-  },
-  "mae": {
+  "vale": {
     "role": "Sentinel"
   },
   "dae": {
     "role": "Initiator"
   },
-  "highkeyangel": {
-    "role": "Duelist"
-  },
-  "kazz": {
-    "role": "Controller"
-  },
-  "jessie": {
-    "role": "Initiator"
-  },
-  "syuz": {
-    "role": "Initiator"
-  },
-  "m0narcs": {
-    "role": "Controller"
-  },
-  "emm": {
-    "role": "Initiator"
-  },
-  "richie": {
-    "role": "Sentinel"
-  },
   "kora": {
     "role": "Duelist"
   },
-  "hystoria": {
-    "role": "Flex"
-  },
-  "zev": {
-    "role": "Duelist"
-  },
-  "oizys": {
-    "role": "Duelist"
-  },
-  "morgan": {
-    "age": 27,
+  "jessie": {
     "role": "Initiator"
   },
   "rynoa": {
     "role": "Flex"
   },
-  "vefa": {
-    "role": "Controller"
-  },
-  "drealexj": {
-    "role": "Duelist"
-  },
-  "mizubabe": {
-    "role": "Controller"
-  },
-  "lex": {
-    "role": "IGL/Controller"
+  "syuz": {
+    "role": "Initiator"
   },
   "joudaa": {
     "age": 25,
     "role": "Controller"
   },
-  "teddyisfluffy": {
+  "vefa": {
     "role": "Controller"
+  },
+  "mizubabe": {
+    "role": "Controller"
+  },
+  "zev": {
+    "role": "Duelist"
+  },
+  "drealexj": {
+    "role": "Duelist"
+  },
+  "m0narcs": {
+    "role": "Controller"
+  },
+  "richie": {
+    "role": "Sentinel"
+  },
+  "hystoria": {
+    "role": "Flex"
+  },
+  "emm": {
+    "role": "Initiator"
+  },
+  "morgan": {
+    "age": 27,
+    "role": "Initiator"
+  },
+  "lex": {
+    "role": "IGL/Controller"
+  },
+  "oizys": {
+    "role": "Duelist"
   },
   "chels": {
     "role": "Duelist"
   },
-  "leahpanda": {
-    "role": "Initiator"
-  },
-  "saab": {
-    "role": "Sentinel"
-  },
-  "kayleigh": {
-    "role": "Initiator"
-  },
-  "alimonstr": {
-    "age": 41,
+  "teddyisfluffy": {
     "role": "Controller"
   },
-  "spooky": {
-    "role": "Sentinel"
-  },
-  "naomi": {
-    "age": 28,
-    "role": "Sentinel"
-  },
-  "allegedlyalexa": {
-    "role": "Duelist"
-  },
-  "snowmely": {
-    "age": 25,
-    "role": "Initiator"
-  },
-  "kamiunist": {
-    "role": "Initiator"
-  },
-  "kuim": {
-    "role": "Controller"
-  },
-  "tayhihi": {
+  "lya": {
     "role": "Flex"
   },
   "asia": {
     "role": "Controller"
   },
-  "oktina": {
-    "role": "Flex"
+  "kayleigh": {
+    "role": "Initiator"
   },
-  "lya": {
-    "role": "Flex"
-  },
-  "nori": {
+  "saab": {
     "role": "Sentinel"
   },
   "gelatycat": {
     "role": "Controller"
   },
+  "tayhihi": {
+    "role": "Flex"
+  },
+  "naomi": {
+    "age": 28,
+    "role": "Sentinel"
+  },
+  "alimonstr": {
+    "age": 41,
+    "role": "Controller"
+  },
+  "nori": {
+    "role": "Sentinel"
+  },
+  "spooky": {
+    "role": "Sentinel"
+  },
+  "leahpanda": {
+    "role": "Initiator"
+  },
   "kaz": {
     "role": "Flex"
   },
-  "rayne": {
+  "snowmely": {
+    "age": 25,
+    "role": "Initiator"
+  },
+  "allegedlyalexa": {
+    "role": "Duelist"
+  },
+  "kuim": {
+    "role": "Controller"
+  },
+  "oktina": {
     "role": "Flex"
   },
-  "huga": {
-    "role": "Flex"
-  },
-  "luna1": {
+  "kamiunist": {
     "role": "Initiator"
   },
   "riv": {
     "role": "Sentinel"
   },
-  "habibti": {
-    "role": "Initiator"
-  },
-  "zaki": {
+  "rayne": {
     "role": "Flex"
+  },
+  "luna1": {
+    "role": "Initiator"
   },
   "frantastic": {
     "age": 29,
     "role": "IGL/Sentinel"
   },
+  "habibti": {
+    "role": "Initiator"
+  },
   "angil": {
     "role": "Controller"
   },
-  "deadnunu": {
-    "role": "Controller"
-  },
-  "shyrexx": {
-    "role": "Duelist"
-  },
-  "churra": {
-    "age": 32,
+  "huga": {
     "role": "Flex"
   },
-  "fire": {
-    "age": 26,
-    "role": "Sentinel"
-  },
-  "luwucia": {
-    "role": "Sentinel"
-  },
-  "morita": {
-    "age": 26,
-    "role": "Duelist"
-  },
-  "laskat": {
-    "role": "Initiator"
-  },
-  "car": {
-    "role": "Duelist"
-  },
-  "maha": {
-    "role": "Flex"
-  },
-  "nanno": {
-    "role": "Sentinel"
-  },
-  "sekkya": {
+  "zaki": {
     "role": "Flex"
   },
   "thund3r0us": {
     "role": "Controller"
   },
-  "777": {
+  "cait": {
+    "role": "Initiator"
+  },
+  "car": {
     "role": "Duelist"
   },
   "chip": {
     "role": "Initiator"
   },
-  "cait": {
-    "role": "Initiator"
-  },
   "sobersushi": {
     "role": "Initiator"
   },
+  "morita": {
+    "age": 26,
+    "role": "Duelist"
+  },
+  "sekkya": {
+    "role": "Flex"
+  },
   "aria": {
+    "role": "Controller"
+  },
+  "nanno": {
+    "role": "Sentinel"
+  },
+  "luwucia": {
+    "role": "Sentinel"
+  },
+  "juliet": {
     "role": "Controller"
   },
   "asuya": {
     "role": "Duelist"
   },
+  "fire": {
+    "age": 26,
+    "role": "Sentinel"
+  },
+  "777": {
+    "role": "Duelist"
+  },
+  "laskat": {
+    "role": "Initiator"
+  },
+  "deadnunu": {
+    "role": "Controller"
+  },
   "elfonashelf": {
     "role": "Initiator"
   },
-  "juliet": {
+  "maha": {
+    "role": "Flex"
+  },
+  "churra": {
+    "age": 32,
+    "role": "Flex"
+  },
+  "shyrexx": {
+    "role": "Duelist"
+  },
+  "bunnileyah": {
     "role": "Controller"
   },
   "e11ie": {
     "role": "Initiator"
   },
-  "nova": {
-    "role": "Duelist"
-  },
-  "cwaudia": {
-    "role": "Flex"
-  },
-  "bunnileyah": {
-    "role": "Controller"
-  },
-  "violette": {
-    "role": "Sentinel"
-  },
-  "alpine": {
-    "role": "Controller"
-  },
-  "liv": {
-    "role": "Initiator"
-  },
-  "syrup": {
-    "role": "Initiator"
-  },
-  "rebecca": {
-    "role": "Controller"
-  },
-  "thommy": {
-    "role": "Sentinel"
-  },
   "astrid": {
     "role": "Initiator"
   },
-  "peep": {
-    "role": "Duelist"
+  "cwaudia": {
+    "role": "Flex"
   },
   "nmutua": {
     "age": 22,
     "role": "Sentinel"
   },
+  "nova": {
+    "role": "Duelist"
+  },
+  "peep": {
+    "role": "Duelist"
+  },
+  "rebecca": {
+    "role": "Controller"
+  },
+  "alpine": {
+    "role": "Controller"
+  },
+  "syrup": {
+    "role": "Initiator"
+  },
+  "violette": {
+    "role": "Sentinel"
+  },
+  "liv": {
+    "role": "Initiator"
+  },
+  "thommy": {
+    "role": "Sentinel"
+  },
   "trushi": {
     "role": "Sentinel"
   },
-  "awus": {
-    "role": "Controller"
-  },
-  "andrea": {
-    "role": "Initiator"
-  },
-  "idda": {
-    "role": "Controller"
-  },
-  "sumii": {
-    "role": "Controller"
-  },
   "3dwn": {
     "role": "Sentinel"
-  },
-  "junafour": {
-    "role": "Flex"
-  },
-  "m1yu": {
-    "role": "Initiator"
-  },
-  "fairy": {
-    "role": "Flex"
-  },
-  "irlfemboy": {
-    "role": "Duelist"
   },
   "always": {
     "role": "Controller"
@@ -20460,79 +20439,112 @@
   "lylac": {
     "role": "Controller"
   },
+  "idda": {
+    "role": "Controller"
+  },
+  "m1yu": {
+    "role": "Initiator"
+  },
+  "andrea": {
+    "role": "Initiator"
+  },
+  "junafour": {
+    "role": "Flex"
+  },
+  "fairy": {
+    "role": "Flex"
+  },
+  "irlfemboy": {
+    "role": "Duelist"
+  },
+  "sumii": {
+    "role": "Controller"
+  },
+  "awus": {
+    "role": "Controller"
+  },
   "tmtm": {
     "role": "Duelist"
   },
-  "kitana": {
-    "role": "Initiator"
-  },
-  "abrux": {
-    "age": 22,
+  "naf": {
     "role": "Initiator"
   },
   "miffy": {
     "role": "Controller"
   },
-  "rotting": {
-    "role": "Sentinel"
-  },
-  "naf": {
+  "kitana": {
     "role": "Initiator"
   },
-  "shin3y": {
-    "role": "Controller"
+  "melj": {
+    "role": "Initiator"
   },
   "romii": {
     "role": "Sentinel"
   },
-  "miwa": {
+  "korn": {
+    "role": "Controller"
+  },
+  "irena": {
+    "role": "Controller"
+  },
+  "abrux": {
+    "age": 22,
     "role": "Initiator"
   },
   "stay": {
     "role": "Duelist"
   },
-  "korn": {
-    "role": "Controller"
-  },
-  "melj": {
+  "miwa": {
     "role": "Initiator"
   },
-  "irena": {
+  "shin3y": {
     "role": "Controller"
   },
-  "eoz": {
+  "rotting": {
     "role": "Sentinel"
   },
   "lupe": {
     "age": 20,
     "role": "Initiator"
   },
-  "karen": {
-    "age": 29,
-    "role": "Controller"
-  },
-  "satto": {
+  "rover": {
     "role": "Initiator"
   },
   "existinge": {
     "role": "Initiator"
   },
-  "mookilove": {
-    "role": "Initiator"
-  },
   "blush": {
     "role": "Duelist"
   },
-  "junki": {
+  "karen": {
+    "age": 29,
     "role": "Controller"
   },
   "odessaca": {
     "role": "Flex"
   },
+  "junki": {
+    "role": "Controller"
+  },
   "wlloh": {
     "role": "Flex"
   },
-  "rover": {
+  "mookilove": {
+    "role": "Initiator"
+  },
+  "eoz": {
+    "role": "Sentinel"
+  },
+  "satto": {
+    "role": "Initiator"
+  },
+  "leelee": {
+    "role": "Duelist"
+  },
+  "aki": {
+    "role": "Duelist"
+  },
+  "sar": {
     "role": "Initiator"
   },
   "tailo": {
@@ -20545,31 +20557,8 @@
     "age": 24,
     "role": "Initiator"
   },
-  "leelee": {
-    "role": "Duelist"
-  },
-  "aki": {
-    "role": "Duelist"
-  },
-  "sye": {
-    "role": "Sentinel"
-  },
-  "biffy": {
-    "role": "Initiator"
-  },
-  "drea": {
-    "role": "Initiator"
-  },
   "enderz": {
     "role": "Duelist"
-  },
-  "kikirucha": {
-    "age": 26,
-    "role": "Initiator"
-  },
-  "di^": {
-    "age": 31,
-    "role": "Controller"
   },
   "buhms": {
     "role": "Initiator"
@@ -20577,45 +20566,57 @@
   "natas": {
     "role": "Flex"
   },
-  "just helping": {
-    "role": "Flex"
-  },
-  "sar": {
-    "role": "Initiator"
+  "angie": {
+    "role": "Duelist"
   },
   "caya1": {
     "role": "Flex"
   },
-  "angie": {
-    "role": "Duelist"
+  "sye": {
+    "role": "Sentinel"
+  },
+  "di^": {
+    "age": 31,
+    "role": "Controller"
+  },
+  "kikirucha": {
+    "age": 26,
+    "role": "Initiator"
+  },
+  "biffy": {
+    "role": "Initiator"
+  },
+  "drea": {
+    "role": "Initiator"
+  },
+  "just helping": {
+    "role": "Flex"
+  },
+  "mcfly": {
+    "role": "Initiator"
   },
   "crystal": {
     "age": 20,
     "role": "Initiator"
   },
-  "paige": {
-    "role": "Duelist"
-  },
   "sarastarr": {
     "role": "Initiator"
   },
+  "paige": {
+    "role": "Duelist"
+  },
   "temai": {
-    "role": "Initiator"
-  },
-  "mcfly": {
-    "role": "Initiator"
-  },
-  "sadeel": {
     "role": "Initiator"
   },
   "aery": {
     "role": "Flex"
   },
-  "gogu": {
+  "sadeel": {
     "role": "Initiator"
   },
-  "artemis": {
-    "role": "Flex"
+  "nanu": {
+    "age": 25,
+    "role": "Controller"
   },
   "shotoo": {
     "age": 20,
@@ -20624,115 +20625,105 @@
   "pinky d": {
     "role": "Duelist"
   },
-  "gbc": {
-    "role": "Sentinel"
-  },
-  "fresalugafps": {
-    "role": "Sentinel"
-  },
-  "fahda": {
-    "role": "Controller"
-  },
-  "ashxtru": {
-    "role": "Sentinel"
-  },
-  "nanu": {
-    "age": 25,
-    "role": "Controller"
-  },
   "nomy": {
-    "role": "Initiator"
-  },
-  "mady": {
-    "role": "Sentinel"
-  },
-  "teff": {
-    "role": "Initiator"
-  },
-  "chiyeu": {
-    "role": "Sentinel"
-  },
-  "duo": {
-    "age": 24,
     "role": "Initiator"
   },
   "peachtea": {
     "role": "Initiator"
   },
+  "fresalugafps": {
+    "role": "Sentinel"
+  },
+  "gbc": {
+    "role": "Sentinel"
+  },
   "zalirah": {
     "role": "Initiator"
+  },
+  "ashxtru": {
+    "role": "Sentinel"
+  },
+  "gogu": {
+    "role": "Initiator"
+  },
+  "fahda": {
+    "role": "Controller"
   },
   "152": {
     "role": "Sentinel"
   },
+  "teff": {
+    "role": "Initiator"
+  },
+  "duo": {
+    "age": 24,
+    "role": "Initiator"
+  },
   "nadie": {
     "role": "Initiator"
   },
-  "kross unity": {
-    "role": "Initiator"
+  "chiyeu": {
+    "role": "Sentinel"
   },
-  "natty": {
+  "artemis": {
     "role": "Flex"
+  },
+  "mady": {
+    "role": "Sentinel"
   },
   "heist": {
     "role": "Duelist"
   },
-  "qlutch": {
-    "role": "Flex"
-  },
-  "moni": {
-    "role": "Controller"
-  },
-  "jasprr": {
-    "role": "Initiator"
-  },
-  "bellexion": {
+  "unsane": {
     "role": "Sentinel"
   },
   "shockah": {
     "role": "Initiator"
   },
-  "raffaello": {
+  "moni": {
     "role": "Controller"
   },
-  "unsane": {
+  "qlutch": {
+    "role": "Flex"
+  },
+  "bellexion": {
     "role": "Sentinel"
   },
-  "spite": {
-    "role": "Controller"
+  "natty": {
+    "role": "Flex"
+  },
+  "kross unity": {
+    "role": "Initiator"
   },
   "angle": {
     "role": "Sentinel"
   },
-  "mochimei": {
+  "jasprr": {
+    "role": "Initiator"
+  },
+  "spite": {
     "role": "Controller"
   },
   "abbie2k": {
     "role": "Duelist"
   },
-  "rushhh": {
-    "role": "Initiator"
+  "raffaello": {
+    "role": "Controller"
   },
-  "lynxz": {
-    "role": "Duelist"
-  },
-  "m1nyu": {
-    "role": "Flex"
-  },
-  "chobo": {
-    "role": "Duelist"
+  "mochimei": {
+    "role": "Controller"
   },
   "pretaxmicrob": {
     "role": "Controller"
   },
-  "nurhan": {
-    "role": "Controller"
-  },
-  "bvlenn": {
-    "role": "Sentinel"
+  "chobo": {
+    "role": "Duelist"
   },
   "xaan": {
     "role": "Initiator"
+  },
+  "lynxz": {
+    "role": "Duelist"
   },
   "lapapaluna": {
     "role": "Flex"
@@ -20740,8 +20731,17 @@
   "rush": {
     "role": "Controller"
   },
-  "alyssayye": {
+  "bvlenn": {
     "role": "Sentinel"
+  },
+  "nurhan": {
+    "role": "Controller"
+  },
+  "m1nyu": {
+    "role": "Flex"
+  },
+  "rushhh": {
+    "role": "Initiator"
   },
   "pewpeewwaifu": {
     "role": "Duelist"
@@ -20749,82 +20749,85 @@
   "memi": {
     "role": "Controller"
   },
-  "starlight": {
-    "role": "Initiator"
-  },
   "cece": {
     "role": "Sentinel"
   },
-  "jenna": {
-    "role": "Flex"
+  "alyssayye": {
+    "role": "Sentinel"
   },
-  "lyyian": {
+  "starlight": {
+    "role": "Initiator"
+  },
+  "oranges": {
+    "role": "Controller"
+  },
+  "sangogg": {
+    "role": "Duelist"
+  },
+  "riss": {
     "role": "Initiator"
   },
   "andi": {
     "role": "Duelist"
   },
-  "shockah bobackah": {
-    "role": "Flex"
-  },
-  "riss": {
+  "lyyian": {
     "role": "Initiator"
   },
-  "sangogg": {
-    "role": "Duelist"
+  "jenna": {
+    "role": "Flex"
   },
-  "oranges": {
-    "role": "Controller"
-  },
-  "gracious": {
-    "role": "Duelist"
+  "shockah bobackah": {
+    "role": "Flex"
   },
   "chjna4q": {
     "role": "Duelist"
   },
-  "splatt": {
+  "starryy": {
     "role": "Initiator"
   },
-  "starryy": {
+  "mile": {
+    "role": "Initiator"
+  },
+  "splatt": {
     "role": "Initiator"
   },
   "jjasonl": {
     "role": "Flex"
   },
+  "gracious": {
+    "role": "Duelist"
+  },
   "kezyun": {
     "role": "Duelist"
   },
-  "mile": {
+  "aus": {
     "role": "Initiator"
   },
   "ichigoo": {
     "role": "Sentinel"
   },
-  "aus": {
-    "role": "Initiator"
+  "fantasmitawr": {
+    "role": "Controller"
   },
   "clocracy": {
     "role": "Controller"
   },
-  "fantasmitawr": {
-    "role": "Controller"
-  },
-  "velvet": {
-    "role": "Initiator"
-  },
-  "izi": {
-    "role": "Sentinel"
-  },
   "ravena": {
     "role": "Duelist"
   },
-  "svnny": {
+  "mawyk": {
+    "role": "Initiator"
+  },
+  "velvet": {
     "role": "Initiator"
   },
   "overdose": {
     "role": "Sentinel"
   },
-  "mawyk": {
+  "izi": {
+    "role": "Sentinel"
+  },
+  "svnny": {
     "role": "Initiator"
   },
   "xylandir": {
@@ -20833,32 +20836,19 @@
   "apidaez": {
     "role": "Controller"
   },
-  "kocham cię": {
-    "role": "Initiator"
-  },
   "kyedae": {
     "age": 24,
     "role": "Controller"
   },
+  "kocham cię": {
+    "role": "Initiator"
+  },
   "cciscray": {
     "role": "Controller"
-  },
-  "ouppy": {
-    "role": "Duelist"
   },
   "maka": {
     "age": 27,
     "role": "IGL/Controller"
-  },
-  "nyx": {
-    "role": "Duelist"
-  },
-  "zee": {
-    "role": "Initiator"
-  },
-  "lana": {
-    "age": 27,
-    "role": "Initiator"
   },
   "valy": {
     "role": "Sentinel"
@@ -20866,11 +20856,21 @@
   "savi": {
     "role": "Initiator"
   },
+  "zee": {
+    "role": "Initiator"
+  },
+  "nyx": {
+    "role": "Duelist"
+  },
+  "ouppy": {
+    "role": "Duelist"
+  },
   "dariari": {
     "role": "Initiator"
   },
-  "coax": {
-    "role": "Flex"
+  "lana": {
+    "age": 27,
+    "role": "Initiator"
   },
   "yukiyo": {
     "role": "Initiator"
@@ -20878,21 +20878,27 @@
   "bells": {
     "role": "Flex"
   },
-  "jazzy": {
-    "age": 25,
-    "role": "IGL/Controller"
+  "coax": {
+    "role": "Flex"
   },
   "aitch": {
     "role": "Initiator"
   },
+  "jazzy": {
+    "age": 25,
+    "role": "IGL/Controller"
+  },
   "cohs": {
+    "role": "Controller"
+  },
+  "valk": {
     "role": "Controller"
   },
   "genuine": {
     "role": "Initiator"
   },
-  "valk": {
-    "role": "Controller"
+  "jupiter": {
+    "role": "Initiator"
   },
   "jocus": {
     "role": "Initiator"
@@ -20900,17 +20906,14 @@
   "danii": {
     "role": "Initiator"
   },
-  "jupiter": {
-    "role": "Initiator"
-  },
   "unfeel": {
+    "role": "Duelist"
+  },
+  "kiiromine": {
     "role": "Duelist"
   },
   "hyungwonho": {
     "role": "Controller"
-  },
-  "kiiromine": {
-    "role": "Duelist"
   },
   "ksweet": {
     "role": "Initiator"
@@ -20936,11 +20939,11 @@
   "izzyromo": {
     "role": "Duelist"
   },
-  "m1lky": {
-    "role": "Duelist"
-  },
   "aebix": {
     "role": "Flex"
+  },
+  "m1lky": {
+    "role": "Duelist"
   },
   "boopie": {
     "role": "Duelist"
