@@ -62,15 +62,15 @@ jobs:
           FTP_PATH: ${{ secrets.FTP_PATH }}
         run: |
           sudo apt-get install -y lftp
-          cat > /tmp/upload-skins.lftp << EOF
-          open -p 21 -u $FTP_USER,$FTP_PASS $FTP_HOST
+
+          lftp -p 21 -u "$FTP_USER","$FTP_PASS" "$FTP_HOST" << EOF
           set ftp:ssl-allow no
           set net:timeout 60
-          set net:max-retries 3
-          put public/data/skins-db.json -o $FTP_PATH/data/skins-db.json
+          set net:max-retries 5
+          set net:reconnect-interval-base 5
+          mirror --reverse --verbose --ignore-time --include-glob skins-db.json public/data/ $FTP_PATH/data/
           bye
           EOF
-          lftp -f /tmp/upload-skins.lftp
 
       - name: Purge Cloudflare cache
         env:
