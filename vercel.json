@@ -1,0 +1,17 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "redirects": [
+    { "source": "/league-select.html", "destination": "/league-select", "permanent": true },
+    { "source": "/game.html", "destination": "/game", "permanent": true },
+    { "source": "/skins.html", "destination": "/skins", "permanent": true },
+    { "source": "/agents.html", "destination": "/agents", "permanent": true },
+    { "source": "/abilities.html", "destination": "/abilities", "permanent": true },
+    { "source": "/maps.html", "destination": "/maps", "permanent": true },
+    { "source": "/en/league-select.html", "destination": "/en/league-select", "permanent": true },
+    { "source": "/en/game.html", "destination": "/en/game", "permanent": true },
+    { "source": "/en/skins.html", "destination": "/en/skins", "permanent": true },
+    { "source": "/en/agents.html", "destination": "/en/agents", "permanent": true },
+    { "source": "/en/abilities.html", "destination": "/en/abilities", "permanent": true },
+    { "source": "/en/maps.html", "destination": "/en/maps", "permanent": true }
+  ]
+}

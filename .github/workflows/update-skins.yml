@@ -26,7 +26,7 @@ jobs:
           node-version: '22'
 
       - name: Install dependencies
-        run: npm install
+        run: npm ci
 
       # Fetches valorant-api.com, applies skin-overrides.json, writes public/data/skins-db.json.
       # Exits with code 1 (failing the job) if any bundle has no entry in
@@ -51,34 +51,3 @@ jobs:
           git diff --staged --quiet \
             && echo "skins-db.json unchanged — nothing to commit" \
             || (git commit -m "chore: update skins-db.json" && git push)
-
-      # skins-db.json is a static public asset — no Astro rebuild needed.
-      # Push the updated JSON directly to the live server.
-      - name: Upload skins-db.json to Hostinger via FTP
-        env:
-          FTP_HOST: ${{ secrets.FTP_HOST }}
-          FTP_USER: ${{ secrets.FTP_USER }}
-          FTP_PASS: ${{ secrets.FTP_PASS }}
-          FTP_PATH: ${{ secrets.FTP_PATH }}
-        run: |
-          sudo apt-get install -y lftp
-
-          lftp -p 21 -u "$FTP_USER","$FTP_PASS" "$FTP_HOST" << EOF
-          set ftp:ssl-allow no
-          set net:timeout 60
-          set net:max-retries 5
-          set net:reconnect-interval-base 5
-          mirror --reverse --verbose --ignore-time --include-glob skins-db.json public/data/ $FTP_PATH/data/
-          bye
-          EOF
-
-      - name: Purge Cloudflare cache
-        env:
-          CF_ZONE_ID: ${{ secrets.CF_ZONE_ID }}
-          CF_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
-        run: |
-          curl -s -X POST "https://api.cloudflare.com/client/v4/zones/${CF_ZONE_ID}/purge_cache" \
-            -H "Authorization: Bearer ${CF_API_TOKEN}" \
-            -H "Content-Type: application/json" \
-            --data '{"purge_everything":true}' | tee /tmp/cf_purge.json
-          grep -q '"success":true' /tmp/cf_purge.json || { echo "Cloudflare purge failed"; cat /tmp/cf_purge.json; exit 1; }

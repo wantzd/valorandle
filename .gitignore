@@ -1,0 +1,8 @@
+node_modules/
+dist/
+.astro/
+.vercel/
+
+# Large map screenshots are served by media.valorandle.com.
+public/maps/
+sandbox/
