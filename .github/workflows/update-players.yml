@@ -29,6 +29,7 @@ jobs:
         run: python .github/scripts/build_orgmap.py
         env:
           VLRGG_API_URL: ${{ secrets.VLRGG_API_URL }}
+          VLRGG_API_TOKEN: ${{ secrets.VLRGG_API_TOKEN }}
           LIQUIPEDIA_API_KEY: ${{ secrets.LIQUIPEDIA_API_KEY }}
 
       - name: Commit public/data/org-map.json to repository
