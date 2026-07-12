@@ -20,7 +20,7 @@ Attributes compared: country, team, age, role, region, titles won, and years act
 
 ## Built with
 
-Vanilla HTML, CSS, and JavaScript — no frameworks, no build step. Hosted as a static site on Hostinger.
+Astro and Svelte, rendered as a static site and deployed on Vercel. Large map screenshots are served from `media.valorandle.com` through Cloudflare.
 
 ---
 

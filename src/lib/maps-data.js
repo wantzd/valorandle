@@ -215,6 +215,14 @@ export async function loadMapsFromAPI() {
 }
 
 // ── Screenshot path ────────────────────────────────────────────────────────────
+const MAPS_ASSET_BASE = (
+  import.meta.env.PUBLIC_MAPS_BASE_URL || 'https://media.valorandle.com'
+).replace(/\/$/, '');
+
+function mapAssetPath(mapName, fileName) {
+  return `${MAPS_ASSET_BASE}/maps/${mapName}/${fileName}.png`;
+}
+
 export function getCalloutImgPath(mapId, calloutId) {
   if (!MAPS_WITH_SCREENSHOTS.has(mapId)) return null;
   const mapName = MAPS_DB[mapId]?.name;
@@ -222,7 +230,9 @@ export function getCalloutImgPath(mapId, calloutId) {
 
   const key = `${mapId}|${calloutId}`;
   if (key in IMG_OVERRIDES) {
-    return IMG_OVERRIDES[key] === null ? null : `/maps/${mapName}/${IMG_OVERRIDES[key]}.png`;
+    return IMG_OVERRIDES[key] === null
+      ? null
+      : mapAssetPath(mapName, IMG_OVERRIDES[key]);
   }
 
   const callout = (MAPS_CALLOUTS[mapId] || []).find(c => c.id === calloutId);
@@ -233,9 +243,11 @@ export function getCalloutImgPath(mapId, calloutId) {
     ['Attacker Side ','_Attacker Side'], ['Defender Side ','_Defender Side'],
     ['Mid ','_Mid'], ['A ','_A'], ['B ','_B'], ['C ','_C'],
   ]) {
-    if (name.startsWith(pfx)) return `/maps/${mapName}/${name.slice(pfx.length)}${sfx}.png`;
+    if (name.startsWith(pfx)) {
+      return mapAssetPath(mapName, `${name.slice(pfx.length)}${sfx}`);
+    }
   }
-  return `/maps/${mapName}/${name}.png`;
+  return mapAssetPath(mapName, name);
 }
 
 // ── Target selection ───────────────────────────────────────────────────────────
