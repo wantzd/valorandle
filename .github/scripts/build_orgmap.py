@@ -31,10 +31,16 @@ from collections import defaultdict
 
 # ── Secrets ───────────────────────────────────────────────────────────────────
 API_BASE = os.environ.get("VLRGG_API_URL", "").rstrip("/")
+API_TOKEN = os.environ.get("VLRGG_API_TOKEN", "").strip()
 
 if not API_BASE:
     print("ERROR: VLRGG_API_URL environment variable is not set.")
     sys.exit(1)
+if not API_TOKEN:
+    print("ERROR: VLRGG_API_TOKEN environment variable is not set.")
+    sys.exit(1)
+
+API_HEADERS = {"Authorization": f"Bearer {API_TOKEN}"}
 
 # ── Agent → Role map (all VALORANT agents — updated 2026-05-12) ───────────────
 AGENT_ROLE = {
@@ -228,7 +234,12 @@ print("[Step 1] Fetching player stats (timespan=all)...\n")
 for region in REGIONS:
     url = f"{API_BASE}/v2/stats?region={region}&timespan=all"
     try:
-        r = httpx.get(url, timeout=TIMEOUT, follow_redirects=True)
+        r = httpx.get(
+            url,
+            headers=API_HEADERS,
+            timeout=TIMEOUT,
+            follow_redirects=True,
+        )
         r.raise_for_status()
         segments = r.json().get("data", {}).get("segments", [])
         count = 0
@@ -261,7 +272,12 @@ print("[Step 1b] Fetching recent agents (timespan=30)...\n")
 for region in REGIONS:
     url = f"{API_BASE}/v2/stats?region={region}&timespan=30"
     try:
-        r = httpx.get(url, timeout=TIMEOUT, follow_redirects=True)
+        r = httpx.get(
+            url,
+            headers=API_HEADERS,
+            timeout=TIMEOUT,
+            follow_redirects=True,
+        )
         r.raise_for_status()
         segments = r.json().get("data", {}).get("segments", [])
         count = 0
@@ -348,6 +364,7 @@ for vid, pinfo in vlr_id_map.items():
         r = httpx.get(
             f"{API_BASE}/v2/player",
             params={"id": vid},
+            headers=API_HEADERS,
             timeout=TIMEOUT,
             follow_redirects=True,
         )
