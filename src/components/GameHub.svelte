@@ -1,5 +1,5 @@
 ﻿<script>
-  import { onMount, onDestroy } from 'svelte';
+  import { onMount, onDestroy, tick } from 'svelte';
   import { getDailyDateKey, msUntilNextDaily, formatCountdown, saveLang, loadStats } from '../lib/game-utils.js';
 
   // ── Lang ─────────────────────────────────────────────────────────────────────
@@ -24,6 +24,11 @@
   let feedbackWebsite = $state('');
   let feedbackStatus  = $state('idle');
   let feedbackError   = $state('');
+  let turnstileContainer = $state(null);
+  let turnstileToken     = $state('');
+  let turnstileWidgetId  = null;
+
+  const TURNSTILE_SITE_KEY = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY || '';
 
   // ── Countdown ────────────────────────────────────────────────────────────────
   let countdown  = $state('--:--:--');
@@ -37,7 +42,110 @@
     startCountdown();
   });
 
-  onDestroy(() => { if (cdInterval) clearInterval(cdInterval); });
+  onDestroy(() => {
+    if (cdInterval) clearInterval(cdInterval);
+    destroyTurnstile();
+  });
+
+  function loadTurnstile() {
+    if (window.turnstile) return Promise.resolve(window.turnstile);
+    if (window.__valorandleTurnstilePromise) return window.__valorandleTurnstilePromise;
+
+    window.__valorandleTurnstilePromise = new Promise((resolve, reject) => {
+      const existing = document.querySelector('script[data-valorandle-turnstile]');
+      if (existing) {
+        existing.addEventListener('load', () => resolve(window.turnstile), { once: true });
+        existing.addEventListener('error', reject, { once: true });
+        return;
+      }
+
+      const script = document.createElement('script');
+      script.src = 'https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit';
+      script.async = true;
+      script.defer = true;
+      script.dataset.valorandleTurnstile = '';
+      script.onload = () => resolve(window.turnstile);
+      script.onerror = reject;
+      document.head.appendChild(script);
+    });
+
+    return window.__valorandleTurnstilePromise;
+  }
+
+  function destroyTurnstile() {
+    if (turnstileWidgetId !== null && window.turnstile) {
+      try { window.turnstile.remove(turnstileWidgetId); } catch {}
+    }
+    turnstileWidgetId = null;
+    turnstileToken = '';
+  }
+
+  function resetTurnstile() {
+    turnstileToken = '';
+    if (turnstileWidgetId !== null && window.turnstile) {
+      try { window.turnstile.reset(turnstileWidgetId); } catch {}
+    }
+  }
+
+  async function setupTurnstile() {
+    if (!TURNSTILE_SITE_KEY) {
+      feedbackError = isPT
+        ? 'A verificação de segurança está temporariamente indisponível.'
+        : 'Security verification is temporarily unavailable.';
+      return;
+    }
+
+    try {
+      const turnstile = await loadTurnstile();
+      if (!turnstile || !turnstileContainer || turnstileWidgetId !== null) return;
+      turnstileWidgetId = turnstile.render(turnstileContainer, {
+        sitekey: TURNSTILE_SITE_KEY,
+        action: 'feedback',
+        theme: 'dark',
+        size: 'flexible',
+        appearance: 'interaction-only',
+        language: isPT ? 'pt-br' : 'en',
+        'response-field': false,
+        callback: (token) => {
+          turnstileToken = token;
+          if (feedbackError.includes('verificação') || feedbackError.includes('verification')) {
+            feedbackError = '';
+          }
+        },
+        'expired-callback': () => {
+          turnstileToken = '';
+          feedbackError = isPT
+            ? 'A verificação expirou. Confirme novamente.'
+            : 'Verification expired. Please confirm again.';
+        },
+        'error-callback': () => {
+          turnstileToken = '';
+          feedbackError = isPT
+            ? 'Não foi possível concluir a verificação de segurança.'
+            : 'Could not complete security verification.';
+          return true;
+        },
+      });
+    } catch {
+      feedbackError = isPT
+        ? 'Não foi possível carregar a verificação de segurança.'
+        : 'Could not load security verification.';
+    }
+  }
+
+  async function toggleFeedback() {
+    if (feedbackOpen) {
+      destroyTurnstile();
+      feedbackOpen = false;
+      feedbackError = '';
+      return;
+    }
+
+    feedbackOpen = true;
+    feedbackError = '';
+    await tick();
+    if (feedbackStatus !== 'sent') await setupTurnstile();
+  }
 
   function setLang(l) {
     lang = l;
@@ -130,17 +238,43 @@
       const response = await fetch('/api/feedback', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ message, lang, page: window.location.pathname, website: feedbackWebsite }),
+        body: JSON.stringify({
+          message,
+          lang,
+          page: window.location.pathname,
+          website: feedbackWebsite,
+          turnstileToken,
+        }),
       });
-      if (!response.ok) throw new Error('request_failed');
+      const result = await response.json().catch(() => ({}));
+      if (!response.ok) {
+        feedbackStatus = 'error';
+        if (response.status === 429) {
+          feedbackError = isPT
+            ? 'Muitas tentativas. Aguarde um minuto antes de tentar novamente.'
+            : 'Too many attempts. Wait a minute before trying again.';
+        } else if (result.error === 'verification_failed' || result.error === 'verification_required') {
+          feedbackError = isPT
+            ? 'A verificação expirou ou não foi aceita. Confirme novamente.'
+            : 'Verification expired or was not accepted. Please confirm again.';
+        } else {
+          feedbackError = isPT
+            ? 'Nao foi possivel enviar agora. Tente novamente.'
+            : 'Could not send it right now. Please try again.';
+        }
+        resetTurnstile();
+        return;
+      }
       localStorage.setItem('valorandle_feedback_sent_at', String(Date.now()));
       feedbackMessage = '';
       feedbackStatus = 'sent';
+      destroyTurnstile();
     } catch {
       feedbackStatus = 'error';
       feedbackError = isPT
         ? 'Não foi possível enviar agora. Tente novamente.'
         : 'Could not send it right now. Please try again.';
+      resetTurnstile();
     }
   }
 </script>
@@ -285,7 +419,7 @@
         type="button"
         aria-expanded={feedbackOpen}
         aria-controls="feedback-panel"
-        onclick={() => { feedbackOpen = !feedbackOpen; feedbackError = ''; }}
+        onclick={toggleFeedback}
       >
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
           <path d="M21 15a4 4 0 0 1-4 4H8l-5 3V7a4 4 0 0 1 4-4h10a4 4 0 0 1 4 4z"/>
@@ -323,9 +457,14 @@
                 <label for="feedback-website">Website</label>
                 <input id="feedback-website" bind:value={feedbackWebsite} tabindex="-1" autocomplete="off" />
               </div>
+              <div
+                class="feedback-turnstile"
+                bind:this={turnstileContainer}
+                aria-label={isPT ? 'Verificação de segurança' : 'Security verification'}
+              ></div>
               <div class="feedback-actions">
-                <span class="feedback-note">{isPT ? 'Enviado diretamente à equipe.' : 'Sent directly to the team.'}</span>
-                <button class="feedback-submit" type="submit" disabled={feedbackStatus === 'sending'}>
+                <span class="feedback-note">{isPT ? 'Protegido pelo Cloudflare Turnstile.' : 'Protected by Cloudflare Turnstile.'}</span>
+                <button class="feedback-submit" type="submit" disabled={feedbackStatus === 'sending' || !turnstileToken}>
                   {feedbackStatus === 'sending' ? (isPT ? 'Enviando…' : 'Sending…') : (isPT ? 'Enviar →' : 'Send →')}
                 </button>
               </div>
@@ -447,6 +586,8 @@
   .feedback-panel textarea::placeholder { color:var(--text-dim); }
   .feedback-panel textarea:focus { border-color:var(--red-bd); }
   .feedback-panel textarea:disabled { opacity:0.6; }
+  .feedback-turnstile { min-height:4px; margin-top:0.65rem; }
+  .feedback-turnstile:empty { display:none; }
   .feedback-actions { display:flex; align-items:center; justify-content:space-between; gap:1rem; margin-top:0.65rem; }
   .feedback-note { color:var(--text-dim); font-size:0.62rem; }
   .feedback-submit { flex-shrink:0; border:1px solid var(--red-bd); border-radius:4px; padding:0.5rem 0.85rem; background:var(--red-dim); color:var(--red); font-family:var(--font-mono); font-size:0.65rem; font-weight:700; letter-spacing:0.03em; text-transform:uppercase; cursor:pointer; transition:background 0.18s,border-color 0.18s; }
