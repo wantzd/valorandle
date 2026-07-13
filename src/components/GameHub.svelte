@@ -18,6 +18,13 @@
   let statToday = $state(0);
   let statWinrate = $state('—');
 
+  // ── Feedback ─────────────────────────────────────────────────────────────────
+  let feedbackOpen    = $state(false);
+  let feedbackMessage = $state('');
+  let feedbackWebsite = $state('');
+  let feedbackStatus  = $state('idle');
+  let feedbackError   = $state('');
+
   // ── Countdown ────────────────────────────────────────────────────────────────
   let countdown  = $state('--:--:--');
   let cdInterval = null;
@@ -101,6 +108,40 @@
     cdInterval = setInterval(() => {
       countdown = formatCountdown(msUntilNextDaily());
     }, 1000);
+  }
+
+  async function submitFeedback(event) {
+    event.preventDefault();
+    const message = feedbackMessage.trim();
+    if (message.length < 3 || message.length > 1000) {
+      feedbackError = isPT ? 'Escreva entre 3 e 1000 caracteres.' : 'Write between 3 and 1000 characters.';
+      return;
+    }
+
+    const lastSent = Number(localStorage.getItem('valorandle_feedback_sent_at') || 0);
+    if (Date.now() - lastSent < 60_000) {
+      feedbackError = isPT ? 'Aguarde um minuto antes de enviar novamente.' : 'Wait one minute before sending again.';
+      return;
+    }
+
+    feedbackStatus = 'sending';
+    feedbackError = '';
+    try {
+      const response = await fetch('/api/feedback', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message, lang, page: window.location.pathname, website: feedbackWebsite }),
+      });
+      if (!response.ok) throw new Error('request_failed');
+      localStorage.setItem('valorandle_feedback_sent_at', String(Date.now()));
+      feedbackMessage = '';
+      feedbackStatus = 'sent';
+    } catch {
+      feedbackStatus = 'error';
+      feedbackError = isPT
+        ? 'Não foi possível enviar agora. Tente novamente.'
+        : 'Could not send it right now. Please try again.';
+    }
   }
 </script>
 
@@ -238,6 +279,63 @@
       <span class="countdown-timer">{countdown}</span>
     </div>
 
+    <section class="feedback-wrap" class:open={feedbackOpen}>
+      <button
+        class="feedback-toggle"
+        type="button"
+        aria-expanded={feedbackOpen}
+        aria-controls="feedback-panel"
+        onclick={() => { feedbackOpen = !feedbackOpen; feedbackError = ''; }}
+      >
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M21 15a4 4 0 0 1-4 4H8l-5 3V7a4 4 0 0 1 4-4h10a4 4 0 0 1 4 4z"/>
+          <path d="M8 9h8M8 13h5"/>
+        </svg>
+        <span>{isPT ? 'Enviar feedback' : 'Send feedback'}</span>
+        <span class="feedback-chevron" aria-hidden="true">⌄</span>
+      </button>
+
+      {#if feedbackOpen}
+        <div class="feedback-panel" id="feedback-panel">
+          {#if feedbackStatus === 'sent'}
+            <div class="feedback-success" role="status">
+              <span>✓</span>
+              <div>
+                <strong>{isPT ? 'Feedback enviado' : 'Feedback sent'}</strong>
+                <p>{isPT ? 'Obrigado por ajudar a melhorar o Valorandle.' : 'Thanks for helping improve Valorandle.'}</p>
+              </div>
+            </div>
+          {:else}
+            <form onsubmit={submitFeedback}>
+              <label for="feedback-message">
+                {isPT ? 'O que podemos melhorar?' : 'What could we improve?'}
+              </label>
+              <textarea
+                id="feedback-message"
+                bind:value={feedbackMessage}
+                maxlength="1000"
+                rows="4"
+                placeholder={isPT ? 'Conte sobre um bug, ideia ou sugestão…' : 'Tell us about a bug, idea, or suggestion…'}
+                disabled={feedbackStatus === 'sending'}
+                required
+              ></textarea>
+              <div class="feedback-honeypot" aria-hidden="true">
+                <label for="feedback-website">Website</label>
+                <input id="feedback-website" bind:value={feedbackWebsite} tabindex="-1" autocomplete="off" />
+              </div>
+              <div class="feedback-actions">
+                <span class="feedback-note">{isPT ? 'Enviado diretamente à equipe.' : 'Sent directly to the team.'}</span>
+                <button class="feedback-submit" type="submit" disabled={feedbackStatus === 'sending'}>
+                  {feedbackStatus === 'sending' ? (isPT ? 'Enviando…' : 'Sending…') : (isPT ? 'Enviar →' : 'Send →')}
+                </button>
+              </div>
+              {#if feedbackError}<p class="feedback-error" role="alert">{feedbackError}</p>{/if}
+            </form>
+          {/if}
+        </div>
+      {/if}
+    </section>
+
     <footer class="hub-footer">
       <span>Fan-made. {isPT ? 'Não afiliado à' : 'Not affiliated with'}
         <a href="https://playvalorant.com" target="_blank" rel="noopener">Riot Games</a>.</span>
@@ -334,6 +432,34 @@
   .countdown-lbl { font-family:var(--font-mono); font-size:0.62rem; letter-spacing:0.05em; text-transform:uppercase; color:var(--text-dim); }
   .countdown-timer { font-family:var(--font-mono); font-size:1.1rem; font-weight:700; color:var(--red); letter-spacing:0.02em; }
 
+  .feedback-wrap { border-top:1px solid transparent; }
+  .feedback-wrap.open { background:var(--surface); border:1px solid var(--border); border-radius:6px; overflow:hidden; }
+  .feedback-toggle { width:100%; display:flex; align-items:center; justify-content:center; gap:0.5rem; padding:0.7rem 1rem; border:0; background:transparent; color:var(--text-dim); font-family:var(--font-mono); font-size:0.65rem; letter-spacing:0.03em; text-transform:uppercase; cursor:pointer; transition:color 0.18s,background 0.18s; }
+  .feedback-toggle:hover { color:var(--text-mid); background:rgba(255,255,255,0.015); }
+  .feedback-toggle:focus-visible, .feedback-submit:focus-visible, textarea:focus-visible { outline:2px solid var(--red); outline-offset:2px; }
+  .feedback-toggle svg { width:15px; height:15px; }
+  .feedback-chevron { transition:transform 0.18s; margin-left:0.1rem; }
+  .feedback-wrap.open .feedback-chevron { transform:rotate(180deg); }
+  .feedback-panel { padding:0 1rem 1rem; border-top:1px solid var(--border); animation:feedbackReveal 0.18s ease both; }
+  .feedback-panel form { padding-top:0.9rem; }
+  .feedback-panel label { display:block; font-size:0.75rem; color:var(--text-mid); margin-bottom:0.5rem; }
+  .feedback-panel textarea { width:100%; resize:vertical; min-height:92px; max-height:220px; padding:0.75rem; background:var(--bg); border:1px solid var(--border2); border-radius:4px; color:var(--text); font:0.82rem/1.5 var(--font-ui); transition:border-color 0.18s; }
+  .feedback-panel textarea::placeholder { color:var(--text-dim); }
+  .feedback-panel textarea:focus { border-color:var(--red-bd); }
+  .feedback-panel textarea:disabled { opacity:0.6; }
+  .feedback-actions { display:flex; align-items:center; justify-content:space-between; gap:1rem; margin-top:0.65rem; }
+  .feedback-note { color:var(--text-dim); font-size:0.62rem; }
+  .feedback-submit { flex-shrink:0; border:1px solid var(--red-bd); border-radius:4px; padding:0.5rem 0.85rem; background:var(--red-dim); color:var(--red); font-family:var(--font-mono); font-size:0.65rem; font-weight:700; letter-spacing:0.03em; text-transform:uppercase; cursor:pointer; transition:background 0.18s,border-color 0.18s; }
+  .feedback-submit:hover:not(:disabled) { background:var(--red); border-color:var(--red); color:#fff; }
+  .feedback-submit:disabled { opacity:0.55; cursor:wait; }
+  .feedback-error { margin-top:0.6rem; color:var(--red); font-size:0.7rem; }
+  .feedback-success { display:flex; align-items:center; gap:0.75rem; padding-top:1rem; color:var(--green); }
+  .feedback-success > span { width:30px; height:30px; display:grid; place-items:center; border:1px solid rgba(52,212,126,0.4); border-radius:50%; background:rgba(52,212,126,0.08); }
+  .feedback-success strong { display:block; font-size:0.78rem; }
+  .feedback-success p { margin-top:0.15rem; color:var(--text-dim); font-size:0.7rem; }
+  .feedback-honeypot { position:absolute; left:-10000px; width:1px; height:1px; overflow:hidden; }
+  @keyframes feedbackReveal { from{opacity:0;transform:translateY(-4px)} to{opacity:1;transform:translateY(0)} }
+
   .hub-footer { margin-top:1.5rem; font-family:var(--font-mono); font-size:0.65rem; color:var(--text-dim); text-align:center; line-height:1.8; }
   .hub-footer a { color:var(--text-mid); text-decoration:none; }
   .hub-footer a:hover { color:var(--red); }
@@ -348,5 +474,9 @@
     .hub-hero-desc { display:none; }
     .hub-hero-top { flex-direction:column; gap:0.6rem; }
     .mode-desc { display:none; }
+  }
+  @media (prefers-reduced-motion:reduce) {
+    .hub, .topbar, .hub-content, .feedback-panel { animation:none; }
+    *, *::before, *::after { scroll-behavior:auto !important; transition-duration:0.01ms !important; }
   }
 </style>

@@ -417,15 +417,63 @@ const LS_KEYS = {
 };
 
 function loadStats() {
+  const fallback = { played: 0, wins: 0, streak: 0, maxStreak: 0, lastPlayedDate: null };
   try {
     const raw = localStorage.getItem(LS_KEYS.stats);
-    if (!raw) return { played: 0, wins: 0, streak: 0, maxStreak: 0 };
-    return JSON.parse(raw);
-  } catch { return { played: 0, wins: 0, streak: 0, maxStreak: 0 }; }
+    const parsed = raw ? JSON.parse(raw) : fallback;
+    if (!parsed.lastPlayedDate) parsed.lastPlayedDate = findLatestCompletedDailyDate();
+    const stats = normalizeStats(parsed, getDailyDateKey());
+    localStorage.setItem(LS_KEYS.stats, JSON.stringify(stats));
+    return stats;
+  } catch { return fallback; }
+}
+
+function findLatestCompletedDailyDate() {
+  let latest = null;
+  try {
+    for (let i = 0; i < localStorage.length; i++) {
+      const key = localStorage.key(i);
+      const match = key?.match(/^valorandle_daily_.+_(\d{4}-\d{2}-\d{2})$/);
+      if (!match || (latest && match[1] <= latest)) continue;
+      const state = JSON.parse(localStorage.getItem(key) || 'null');
+      if (state?.dailyDone) latest = match[1];
+    }
+  } catch {}
+  return latest;
 }
 
 function saveStats(stats) {
   try { localStorage.setItem(LS_KEYS.stats, JSON.stringify(stats)); } catch {}
+}
+
+function dayDifference(fromDate, toDate) {
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(fromDate || '') || !/^\d{4}-\d{2}-\d{2}$/.test(toDate || '')) return null;
+  return Math.round((Date.parse(toDate + 'T00:00:00Z') - Date.parse(fromDate + 'T00:00:00Z')) / 864e5);
+}
+
+function normalizeStats(input, today = getDailyDateKey()) {
+  const stats = {
+    played: Number(input?.played) || 0,
+    wins: Number(input?.wins) || 0,
+    streak: Number(input?.streak) || 0,
+    maxStreak: Number(input?.maxStreak) || 0,
+    lastPlayedDate: input?.lastPlayedDate || null,
+  };
+  const gap = dayDifference(stats.lastPlayedDate, today);
+  if (gap === null || gap > 1) stats.streak = 0;
+  return stats;
+}
+
+function recordDailyCompletion(input, today = getDailyDateKey(), won = false) {
+  const stats = normalizeStats(input, today);
+  if (stats.lastPlayedDate === today) return stats;
+  const gap = dayDifference(stats.lastPlayedDate, today);
+  stats.played += 1;
+  if (won) stats.wins += 1;
+  stats.streak = gap === 1 ? stats.streak + 1 : 1;
+  stats.maxStreak = Math.max(stats.maxStreak, stats.streak);
+  stats.lastPlayedDate = today;
+  return stats;
 }
 
 function loadDailyState() {

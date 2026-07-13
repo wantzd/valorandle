@@ -24,6 +24,12 @@ Astro and Svelte, rendered as a static site and deployed on Vercel. Large map sc
 
 ---
 
+### Environment variables
+
+Set `DISCORD_FEEDBACK_WEBHOOK_URL` in Vercel for the home feedback form. The webhook is only read by the `/api/feedback` function and is never exposed to the browser.
+
+---
+
 ## Credits
 
 Player data sourced from [Liquipedia](https://liquipedia.net/valorant), licensed under [CC BY-SA](https://liquipedia.net/commons/Liquipedia:Copyrights).

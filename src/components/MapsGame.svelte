@@ -574,10 +574,10 @@
               onload={() => { screenshotReady = true; }}
             />
             {#if !screenshotReady}
-              <div class="screenshot-ph"><span>{t.imgPlaceholder}</span></div>
+              <div class="screenshot-ph" role="status"><span class="loading-dot" aria-hidden="true"></span><span>{t.imgPlaceholder}</span></div>
             {/if}
           {:else}
-            <div class="screenshot-ph"><span>{t.imgPlaceholder}</span></div>
+            <div class="screenshot-ph" role="status"><span class="loading-dot" aria-hidden="true"></span><span>{t.imgPlaceholder}</span></div>
           {/if}
         </div>
       </div>
@@ -823,6 +823,14 @@
     display:flex; align-items:center; justify-content:center;
     font-family:var(--font-mono); font-size:0.72rem; color:var(--text-dim);
     letter-spacing:0.02em;
+    gap:0.55rem;
+  }
+  .loading-dot {
+    width:7px; height:7px; border-radius:50%; background:var(--red);
+    box-shadow:0 0 0 0 var(--red-bd); animation:loadingPulse 1.1s ease-out infinite;
+  }
+  @keyframes loadingPulse {
+    70%,100% { box-shadow:0 0 0 7px rgba(255,70,85,0); opacity:0.55; }
   }
   /* ── Ícones no canto da screenshot ──────────────────────────────────────── */
   .ss-corner-btns {

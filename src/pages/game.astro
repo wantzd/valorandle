@@ -570,7 +570,7 @@ import ProPlayersGame from '../components/ProPlayersGame.svelte';
     function completeDailyAndFinish() {
       state.dailyDone = true;
       const wins = state.roundResults.filter(r=>r.won).length;
-      updateStats(wins===DAILY_ROUNDS, true);
+      updateStats(wins===DAILY_ROUNDS, true, true);
       saveLeagueDailyState(getSerializableState());
       updateStreakChip();
       showDailyComplete();
@@ -609,11 +609,14 @@ import ProPlayersGame from '../components/ProPlayersGame.svelte';
       renderRound();
     }
 
-    function updateStats(won, countPlay) {
-      const s = loadStats();
-      if (countPlay) s.played++;
-      if (won) { s.wins++; s.streak++; s.maxStreak=Math.max(s.streak,s.maxStreak); }
-      else s.streak=0;
+    function updateStats(won, countPlay, isDaily = false) {
+      let s = loadStats();
+      if (isDaily) {
+        s = recordDailyCompletion(s, getDailyDateKey(), won);
+      } else {
+        if (countPlay) s.played++;
+        if (won) s.wins++;
+      }
       saveStats(s);
     }
 
