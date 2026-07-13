@@ -233,7 +233,7 @@
     "teamFull": "100 Thieves",
     "country": "EUA",
     "countryCode": "US",
-    "role": "Sentinel",
+    "role": "Flex",
     "age": 23,
     "titles": [
       "VCT Americas Stage 1 2024"
@@ -875,7 +875,7 @@
     "teamFull": "Team Vitality",
     "country": "Rússia",
     "countryCode": "RU",
-    "role": "Sentinel",
+    "role": "Initiator",
     "age": 23,
     "titles": [
       "VCT EMEA Stage 1 2025",
@@ -2039,7 +2039,7 @@
     "teamFull": "TYLOO",
     "country": "China",
     "countryCode": "CN",
-    "role": "Initiator",
+    "role": "Flex",
     "age": 24
   },
   "7849": {
@@ -2111,11 +2111,24 @@
     "teamFull": "Xi Lai Gaming",
     "country": "Taiwan",
     "countryCode": "TW",
-    "role": "Sentinel",
+    "role": "Controller",
     "age": 22,
     "titles": [
       "VCT China Stage 1 2025"
     ]
+  },
+  "swagzor": {
+    "age": 18,
+    "role": "Duelist"
+  },
+  "spike": {
+    "role": "Flex"
+  },
+  "ft": {
+    "role": "Duelist"
+  },
+  "verse": {
+    "role": "Controller"
   },
   "byrf": {
     "role": "Initiator"
