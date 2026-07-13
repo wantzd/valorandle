@@ -62,9 +62,18 @@ function normalizePage(value) {
 function isDiscordWebhook(value) {
   try {
     const url = new URL(value);
+    const allowedHost = url.hostname === 'discord.com'
+      || url.hostname.endsWith('.discord.com')
+      || url.hostname === 'discordapp.com'
+      || url.hostname.endsWith('.discordapp.com');
+    const parts = url.pathname.split('/').filter(Boolean);
     return url.protocol === 'https:'
-      && (url.hostname === 'discord.com' || url.hostname === 'discordapp.com')
-      && /^\/api\/webhooks\/\d+\/[A-Za-z0-9_-]+$/.test(url.pathname);
+      && allowedHost
+      && parts.length === 4
+      && parts[0] === 'api'
+      && parts[1] === 'webhooks'
+      && /^\d+$/.test(parts[2])
+      && parts[3].length >= 20;
   } catch {
     return false;
   }
