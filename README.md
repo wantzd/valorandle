@@ -26,7 +26,13 @@ Astro and Svelte, rendered as a static site and deployed on Vercel. Large map sc
 
 ### Environment variables
 
-Set `DISCORD_FEEDBACK_WEBHOOK_URL` in Vercel for the home feedback form. The webhook is only read by the `/api/feedback` function and is never exposed to the browser.
+Set these environment variables in Vercel for the home feedback form:
+
+- `DISCORD_FEEDBACK_WEBHOOK_URL` (server-only)
+- `TURNSTILE_SECRET_KEY` (server-only)
+- `PUBLIC_TURNSTILE_SITE_KEY` (public, embedded in the client bundle)
+
+The feedback endpoint validates Cloudflare Turnstile server-side and only reads the Discord webhook in the `/api/feedback` function. Never prefix either secret with `PUBLIC_`.
 
 ---
 
