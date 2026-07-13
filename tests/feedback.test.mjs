@@ -4,7 +4,7 @@ import { createFeedbackHandler } from '../api/feedback.js';
 
 const TEST_ENV = {
   TURNSTILE_SECRET_KEY: 'turnstile-test-secret',
-  DISCORD_FEEDBACK_WEBHOOK_URL: 'https://discord.com/api/webhooks/123456/test_token',
+  DISCORD_FEEDBACK_WEBHOOK_URL: 'https://discord.com/api/webhooks/123456/test_token.with-valid-characters',
 };
 const SILENT_LOGGER = { error() {} };
 
