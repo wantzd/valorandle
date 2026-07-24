@@ -111,7 +111,7 @@
       return;
     }
 
-    if (!localStorage.getItem('valorandle_maps_tutorial_seen')) {
+    if (!localStorage.getItem('valorandle_maps_tutorial_seen_v2')) {
       showTutorial = true;
     } else {
       startGame();
@@ -141,7 +141,7 @@
     url.searchParams.set('mode', m);
     history.replaceState(null, '', url);
 
-    if (!localStorage.getItem('valorandle_maps_tutorial_seen')) {
+    if (!localStorage.getItem('valorandle_maps_tutorial_seen_v2')) {
       showTutorial = true;
     } else {
       startGame();
@@ -152,7 +152,7 @@
   // Tutorial
   // ─────────────────────────────────────────────────────────────────────────────
   function dismissTutorial() {
-    localStorage.setItem('valorandle_maps_tutorial_seen', '1');
+    localStorage.setItem('valorandle_maps_tutorial_seen_v2', '1');
     showTutorial = false;
     startGame();
   }

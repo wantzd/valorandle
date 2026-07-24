@@ -27,13 +27,36 @@
   let countdown  = $state('--:--:--');
   let cdInterval = null;
 
+  // ── Aviso de atualização (pós-redesign) ──────────────────────────────────────
+  let showUpdate = $state(false);
+  const NOTICE_KEY = 'valorandle_redesign_notice_v1';
+
   onMount(() => {
     lang = window.location.pathname.startsWith('/en') ? 'en' : 'pt-BR';
     saveLang(lang);
     renderStreaks();
     renderPlayersState();
     startCountdown();
+    if (shouldShowUpdate()) showUpdate = true;
   });
+
+  // Só mostra o aviso para quem já jogou antes do redesign, uma única vez.
+  function shouldShowUpdate() {
+    try {
+      if (localStorage.getItem(NOTICE_KEY)) return false;
+      if (localStorage.getItem('valorandle_stats')) return true;
+      if (localStorage.getItem('valorandle_maps_tutorial_seen')) return true;
+      for (let i = 0; i < localStorage.length; i++) {
+        const k = localStorage.key(i);
+        if (k && k.startsWith('valorandle_') && k.includes('daily')) return true;
+      }
+    } catch {}
+    return false;
+  }
+  function dismissUpdate() {
+    try { localStorage.setItem(NOTICE_KEY, '1'); } catch {}
+    showUpdate = false;
+  }
 
   onDestroy(() => {
     if (cdInterval) clearInterval(cdInterval);
@@ -282,6 +305,22 @@
   }
 </script>
 
+{#if showUpdate}
+  <div class="update-overlay" role="dialog" aria-modal="true" aria-labelledby="update-title">
+    <div class="update-card">
+      <div class="update-eyebrow">{isPT ? 'Atualização' : "What's new"}</div>
+      <h2 id="update-title">{isPT ? 'O Valorandle mudou de cara' : 'Valorandle got a redesign'}</h2>
+      <p>{isPT
+        ? 'Reconstruímos toda a interface — o lobby e os cinco modos. Aproveite para explorar o visual novo.'
+        : 'We rebuilt the whole interface — the lobby and all five modes. Take a moment to explore the new look.'}</p>
+      <p class="update-apology">{isPT
+        ? 'Com a mudança, as sequências agora contam por modo. Pedimos desculpa: sua sequência anterior foi zerada e cada modo começa do zero hoje.'
+        : "With the change, streaks now count per mode. We're sorry: your previous streak was reset, and every mode starts fresh today."}</p>
+      <button class="update-btn" type="button" onclick={dismissUpdate}>{isPT ? 'Entendi' : 'Got it'}</button>
+    </div>
+  </div>
+{/if}
+
 <header class="ticker">
   <a class="wordmark" href={isPT ? '/' : '/en'} title={isPT ? 'Início' : 'Home'}>VALOR<b>ANDLE</b></a>
   <div class="meta">
@@ -519,6 +558,30 @@
 
   @keyframes rise { from { opacity:0; transform:translateY(12px); } to { opacity:1; transform:none; } }
 
+  /* ── tela de atualização (pós-redesign) ── */
+  .update-overlay {
+    position:fixed; inset:0; z-index:200; display:flex; align-items:center; justify-content:center;
+    padding:24px; background:rgba(8,9,13,0.9); backdrop-filter:blur(6px);
+    animation:u-fade 0.25s var(--ease-out) both;
+  }
+  .update-card {
+    width:100%; max-width:440px; background:var(--surface);
+    border:1px solid var(--border2); border-bottom:2px solid var(--red);
+    padding:30px 30px 26px; animation:u-pop 0.4s var(--ease-out) both;
+  }
+  .update-eyebrow { font-size:0.6rem; letter-spacing:0.22em; text-transform:uppercase; color:var(--red); font-weight:700; margin-bottom:12px; }
+  .update-card h2 { font-family:var(--font-display); font-size:1.5rem; font-weight:400; line-height:1.1; }
+  .update-card p { font-size:0.86rem; color:var(--text-mid); line-height:1.6; margin-top:14px; }
+  .update-apology { color:var(--text-dim); }
+  .update-btn {
+    margin-top:22px; font-family:var(--font-display); font-size:0.75rem; letter-spacing:0.08em;
+    background:var(--red); color:#0a0a0c; border:none; padding:13px 26px; cursor:pointer;
+    transition:filter var(--t-fast) var(--ease-out);
+  }
+  .update-btn:hover { filter:brightness(1.12); }
+  @keyframes u-fade { from { opacity:0; } to { opacity:1; } }
+  @keyframes u-pop { from { opacity:0; transform:translateY(14px) scale(0.97); } to { opacity:1; transform:none; } }
+
   /* ── tablet ── */
   @media (max-width: 860px) {
     .front { width:min(100% - 32px, 980px); }
@@ -537,7 +600,7 @@
     .foot { justify-content:center; text-align:center; }
   }
   @media (prefers-reduced-motion: reduce) {
-    .head, .srow { animation:none; }
+    .head, .srow, .update-overlay, .update-card { animation:none; }
     *, *::before, *::after { transition-duration:0.01ms !important; }
   }
 </style>
