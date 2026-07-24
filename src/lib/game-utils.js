@@ -123,3 +123,31 @@ export function recordDailyCompletion(input, today = getDailyDateKey(), won = fa
   stats.lastPlayedDate = today;
   return stats;
 }
+
+// ── Per-mode stats ────────────────────────────────────────────────────────────
+// Each mode (players, agents, maps, skins, abilities) keeps its own streak,
+// stored together under one key as { [modeId]: stats }. Reuses the same
+// normalize/record rules as the global stats above.
+const MODE_STATS_KEY = 'valorandle_mode_stats';
+
+export function loadModeStats(modeId, today = getDailyDateKey()) {
+  const fallback = { played: 0, wins: 0, streak: 0, maxStreak: 0, lastPlayedDate: null };
+  try {
+    const all = JSON.parse(localStorage.getItem(MODE_STATS_KEY) || '{}');
+    return normalizeStats(all[modeId] || fallback, today);
+  } catch {
+    return fallback;
+  }
+}
+
+export function recordModeCompletion(modeId, today = getDailyDateKey(), won = false) {
+  try {
+    const all = JSON.parse(localStorage.getItem(MODE_STATS_KEY) || '{}');
+    const updated = recordDailyCompletion(all[modeId] || {}, today, won);
+    all[modeId] = updated;
+    localStorage.setItem(MODE_STATS_KEY, JSON.stringify(all));
+    return updated;
+  } catch {
+    return normalizeStats({}, today);
+  }
+}

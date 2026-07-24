@@ -1,22 +1,15 @@
-﻿<script>
+<script>
   import { onMount, onDestroy, tick } from 'svelte';
-  import { getDailyDateKey, msUntilNextDaily, formatCountdown, saveLang, loadStats } from '../lib/game-utils.js';
+  import { msUntilNextDaily, formatCountdown, saveLang, getDailyDateKey, loadModeStats } from '../lib/game-utils.js';
 
   // ── Lang ─────────────────────────────────────────────────────────────────────
   let lang = $state('pt-BR');
   let isPT = $derived(lang === 'pt-BR');
 
-  // ── Hero state ───────────────────────────────────────────────────────────────
-  let pips        = $state(['', '', '', '', '']);
-  let heroMeta    = $state('');
-  let statusClass = $state('new');
-  let statusText  = $state('Novo');
-  let btnText     = $state('Jogar →');
-
-  // ── Stats ────────────────────────────────────────────────────────────────────
-  let streak    = $state(0);
-  let statToday = $state(0);
-  let statWinrate = $state('—');
+  // ── Per-mode streaks + Players daily state ───────────────────────────────────
+  let streaks       = $state({ players: 0, agents: 0, maps: 0, skins: 0, abilities: 0 });
+  let playersState  = $state('new'); // 'new' | 'progress' | 'done'
+  let playersWins   = $state(0);
 
   // ── Feedback ─────────────────────────────────────────────────────────────────
   let feedbackOpen    = $state(false);
@@ -37,8 +30,8 @@
   onMount(() => {
     lang = window.location.pathname.startsWith('/en') ? 'en' : 'pt-BR';
     saveLang(lang);
-    renderHero();
-    renderStats();
+    renderStreaks();
+    renderPlayersState();
     startCountdown();
   });
 
@@ -147,68 +140,29 @@
     if (feedbackStatus !== 'sent') await setupTurnstile();
   }
 
-  function setLang(l) {
-    lang = l;
-    saveLang(l);
-    renderHero();
-    renderStats();
+  function renderStreaks() {
+    streaks = {
+      players:   loadModeStats('players').streak   || 0,
+      agents:    loadModeStats('agents').streak    || 0,
+      maps:      loadModeStats('maps').streak      || 0,
+      skins:     loadModeStats('skins').streak     || 0,
+      abilities: loadModeStats('abilities').streak || 0,
+    };
   }
 
-  function renderHero() {
+  function renderPlayersState() {
     const key   = 'valorandle_daily_americas_' + getDailyDateKey();
     let   saved = null;
     try { saved = JSON.parse(localStorage.getItem(key) || 'null'); } catch {}
-
-    const results  = saved?.roundResults || [];
-    const current  = saved?.currentRound ?? 0;
-    const done     = !!(saved?.dailyDone);
-    const started  = results.length > 0 || !!(saved?.guesses?.length);
-
-    pips = Array.from({ length: 5 }, (_, i) => {
-      if (results[i])                          return 'done';
-      if (i === current && started && !done)   return 'active';
-      return '';
-    });
-
-    if (done) {
-      const wins = results.filter(r => r.won).length;
-      heroMeta    = isPT ? `Daily completo · ${wins}/5` : `Daily complete · ${wins}/5`;
-      statusClass = 'done';
-      statusText  = isPT ? '✓ Completo' : '✓ Complete';
-      btnText     = isPT ? 'Ver resultado →' : 'View result →';
-    } else if (started) {
-      heroMeta    = isPT
-        ? `Daily de hoje · Round ${current + 1} de 5`
-        : `Today's Daily · Round ${current + 1} of 5`;
-      statusClass = '';
-      statusText  = isPT ? 'Em progresso' : 'In progress';
-      btnText     = isPT ? 'Continuar →' : 'Continue →';
+    const results = saved?.roundResults || [];
+    if (saved?.dailyDone) {
+      playersState = 'done';
+      playersWins  = results.filter(r => r.won).length;
+    } else if (results.length > 0 || saved?.guesses?.length) {
+      playersState = 'progress';
     } else {
-      heroMeta    = isPT ? 'Daily de hoje' : "Today's Daily";
-      statusClass = 'new';
-      statusText  = isPT ? 'Novo' : 'New';
-      btnText     = isPT ? 'Jogar →' : 'Play →';
+      playersState = 'new';
     }
-  }
-
-  function renderStats() {
-    const stats = loadStats();
-    streak      = stats.streak || 0;
-    statWinrate = stats.played > 0
-      ? Math.round((stats.wins / stats.played) * 100) + '%'
-      : '—';
-
-    const today = getDailyDateKey();
-    let count = 0;
-    try {
-      for (let i = 0; i < localStorage.length; i++) {
-        const k = localStorage.key(i);
-        if (!k?.startsWith('valorandle_daily_') || !k.endsWith('_' + today)) continue;
-        const s = JSON.parse(localStorage.getItem(k) || 'null');
-        if (s?.guesses?.length > 0 || s?.roundResults?.length > 0) count++;
-      }
-    } catch {}
-    statToday = count;
   }
 
   function startCountdown() {
@@ -277,347 +231,313 @@
       resetTurnstile();
     }
   }
+
+  // ── Modes ────────────────────────────────────────────────────────────────────
+  const pfx = $derived(isPT ? '' : '/en');
+
+  const modes = $derived([
+    {
+      id: 'players', color: 'var(--red)', href: `${pfx}/league-select`,
+      icon: 'M12 3a9 9 0 1 1 0 18 9 9 0 0 1 0-18z M12 9a3 3 0 1 1 0 6 3 3 0 0 1 0-6z M12 3v3 M12 18v3 M3 12h3 M18 12h3',
+      name: isPT ? 'Pro Players' : 'Pro Players',
+      desc: isPT ? 'Cinco alvos escondidos nas quatro ligas do VCT' : 'Five hidden targets across the four VCT leagues',
+      streak: streaks.players,
+      state: playersState, wins: playersWins,
+    },
+    {
+      id: 'agents', color: 'var(--col-pacific)', href: `${pfx}/agents`,
+      icon: 'M12 4a4 4 0 1 1 0 8 4 4 0 0 1 0-8z M4 21c0-4 3.6-6.5 8-6.5s8 2.5 8 6.5',
+      name: isPT ? 'Agentes' : 'Agents',
+      desc: isPT ? 'Gênero, função, origem, lançamento e ult' : 'Gender, role, origin, release and ult',
+      streak: streaks.agents,
+    },
+    {
+      id: 'maps', color: 'var(--col-americas)', href: `${pfx}/maps`,
+      icon: 'M9 4 3 6v14l6-2 6 2 6-2V4l-6 2z M9 4v14 M15 6v14',
+      name: isPT ? 'Mapas' : 'Maps',
+      desc: isPT ? 'Reconheça o mapa pela imagem com zoom' : 'Name the map from the zoomed image',
+      streak: streaks.maps,
+    },
+    {
+      id: 'skins', color: 'var(--col-all)', href: `${pfx}/skins`,
+      icon: 'M2 12h13l5-3v6l-5-3 M6 12v5h3v-5',
+      name: 'Skins',
+      desc: isPT ? 'Ouça o som e descubra bundle, arma e edição' : 'Hear the sound; guess bundle, weapon and edition',
+      streak: streaks.skins,
+    },
+    {
+      id: 'abilities', color: 'var(--col-emea)', href: `${pfx}/abilities`,
+      icon: 'M13 2 4 14h6l-1 8 9-12h-6z',
+      name: isPT ? 'Habilidades' : 'Abilities',
+      desc: isPT ? 'Descrição revelada palavra por palavra' : 'Description revealed word by word',
+      streak: streaks.abilities,
+    },
+  ]);
+
+  function stateLabel(m) {
+    if (m.id !== 'players') return '';
+    if (m.state === 'done')     return isPT ? `✓ ${m.wins}/5` : `✓ ${m.wins}/5`;
+    if (m.state === 'progress') return isPT ? 'em progresso' : 'in progress';
+    return '';
+  }
 </script>
 
-<div class="hub">
-  <nav class="topbar">
-    <a class="topbar-logo" href="/">VALOR<span>ANDLE</span></a>
-    <div class="topbar-right">
-      {#if streak > 0}
-        <span class="streak-chip">🔥 {streak}</span>
-      {/if}
-      <a class="lang-btn" class:active={lang === 'pt-BR'} href="/">
-        <span class="fi fi-br" aria-hidden="true"></span> PT
-      </a>
-      <a class="lang-btn" class:active={lang === 'en'} href="/en">
-        <span class="fi fi-us" aria-hidden="true"></span> EN
-      </a>
-    </div>
-  </nav>
+<header class="ticker">
+  <a class="wordmark" href={isPT ? '/' : '/en'} title={isPT ? 'Início' : 'Home'}>VALOR<b>ANDLE</b></a>
+  <div class="meta">
+    <span class="sub">{isPT ? 'reset em' : 'reset in'} <b>{countdown}</b></span>
+    <a class="lang" href={isPT ? '/en' : '/'} title={isPT ? 'Switch to English' : 'Mudar para Português'}
+       aria-label={isPT ? 'Switch to English' : 'Mudar para Português'}>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+        <circle cx="12" cy="12" r="9" />
+        <path d="M3 12h18 M12 3a14.5 14.5 0 0 1 0 18 M12 3a14.5 14.5 0 0 0 0 18" />
+      </svg>
+      <b>{isPT ? 'EN' : 'PT'}</b>
+    </a>
+  </div>
+</header>
 
-  <main class="hub-content">
-    <!-- Hero card -->
-    <div class="hub-hero">
-      <div class="hub-hero-inner">
-        <div class="hub-hero-top">
-          <div>
-            <div class="hub-hero-meta">{heroMeta}</div>
-            <div class="hub-hero-title">Pro Players</div>
-            <div class="hub-hero-desc">
-              {isPT
-                ? 'Adivinhe qual jogador profissional do VCT está escondido. 8 tentativas por round.'
-                : 'Guess which VCT pro player is hidden. 8 attempts per round.'}
+<main class="front">
+
+  <header class="head">
+    <h1>{isPT ? 'ESCOLHA SEU' : 'PICK YOUR'} <em>{isPT ? 'MODO' : 'MODE'}</em></h1>
+    <p>{isPT
+      ? 'Um desafio novo por dia em cada modo. Cada um guarda a própria sequência.'
+      : 'A fresh challenge per day in every mode. Each keeps its own streak.'}</p>
+  </header>
+
+  <section class="slate" aria-label={isPT ? 'Modos de jogo' : 'Game modes'}>
+    {#each modes as m, i (m.id)}
+      <a class="srow" href={m.href} style={`--mc:${m.color}; --d:${i * 55}ms`}>
+        <span class="s-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d={m.icon} /></svg>
+        </span>
+        <span class="s-id">
+          <span class="s-name">{m.name}</span>
+          <span class="s-desc">{m.desc}</span>
+        </span>
+        <span class="s-streak">
+          {#if m.streak > 0}🔥<b>{m.streak}</b>{/if}
+        </span>
+        <span class={m.state ? `s-state ${m.state}` : 's-state'}>{stateLabel(m)}</span>
+        <span class="s-go" aria-hidden="true">→</span>
+      </a>
+    {/each}
+  </section>
+
+  <section class="feedback" class:open={feedbackOpen}>
+    {#if !feedbackOpen}
+      <p class="fb-link">
+        {isPT ? 'Achou algo estranho?' : 'Spotted something off?'}
+        <button type="button" onclick={toggleFeedback}>{isPT ? 'Mandar feedback' : 'Send feedback'}</button>
+      </p>
+    {:else}
+      <div class="fb-panel" id="feedback-panel">
+        <div class="fb-panel-head">
+          <span>{isPT ? 'Enviar feedback' : 'Send feedback'}</span>
+          <button type="button" class="fb-close" onclick={toggleFeedback} aria-label={isPT ? 'Fechar' : 'Close'}>✕</button>
+        </div>
+        {#if feedbackStatus === 'sent'}
+          <div class="fb-success" role="status">
+            <span>✓</span>
+            <div>
+              <strong>{isPT ? 'Feedback enviado' : 'Feedback sent'}</strong>
+              <p>{isPT ? 'Obrigado por ajudar a melhorar o Valorandle.' : 'Thanks for helping improve Valorandle.'}</p>
             </div>
           </div>
-          <div class="hub-status {statusClass}">
-            <span class="dot"></span>
-            <span>{statusText}</span>
-          </div>
-        </div>
-
-        <div class="hub-pips">
-          {#each pips as pip}
-            <div class="hub-pip {pip}"></div>
-          {/each}
-        </div>
-
-        <div class="hub-cta-row">
-          <a class="btn primary" href="/league-select?mode=daily">{btnText}</a>
-          <a class="btn ghost" href="/league-select?mode=free">
-            {isPT ? 'Modo livre' : 'Free mode'}
-          </a>
-        </div>
-      </div>
-    </div>
-
-    <!-- Other modes -->
-    <div class="section-label">{isPT ? 'Outros modos' : 'Other modes'}</div>
-
-    <div class="mode-list">
-      <a class="mode-row" href={isPT ? '/agents?mode=daily' : '/en/agents?mode=daily'}>
-        <div class="mode-icon">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-            <circle cx="12" cy="8" r="3"/><path d="M5 21v-1a7 7 0 0 1 14 0v1"/>
-          </svg>
-        </div>
-        <div class="mode-info">
-          <div class="mode-name">{isPT ? 'Agentes' : 'Agents'}</div>
-          <div class="mode-desc">{isPT ? 'Gênero, função, origem, lançamento, pts. ult' : 'Gender, role, origin, release, ult points'}</div>
-        </div>
-        <span class="mode-tag new">{isPT ? 'Novo' : 'New'}</span>
-        <span class="mode-arrow">→</span>
-      </a>
-
-      <a class="mode-row" href={isPT ? '/maps' : '/en/maps'}>
-        <div class="mode-icon">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M3 6l6-2 6 2 6-2v14l-6 2-6-2-6 2z"/><path d="M9 4v16M15 6v16"/>
-          </svg>
-        </div>
-        <div class="mode-info">
-          <div class="mode-name">{isPT ? 'Mapas' : 'Maps'}</div>
-          <div class="mode-desc">{isPT ? 'Imagem com zoom progressivo · fácil/difícil' : 'Progressive zoom image · easy/hard'}</div>
-        </div>
-        <span class="mode-tag new">{isPT ? 'Novo' : 'New'}</span>
-        <span class="mode-arrow">→</span>
-      </a>
-
-      <a class="mode-row" href={isPT ? '/skins' : '/en/skins'}>
-        <div class="mode-icon">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M3 13h11l3-4 4 1-1 3-5 3H3z"/><circle cx="17" cy="14" r="1" fill="currentColor" stroke="none"/>
-          </svg>
-        </div>
-        <div class="mode-info">
-          <div class="mode-name">Skins</div>
-          <div class="mode-desc">{isPT ? 'Ouça o som do tiro · adivinhe bundle, arma e edição' : 'Hear the gunshot · guess bundle, weapon and edition'}</div>
-        </div>
-        <span class="mode-tag new">{isPT ? 'Novo' : 'New'}</span>
-        <span class="mode-arrow">→</span>
-      </a>
-
-      <a class="mode-row" href={isPT ? '/abilities' : '/en/abilities'}>
-        <div class="mode-icon">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M13 2L4 14h7l-1 8 9-12h-7z"/>
-          </svg>
-        </div>
-        <div class="mode-info">
-          <div class="mode-name">{isPT ? 'Habilidades' : 'Abilities'}</div>
-          <div class="mode-desc">{isPT ? 'Descrição ou ícone revelado progressivamente' : 'Censored description or progressively revealed icon'}</div>
-        </div>
-        <span class="mode-tag new">{isPT ? 'Novo' : 'New'}</span>
-        <span class="mode-arrow">→</span>
-      </a>
-    </div>
-
-    <!-- Quick stats -->
-    <div class="qstats-row">
-      <div class="qstat">
-        <span class="qstat-num">{statToday}</span>
-        <div class="qstat-lbl">{isPT ? 'Jogos hoje' : 'Today'}</div>
-      </div>
-      <div class="qstat">
-        <span class="qstat-num">{streak}</span>
-        <div class="qstat-lbl">Streak</div>
-      </div>
-      <div class="qstat">
-        <span class="qstat-num">{statWinrate}</span>
-        <div class="qstat-lbl">Win rate</div>
-      </div>
-    </div>
-
-    <!-- Countdown -->
-    <div class="countdown-wrap">
-      <span class="countdown-lbl">{isPT ? 'Próximo daily em' : 'Next daily in'}</span>
-      <span class="countdown-timer">{countdown}</span>
-    </div>
-
-    <section class="feedback-wrap" class:open={feedbackOpen}>
-      <button
-        class="feedback-toggle"
-        type="button"
-        aria-expanded={feedbackOpen}
-        aria-controls="feedback-panel"
-        onclick={toggleFeedback}
-      >
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-          <path d="M21 15a4 4 0 0 1-4 4H8l-5 3V7a4 4 0 0 1 4-4h10a4 4 0 0 1 4 4z"/>
-          <path d="M8 9h8M8 13h5"/>
-        </svg>
-        <span>{isPT ? 'Enviar feedback' : 'Send feedback'}</span>
-        <span class="feedback-chevron" aria-hidden="true">⌄</span>
-      </button>
-
-      {#if feedbackOpen}
-        <div class="feedback-panel" id="feedback-panel">
-          {#if feedbackStatus === 'sent'}
-            <div class="feedback-success" role="status">
-              <span>✓</span>
-              <div>
-                <strong>{isPT ? 'Feedback enviado' : 'Feedback sent'}</strong>
-                <p>{isPT ? 'Obrigado por ajudar a melhorar o Valorandle.' : 'Thanks for helping improve Valorandle.'}</p>
-              </div>
+        {:else}
+          <form onsubmit={submitFeedback}>
+            <label for="feedback-message">{isPT ? 'O que podemos melhorar?' : 'What could we improve?'}</label>
+            <textarea
+              id="feedback-message"
+              bind:value={feedbackMessage}
+              maxlength="1000"
+              rows="4"
+              placeholder={isPT ? 'Conte sobre um bug, ideia ou sugestão…' : 'Tell us about a bug, idea, or suggestion…'}
+              disabled={feedbackStatus === 'sending'}
+              required
+            ></textarea>
+            <div class="fb-honeypot" aria-hidden="true">
+              <label for="feedback-website">Website</label>
+              <input id="feedback-website" bind:value={feedbackWebsite} tabindex="-1" autocomplete="off" />
             </div>
-          {:else}
-            <form onsubmit={submitFeedback}>
-              <label for="feedback-message">
-                {isPT ? 'O que podemos melhorar?' : 'What could we improve?'}
-              </label>
-              <textarea
-                id="feedback-message"
-                bind:value={feedbackMessage}
-                maxlength="1000"
-                rows="4"
-                placeholder={isPT ? 'Conte sobre um bug, ideia ou sugestão…' : 'Tell us about a bug, idea, or suggestion…'}
-                disabled={feedbackStatus === 'sending'}
-                required
-              ></textarea>
-              <div class="feedback-honeypot" aria-hidden="true">
-                <label for="feedback-website">Website</label>
-                <input id="feedback-website" bind:value={feedbackWebsite} tabindex="-1" autocomplete="off" />
-              </div>
-              <div
-                class="feedback-turnstile"
-                bind:this={turnstileContainer}
-                aria-label={isPT ? 'Verificação de segurança' : 'Security verification'}
-              ></div>
-              <div class="feedback-actions">
-                <span class="feedback-note">{isPT ? 'Protegido pelo Cloudflare Turnstile.' : 'Protected by Cloudflare Turnstile.'}</span>
-                <button class="feedback-submit" type="submit" disabled={feedbackStatus === 'sending' || !turnstileToken}>
-                  {feedbackStatus === 'sending' ? (isPT ? 'Enviando…' : 'Sending…') : (isPT ? 'Enviar →' : 'Send →')}
-                </button>
-              </div>
-              {#if feedbackError}<p class="feedback-error" role="alert">{feedbackError}</p>{/if}
-            </form>
-          {/if}
-        </div>
-      {/if}
-    </section>
+            <div class="fb-turnstile" bind:this={turnstileContainer}
+              aria-label={isPT ? 'Verificação de segurança' : 'Security verification'}></div>
+            <div class="fb-actions">
+              <span class="fb-note">{isPT ? 'Protegido pelo Cloudflare Turnstile.' : 'Protected by Cloudflare Turnstile.'}</span>
+              <button class="fb-submit" type="submit" disabled={feedbackStatus === 'sending' || !turnstileToken}>
+                {feedbackStatus === 'sending' ? (isPT ? 'Enviando…' : 'Sending…') : (isPT ? 'Enviar →' : 'Send →')}
+              </button>
+            </div>
+            {#if feedbackError}<p class="fb-error" role="alert">{feedbackError}</p>{/if}
+          </form>
+        {/if}
+      </div>
+    {/if}
+  </section>
 
-    <footer class="hub-footer">
-      <span>Fan-made. {isPT ? 'Não afiliado à' : 'Not affiliated with'}
-        <a href="https://playvalorant.com" target="_blank" rel="noopener">Riot Games</a>.</span>
-      <span class="footer-sep"> · </span>
-      <span>{isPT ? 'Dados dos jogadores:' : 'Player data:'}
-        <a href="https://liquipedia.net/valorant" target="_blank" rel="noopener">Liquipedia</a>
-        (<a href="https://liquipedia.net/commons/Liquipedia:Copyrights" target="_blank" rel="noopener">CC BY-SA</a>)
-      </span>
-    </footer>
-  </main>
-</div>
+  <footer class="foot">
+    <span>Fan-made. {isPT ? 'Não afiliado à' : 'Not affiliated with'}
+      <a href="https://playvalorant.com" target="_blank" rel="noopener">Riot Games</a>.</span>
+    <span>{isPT ? 'Dados dos jogadores:' : 'Player data:'}
+      <a href="https://liquipedia.net/valorant" target="_blank" rel="noopener">Liquipedia</a>
+      (<a href="https://liquipedia.net/commons/Liquipedia:Copyrights" target="_blank" rel="noopener">CC BY-SA</a>)
+    </span>
+  </footer>
+
+</main>
 
 <style>
-  :global(*, *::before, *::after) { box-sizing: border-box; margin: 0; padding: 0; }
+  :global(*, *::before, *::after) { box-sizing:border-box; margin:0; padding:0; }
   :global(:root) {
     --bg:#08090d; --surface:#0e1018; --surface2:#141620; --border:#1c1f2e; --border2:#252838;
     --red:#FF4655; --red-dim:rgba(255,70,85,0.08); --red-bd:rgba(255,70,85,0.32); --red-glow:rgba(255,70,85,0.22);
-    --text:#eeeef5; --text-dim:#6e7190; --text-mid:#8a8da8; --green:#34d47e;
-    --font-display:'Russo One',sans-serif; --font-ui:'Outfit',sans-serif; --font-mono:'Outfit',sans-serif;
-    --col-americas:#FF5400;
+    --text:#eeeef5; --text-dim:#6e7190; --text-mid:#8a8da8; --green:#34d47e; --yellow:#E5C96A;
+    --col-americas:#FF5400; --col-emea:#C4FF00; --col-pacific:#00DCFF; --col-china:#FF1675; --col-all:#E5C96A;
+    --font-display:'Russo One',sans-serif;
+    --ease-out:cubic-bezier(0.22,1,0.36,1); --t-fast:150ms;
   }
-  :global(html,body) { min-height:100vh; background:var(--bg); color:var(--text); font-family:var(--font-ui); overflow-x:hidden; }
-  :global(body::before) { content:''; position:fixed; inset:0; z-index:0; background-image:radial-gradient(circle,#1c1f2e 1px,transparent 1px); background-size:28px 28px; pointer-events:none; opacity:.5; }
-  :global(body::after)  { content:''; position:fixed; top:-180px; left:50%; z-index:0; transform:translateX(-50%); width:600px; height:480px; background:radial-gradient(ellipse,rgba(255,70,85,0.05) 0%,transparent 70%); pointer-events:none; }
+  :global(html,body) { min-height:100vh; background:var(--bg); color:var(--text); overflow-x:hidden; font-family:var(--font-ui,'Epilogue',sans-serif); }
+  :global(body::before) { content:''; position:fixed; inset:0; z-index:0; background-image:radial-gradient(circle,#1c1f2e 1px,transparent 1px); background-size:28px 28px; pointer-events:none; opacity:.4; }
+  :global(body::after)  { content:''; position:fixed; top:-200px; left:50%; z-index:0; transform:translateX(-50%); width:640px; height:440px; background:radial-gradient(ellipse,rgba(255,70,85,0.05) 0%,transparent 70%); pointer-events:none; }
 
-  .hub { position:relative; z-index:1; min-height:100vh; display:flex; flex-direction:column; align-items:center; padding:1.25rem 1.5rem 5rem; }
-
-  .topbar { width:100%; max-width:640px; display:flex; align-items:center; justify-content:space-between; padding-bottom:1rem; border-bottom:1px solid var(--border); margin-bottom:1.5rem; animation:fadeUp 0.38s ease both; }
-  .topbar-logo { font-family:var(--font-display); font-size:1.2rem; letter-spacing:0; text-transform:uppercase; color:var(--text); text-decoration:none; }
-  .topbar-logo span { color:var(--red); }
-  .topbar-right { display:flex; align-items:center; gap:6px; }
-
-  .streak-chip { font-family:var(--font-mono); font-size:0.68rem; font-weight:700; letter-spacing:0.02em; color:var(--red); background:var(--red-dim); border:1px solid var(--red-bd); padding:0.3rem 0.6rem; border-radius:3px; display:flex; align-items:center; gap:0.3rem; }
-
-  .lang-btn { background:transparent; border:1px solid var(--border2); color:var(--text-dim); font-family:var(--font-mono); font-size:0.68rem; letter-spacing:0.03em; padding:0.32rem 0.7rem; cursor:pointer; transition:all 0.2s; display:inline-flex; align-items:center; gap:0.35rem; border-radius:3px; }
-  .lang-btn.active { background:var(--red); color:#fff; border-color:var(--red); }
-  .lang-btn:hover:not(.active) { border-color:var(--text-dim); color:var(--text-mid); }
-
-  .hub-content { width:100%; max-width:640px; display:flex; flex-direction:column; gap:10px; animation:fadeUp 0.38s 0.06s ease both; }
-
-  .hub-hero { background:linear-gradient(135deg,var(--surface) 0%,#1a0a10 60%,rgba(255,70,85,0.1) 100%); border:1px solid var(--red-bd); border-radius:8px; padding:1.5rem 1.75rem; position:relative; overflow:hidden; }
-  .hub-hero::before { content:''; position:absolute; top:-60px; right:-60px; width:260px; height:260px; background:radial-gradient(circle,rgba(255,70,85,0.18),transparent 70%); pointer-events:none; }
-  .hub-hero-inner { position:relative; }
-  .hub-hero-top { display:flex; align-items:flex-start; justify-content:space-between; gap:1rem; margin-bottom:1rem; }
-  .hub-hero-meta { font-family:var(--font-mono); font-size:0.62rem; letter-spacing:0.07em; text-transform:uppercase; color:var(--red); opacity:0.85; margin-bottom:0.4rem; }
-  .hub-hero-title { font-family:var(--font-display); font-size:2rem; line-height:1; text-transform:uppercase; margin-bottom:0.4rem; }
-  .hub-hero-desc { font-size:0.82rem; color:var(--text-mid); line-height:1.5; max-width:340px; }
-
-  .hub-status { font-family:var(--font-mono); font-size:0.6rem; letter-spacing:0; color:var(--text-mid); text-transform:uppercase; padding:0.35rem 0.6rem; background:rgba(0,0,0,0.3); border:1px solid var(--border2); border-radius:3px; display:inline-flex; align-items:center; gap:0.4rem; white-space:nowrap; flex-shrink:0; align-self:flex-start; }
-  .hub-status .dot { width:6px; height:6px; border-radius:50%; background:var(--red); animation:pulse 1.8s ease infinite; }
-  .hub-status.done .dot { background:var(--green); animation:none; }
-  .hub-status.new  .dot { background:var(--text-dim); animation:none; }
-
-  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
-
-  .hub-pips { display:flex; gap:5px; margin-bottom:1.1rem; }
-  .hub-pip { flex:1; height:4px; border-radius:2px; background:var(--surface2); border:1px solid var(--border2); transition:background 0.3s,border-color 0.3s; }
-  .hub-pip.done   { background:var(--green); border-color:var(--green); }
-  .hub-pip.active { background:var(--red); border-color:var(--red); box-shadow:0 0 6px var(--red-glow); }
-
-  .hub-cta-row { display:flex; gap:8px; align-items:center; flex-wrap:wrap; }
-  .btn { font-family:var(--font-mono); font-size:0.72rem; font-weight:700; letter-spacing:0.03em; text-transform:uppercase; padding:0.65rem 1.2rem; border-radius:4px; cursor:pointer; transition:all 0.2s; border:none; display:inline-flex; align-items:center; gap:0.35rem; text-decoration:none; }
-  .btn.primary { background:var(--red); color:#fff; }
-  .btn.primary:hover { background:#e03040; box-shadow:0 0 14px var(--red-glow); }
-  .btn.ghost { background:transparent; border:1px solid var(--border2); color:var(--text-mid); }
-  .btn.ghost:hover { border-color:var(--red); color:var(--red); }
-
-  .section-label { font-family:var(--font-mono); font-size:0.6rem; letter-spacing:0.02em; text-transform:uppercase; color:var(--text-dim); display:flex; align-items:center; gap:0.65rem; margin:0.4rem 0 0.1rem; }
-  .section-label::after { content:''; flex:1; height:1px; background:var(--border); }
-
-  .mode-list { display:flex; flex-direction:column; gap:5px; }
-  .mode-row { display:flex; align-items:center; gap:0.9rem; background:var(--surface); border:1px solid var(--border); border-radius:6px; padding:0.85rem 1rem; cursor:pointer; text-decoration:none; color:inherit; transition:border-color 0.18s,transform 0.18s,background 0.18s; }
-  .mode-row:hover { border-color:var(--red); transform:translateX(2px); background:var(--surface2); }
-  .mode-row:hover .mode-icon { background:var(--red); border-color:var(--red); color:#fff; }
-  .mode-row:hover .mode-arrow { color:var(--red); }
-  .mode-row.disabled { opacity:0.45; pointer-events:none; }
-  .mode-icon { width:36px; height:36px; border-radius:6px; background:var(--surface2); border:1px solid var(--border2); display:flex; align-items:center; justify-content:center; flex-shrink:0; color:var(--text-mid); transition:background 0.18s,border-color 0.18s,color 0.18s; }
-  .mode-icon svg { width:18px; height:18px; }
-  .mode-info { flex:1; min-width:0; }
-  .mode-name { font-family:var(--font-display); font-size:1rem; text-transform:uppercase; line-height:1; }
-  .mode-desc { font-size:0.73rem; color:var(--text-dim); margin-top:3px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-  .mode-tag { font-family:var(--font-mono); font-size:0.55rem; font-weight:700; letter-spacing:0.03em; text-transform:uppercase; padding:0.18rem 0.5rem; border-radius:2px; }
-  .mode-tag.new  { background:var(--red); color:#0d0002; border:1px solid var(--red); }
-  .mode-tag.beta { background:transparent; color:var(--text-dim); border:1px solid var(--border2); }
-  .mode-tag.soon { background:transparent; color:var(--text-dim); border:1px solid var(--border2); opacity:0.6; }
-  .mode-arrow { color:var(--text-dim); font-family:var(--font-mono); font-size:0.95rem; flex-shrink:0; transition:color 0.18s; }
-
-  .qstats-row { display:grid; grid-template-columns:repeat(3,1fr); gap:1px; background:var(--border); border:1px solid var(--border); border-radius:6px; overflow:hidden; }
-  .qstat { background:var(--surface); text-align:center; padding:0.85rem 0.5rem; }
-  .qstat-num { display:block; font-family:var(--font-display); font-size:1.7rem; color:var(--red); line-height:1; }
-  .qstat-lbl { font-family:var(--font-mono); font-size:0.58rem; letter-spacing:0; text-transform:uppercase; color:var(--text-dim); margin-top:0.35rem; }
-
-  .countdown-wrap { background:var(--surface); border:1px solid var(--border); border-radius:6px; display:flex; align-items:center; justify-content:space-between; padding:0.85rem 1.25rem; }
-  .countdown-lbl { font-family:var(--font-mono); font-size:0.62rem; letter-spacing:0.05em; text-transform:uppercase; color:var(--text-dim); }
-  .countdown-timer { font-family:var(--font-mono); font-size:1.1rem; font-weight:700; color:var(--red); letter-spacing:0.02em; }
-
-  .feedback-wrap { border-top:1px solid transparent; }
-  .feedback-wrap.open { background:var(--surface); border:1px solid var(--border); border-radius:6px; overflow:hidden; }
-  .feedback-toggle { width:100%; display:flex; align-items:center; justify-content:center; gap:0.5rem; padding:0.7rem 1rem; border:0; background:transparent; color:var(--text-dim); font-family:var(--font-mono); font-size:0.65rem; letter-spacing:0.03em; text-transform:uppercase; cursor:pointer; transition:color 0.18s,background 0.18s; }
-  .feedback-toggle:hover { color:var(--text-mid); background:rgba(255,255,255,0.015); }
-  .feedback-toggle:focus-visible, .feedback-submit:focus-visible, textarea:focus-visible { outline:2px solid var(--red); outline-offset:2px; }
-  .feedback-toggle svg { width:15px; height:15px; }
-  .feedback-chevron { transition:transform 0.18s; margin-left:0.1rem; }
-  .feedback-wrap.open .feedback-chevron { transform:rotate(180deg); }
-  .feedback-panel { padding:0 1rem 1rem; border-top:1px solid var(--border); animation:feedbackReveal 0.18s ease both; }
-  .feedback-panel form { padding-top:0.9rem; }
-  .feedback-panel label { display:block; font-size:0.75rem; color:var(--text-mid); margin-bottom:0.5rem; }
-  .feedback-panel textarea { width:100%; resize:vertical; min-height:92px; max-height:220px; padding:0.75rem; background:var(--bg); border:1px solid var(--border2); border-radius:4px; color:var(--text); font:0.82rem/1.5 var(--font-ui); transition:border-color 0.18s; }
-  .feedback-panel textarea::placeholder { color:var(--text-dim); }
-  .feedback-panel textarea:focus { border-color:var(--red-bd); }
-  .feedback-panel textarea:disabled { opacity:0.6; }
-  .feedback-turnstile { min-height:4px; margin-top:0.65rem; }
-  .feedback-turnstile:empty { display:none; }
-  .feedback-actions { display:flex; align-items:center; justify-content:space-between; gap:1rem; margin-top:0.65rem; }
-  .feedback-note { color:var(--text-dim); font-size:0.62rem; }
-  .feedback-submit { flex-shrink:0; border:1px solid var(--red-bd); border-radius:4px; padding:0.5rem 0.85rem; background:var(--red-dim); color:var(--red); font-family:var(--font-mono); font-size:0.65rem; font-weight:700; letter-spacing:0.03em; text-transform:uppercase; cursor:pointer; transition:background 0.18s,border-color 0.18s; }
-  .feedback-submit:hover:not(:disabled) { background:var(--red); border-color:var(--red); color:#fff; }
-  .feedback-submit:disabled { opacity:0.55; cursor:wait; }
-  .feedback-error { margin-top:0.6rem; color:var(--red); font-size:0.7rem; }
-  .feedback-success { display:flex; align-items:center; gap:0.75rem; padding-top:1rem; color:var(--green); }
-  .feedback-success > span { width:30px; height:30px; display:grid; place-items:center; border:1px solid rgba(52,212,126,0.4); border-radius:50%; background:rgba(52,212,126,0.08); }
-  .feedback-success strong { display:block; font-size:0.78rem; }
-  .feedback-success p { margin-top:0.15rem; color:var(--text-dim); font-size:0.7rem; }
-  .feedback-honeypot { position:absolute; left:-10000px; width:1px; height:1px; overflow:hidden; }
-  @keyframes feedbackReveal { from{opacity:0;transform:translateY(-4px)} to{opacity:1;transform:translateY(0)} }
-
-  .hub-footer { margin-top:1.5rem; font-family:var(--font-mono); font-size:0.65rem; color:var(--text-dim); text-align:center; line-height:1.8; }
-  .hub-footer a { color:var(--text-mid); text-decoration:none; }
-  .hub-footer a:hover { color:var(--red); }
-  .footer-sep { color:var(--border2); }
-
-  @keyframes fadeUp { from{opacity:0;transform:translateY(14px)} to{opacity:1;transform:translateY(0)} }
-
-  @media (max-width:500px) {
-    .hub { padding:1rem 1rem 4rem; }
-    .hub-hero { padding:1.1rem 1.2rem; }
-    .hub-hero-title { font-size:1.6rem; }
-    .hub-hero-desc { display:none; }
-    .hub-hero-top { flex-direction:column; gap:0.6rem; }
-    .mode-desc { display:none; }
+  /* ── ticker ── */
+  .ticker {
+    position:sticky; top:0; z-index:30; display:flex; align-items:stretch; height:54px;
+    background:var(--bg); border-bottom:1px solid var(--border);
   }
-  @media (prefers-reduced-motion:reduce) {
-    .hub, .topbar, .hub-content, .feedback-panel { animation:none; }
-    *, *::before, *::after { scroll-behavior:auto !important; transition-duration:0.01ms !important; }
+  .wordmark {
+    display:flex; align-items:center; padding:0 26px; font-family:var(--font-display);
+    font-size:1rem; letter-spacing:0.02em; color:var(--text); border-right:1px solid var(--border);
+  }
+  .wordmark b { color:var(--red); font-weight:400; }
+  .meta { margin-left:auto; display:flex; align-items:stretch; border-left:1px solid var(--border); }
+  .meta .sub {
+    display:flex; align-items:center; padding:0 20px; font-size:0.72rem; color:var(--text-dim);
+    font-variant-numeric:tabular-nums; border-right:1px solid var(--border);
+  }
+  .meta .sub b { color:var(--text); font-weight:700; margin-left:6px; }
+  .lang {
+    display:flex; align-items:center; gap:8px; padding:0 22px; color:var(--text-dim);
+    font-size:0.72rem; font-weight:700; letter-spacing:0.1em;
+    transition:color var(--t-fast) var(--ease-out), background var(--t-fast) var(--ease-out);
+  }
+  .lang svg { width:16px; height:16px; }
+  .lang:hover { color:var(--text); background:var(--surface); }
+  .lang b { font-weight:700; }
+
+  /* ── layout ── */
+  .front {
+    position:relative; z-index:1; width:min(100% - 56px, 980px); margin:0 auto;
+    display:flex; flex-direction:column; min-height:calc(100vh - 54px);
+  }
+  .head { padding:44px 0 26px; animation:rise 0.45s var(--ease-out) both; }
+  .head h1 { font-family:var(--font-display); font-size:clamp(1.8rem, 3.2vw, 2.6rem); line-height:1.05; font-weight:400; }
+  .head h1 em { font-style:normal; color:var(--red); }
+  .head p { color:var(--text-dim); font-size:0.82rem; margin-top:8px; }
+
+  /* ── slate ── */
+  .slate { display:flex; flex-direction:column; border-top:1px solid var(--border); }
+  .srow {
+    display:grid; grid-template-columns:52px minmax(0,1fr) 90px 150px 40px;
+    align-items:center; gap:20px; padding:20px 18px 20px 0;
+    border-bottom:1px solid var(--border); color:inherit; text-decoration:none;
+    animation:rise 0.45s var(--ease-out) both; animation-delay:var(--d);
+    transition:background var(--t-fast) var(--ease-out), padding-left var(--t-fast) var(--ease-out);
+  }
+  .srow:hover { background:var(--surface); padding-left:14px; }
+  .s-icon {
+    display:flex; align-items:center; justify-content:center; width:44px; height:44px; color:var(--mc);
+    background:color-mix(in srgb, var(--mc) 8%, transparent);
+    border:1px solid color-mix(in srgb, var(--mc) 28%, transparent);
+  }
+  .s-icon svg { width:21px; height:21px; }
+  .s-id { display:flex; flex-direction:column; gap:3px; min-width:0; }
+  .s-name { font-family:var(--font-display); font-size:1.15rem; letter-spacing:0.02em; transition:color var(--t-fast) var(--ease-out); }
+  .srow:hover .s-name { color:var(--mc); }
+  .s-desc { font-size:0.82rem; color:var(--text-dim); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .s-streak { font-size:0.95rem; color:var(--text-dim); white-space:nowrap; }
+  .s-streak b { font-family:var(--font-display); font-size:1.15rem; font-weight:400; color:var(--text); font-variant-numeric:tabular-nums; margin-left:5px; }
+  .s-state { font-size:0.62rem; letter-spacing:0.14em; text-transform:uppercase; font-weight:700; color:var(--text-dim); font-variant-numeric:tabular-nums; }
+  .s-state.done { color:var(--green); }
+  .s-state.progress { color:var(--red); }
+  .s-go {
+    justify-self:end; color:var(--mc); font-weight:700; opacity:0.5;
+    transition:opacity var(--t-fast) var(--ease-out), translate var(--t-fast) var(--ease-out);
+  }
+  .srow:hover .s-go { opacity:1; translate:3px 0; }
+
+  /* ── feedback ── */
+  .feedback { margin-top:auto; padding:26px 0 12px; }
+  .fb-link { text-align:center; font-size:0.82rem; color:var(--text-mid); }
+  .fb-link button {
+    background:none; border:none; color:var(--red); font:inherit; cursor:pointer;
+    border-bottom:1px dotted var(--red-bd); padding:0 1px;
+  }
+  .fb-panel { background:var(--surface); border:1px solid var(--border); max-width:520px; margin:0 auto; }
+  .fb-panel-head {
+    display:flex; align-items:center; justify-content:space-between; padding:12px 16px;
+    border-bottom:1px solid var(--border); font-size:0.72rem; letter-spacing:0.14em; text-transform:uppercase;
+    color:var(--text-mid); font-weight:700;
+  }
+  .fb-close { background:none; border:none; color:var(--text-dim); cursor:pointer; font-size:0.85rem; }
+  .fb-close:hover { color:var(--text); }
+  .fb-panel form { padding:16px; }
+  .fb-panel label { display:block; font-size:0.78rem; color:var(--text-mid); margin-bottom:8px; }
+  .fb-panel textarea {
+    width:100%; resize:vertical; min-height:92px; max-height:220px; padding:12px;
+    background:var(--bg); border:1px solid var(--border2); color:var(--text); font:0.86rem/1.5 inherit;
+    transition:border-color var(--t-fast) var(--ease-out);
+  }
+  .fb-panel textarea::placeholder { color:var(--text-dim); }
+  .fb-panel textarea:focus { outline:none; border-color:var(--red-bd); }
+  .fb-turnstile { min-height:4px; margin-top:12px; }
+  .fb-turnstile:empty { display:none; }
+  .fb-actions { display:flex; align-items:center; justify-content:space-between; gap:16px; margin-top:12px; }
+  .fb-note { color:var(--text-dim); font-size:0.66rem; }
+  .fb-submit {
+    flex-shrink:0; border:none; padding:10px 18px; background:var(--red); color:#0a0a0c;
+    font-family:var(--font-display); font-size:0.68rem; letter-spacing:0.08em; cursor:pointer;
+    transition:filter var(--t-fast) var(--ease-out);
+  }
+  .fb-submit:hover:not(:disabled) { filter:brightness(1.12); }
+  .fb-submit:disabled { opacity:0.5; cursor:not-allowed; }
+  .fb-error { margin-top:10px; color:var(--red); font-size:0.74rem; }
+  .fb-success { display:flex; align-items:center; gap:12px; padding:16px; color:var(--green); }
+  .fb-success > span { width:30px; height:30px; display:grid; place-items:center; border:1px solid rgba(52,212,126,0.4); background:rgba(52,212,126,0.08); }
+  .fb-success strong { display:block; font-size:0.82rem; }
+  .fb-success p { margin-top:2px; color:var(--text-dim); font-size:0.72rem; }
+  .fb-honeypot { position:absolute; left:-10000px; width:1px; height:1px; overflow:hidden; }
+
+  .foot {
+    display:flex; justify-content:space-between; gap:10px; flex-wrap:wrap;
+    padding:22px 0 26px; border-top:1px solid var(--border);
+    font-size:0.72rem; color:var(--text-dim); line-height:1.8;
+  }
+  .foot a { color:var(--text-mid); }
+  .foot a:hover { color:var(--red); }
+
+  @keyframes rise { from { opacity:0; transform:translateY(12px); } to { opacity:1; transform:none; } }
+
+  /* ── tablet ── */
+  @media (max-width: 860px) {
+    .front { width:min(100% - 32px, 980px); }
+    .srow { grid-template-columns:48px minmax(0,1fr) auto 40px; }
+    .s-state { display:none; }
+  }
+  /* ── mobile ── */
+  @media (max-width: 560px) {
+    .wordmark { padding:0 16px; }
+    .meta .sub { display:none; }
+    .lang { padding:0 16px; }
+    .head { padding:28px 0 18px; }
+    .srow { grid-template-columns:44px minmax(0,1fr) auto; gap:14px; padding:16px 0; }
+    .s-icon { width:40px; height:40px; }
+    .s-go { display:none; }
+    .foot { justify-content:center; text-align:center; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .head, .srow { animation:none; }
+    *, *::before, *::after { transition-duration:0.01ms !important; }
   }
 </style>

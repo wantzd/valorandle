@@ -7,4 +7,8 @@ dist/
 public/maps/
 sandbox/
 
+# Local dev tooling config
+.impeccable/
+.claude/
+
 .vercel

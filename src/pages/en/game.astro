@@ -179,9 +179,40 @@ import ProPlayersGame from '../../components/ProPlayersGame.svelte';
       sBtn.addEventListener("click", toggleSound);
     }
 
+    function _modeDayDiff(a, b) {
+      if (!/^\d{4}-\d{2}-\d{2}$/.test(a || '') || !/^\d{4}-\d{2}-\d{2}$/.test(b || '')) return null;
+      return Math.round((Date.parse(b + 'T00:00:00Z') - Date.parse(a + 'T00:00:00Z')) / 864e5);
+    }
+    function loadModeStreak(id) {
+      try {
+        const all = JSON.parse(localStorage.getItem('valorandle_mode_stats') || '{}');
+        const s = all[id];
+        if (!s) return 0;
+        const gap = _modeDayDiff(s.lastPlayedDate, getDailyDateKey());
+        return (gap === null || gap > 1) ? 0 : (s.streak || 0);
+      } catch { return 0; }
+    }
+    function recordModeCompletion(id, won) {
+      try {
+        const all = JSON.parse(localStorage.getItem('valorandle_mode_stats') || '{}');
+        const today = getDailyDateKey();
+        const s = all[id] || { played: 0, wins: 0, streak: 0, maxStreak: 0, lastPlayedDate: null };
+        if (s.lastPlayedDate !== today) {
+          const gap = _modeDayDiff(s.lastPlayedDate, today);
+          s.played += 1;
+          if (won) s.wins += 1;
+          s.streak = gap === 1 ? (s.streak || 0) + 1 : 1;
+          s.maxStreak = Math.max(s.maxStreak || 0, s.streak);
+          s.lastPlayedDate = today;
+        }
+        all[id] = s;
+        localStorage.setItem('valorandle_mode_stats', JSON.stringify(all));
+        return s.streak || 0;
+      } catch { return 0; }
+    }
+
     function updateStreakChip() {
-      const s = loadStats();
-      document.getElementById("streak-num").textContent = s.streak || 0;
+      document.getElementById("streak-num").textContent = loadModeStreak("players");
     }
 
     function renderRound() {
@@ -571,6 +602,7 @@ import ProPlayersGame from '../../components/ProPlayersGame.svelte';
       state.dailyDone = true;
       const wins = state.roundResults.filter(r=>r.won).length;
       updateStats(wins===DAILY_ROUNDS, true, true);
+      recordModeCompletion("players", wins===DAILY_ROUNDS);
       saveLeagueDailyState(getSerializableState());
       updateStreakChip();
       showDailyComplete();

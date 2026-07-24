@@ -1,13 +1,13 @@
-﻿<script>
+<script>
   import { onMount } from 'svelte';
   import { loadLang, saveLang, getDailyDateKey } from '../lib/game-utils.js';
+  import '../styles/arena.css';
 
   let lang        = $state('pt-BR');
   let isPT        = $derived(lang === 'pt-BR');
   let mode        = $state('daily');
   let amCount     = $state(0);
-  let amStatus    = $state(null); // null | { type: 'done', wins: number } | { type: 'progress' }
-  let cardsReady  = $state(false);
+  let amStatus    = $state(null); // null | { type: 'done', wins } | { type: 'progress' }
 
   onMount(async () => {
     lang = window.location.pathname.startsWith('/en') ? 'en' : 'pt-BR';
@@ -22,173 +22,113 @@
       }
     }
 
-    if (mode === 'daily' && window.getDailyDateKey) {
-      const key   = 'valorandle_daily_americas_' + window.getDailyDateKey();
+    if (mode === 'daily') {
+      const key = 'valorandle_daily_americas_' + (window.getDailyDateKey?.() || getDailyDateKey());
       try {
         const saved = JSON.parse(localStorage.getItem(key) || 'null');
         if (saved?.dailyDone) {
-          const wins = (saved.roundResults || []).filter(r => r.won).length;
-          amStatus = { type: 'done', wins };
-        } else if (saved?.guesses?.length > 0) {
-          amStatus = { type: 'progress' };
-        }
-      } catch {}
-    } else if (mode === 'daily') {
-      const key   = 'valorandle_daily_americas_' + getDailyDateKey();
-      try {
-        const saved = JSON.parse(localStorage.getItem(key) || 'null');
-        if (saved?.dailyDone) {
-          const wins = (saved.roundResults || []).filter(r => r.won).length;
-          amStatus = { type: 'done', wins };
+          amStatus = { type: 'done', wins: (saved.roundResults || []).filter(r => r.won).length };
         } else if (saved?.guesses?.length > 0) {
           amStatus = { type: 'progress' };
         }
       } catch {}
     }
-
-    // stagger cards
-    setTimeout(() => { cardsReady = true; }, 30);
   });
 
-  function modePillText() {
-    if (mode === 'daily') return 'Daily';
-    return isPT ? 'Livre' : 'Free';
-  }
+  function modePillText() { return mode === 'daily' ? 'Daily' : (isPT ? 'Livre' : 'Free'); }
+  function americasHref() { return `/game?mode=${mode}&league=americas`; }
 
-  function americasHref() {
-    return `/game?mode=${mode}&league=americas`;
-  }
+  const soon = [
+    { id: 'emea',    name: 'EMEA',    region: 'EU · TR · CIS', color: 'var(--col-emea)' },
+    { id: 'pacific', name: 'Pacific', region: 'KR · JP · SEA', color: 'var(--col-pacific)' },
+    { id: 'china',   name: 'China',   region: 'CN',            color: 'var(--col-china)' },
+    { id: 'all',     name: isPT ? 'Todas' : 'All', region: 'AM · EMEA · PAC · CN', color: 'var(--col-all)' },
+  ];
 </script>
 
-<div class="page">
-  <header class="header">
-    <a class="back-btn" href={isPT ? '/' : '/en'}>
-      <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-        stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:3px">
-        <line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/>
-      </svg>Lobby
+<header class="ticker">
+  <a class="wordmark" href={isPT ? '/' : '/en'} title="Lobby">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg>
+    VALOR<b>ANDLE</b>
+  </a>
+  <div class="meta">
+    <span class="sub">{isPT ? 'modo' : 'mode'} <b>{modePillText()}</b></span>
+    <a class="t-btn" href={isPT ? '/en/league-select' : '/league-select'}
+       title={isPT ? 'Switch to English' : 'Mudar para Português'}
+       aria-label={isPT ? 'Switch to English' : 'Mudar para Português'}>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+        <circle cx="12" cy="12" r="9"/><path d="M3 12h18 M12 3a14.5 14.5 0 0 1 0 18 M12 3a14.5 14.5 0 0 0 0 18"/>
+      </svg>
+      <b>{isPT ? 'EN' : 'PT'}</b>
     </a>
-    <div class="header-logo">VALOR<span>ANDLE</span></div>
-    <div class="mode-pill">{modePillText()}</div>
+  </div>
+</header>
+
+<main class="arena" style="--accent:var(--col-americas)">
+  <header class="ls-head">
+    <h1>{isPT ? 'QUAL' : 'WHICH'} <em>{isPT ? 'LIGA?' : 'LEAGUE?'}</em></h1>
+    <p>{isPT ? 'Escolha a liga dos jogadores para adivinhar.' : 'Choose the league of players to guess.'}</p>
   </header>
 
-  <div class="hero">
-    <p class="hero-eyebrow">{isPT ? 'Selecione a Liga' : 'Select League'}</p>
-    <h1 class="hero-title">{isPT ? 'Qual liga?' : 'Which league?'}</h1>
-    <p class="hero-sub">{isPT ? 'Escolha a liga dos jogadores para adivinhar' : 'Choose the league of players to guess'}</p>
-  </div>
-
-  <div class="league-grid">
-    <!-- Americas -->
-    <a
-      class="league-card"
-      href={americasHref()}
-      style="--lc:var(--col-americas); opacity:{cardsReady?1:0}; transform:{cardsReady?'translateY(0)':'translateY(18px)'}; transition-delay:80ms"
-    >
-      <div class="league-icon-wrap"><img src="/assets/logos/americas.png" alt="VCT Americas" /></div>
-      <div class="league-name">VCT<br>Americas</div>
-      <div class="league-region">NA · LATAM · BR</div>
-      <div class="league-count">{amCount > 0 ? `${amCount} ${isPT ? 'jogadores' : 'players'}` : '—'}</div>
-      {#if amStatus?.type === 'done'}
-        <div class="am-badge am-done">✓ {amStatus.wins}/5</div>
-      {:else if amStatus?.type === 'progress'}
-        <div class="am-badge am-prog">{isPT ? '▶ em progresso' : '▶ in progress'}</div>
-      {/if}
+  <div class="ls-grid">
+    <a class="ls-card active" href={americasHref()}>
+      <span class="ls-icon"><img src="/assets/logos/americas.png" alt="VCT Americas" /></span>
+      <span class="ls-name">VCT Americas</span>
+      <span class="ls-region">NA · LATAM · BR</span>
+      <span class="ls-meta">
+        {amCount > 0 ? `${amCount} ${isPT ? 'jogadores' : 'players'}` : '—'}
+        {#if amStatus?.type === 'done'} · <b class="ok">✓ {amStatus.wins}/5</b>
+        {:else if amStatus?.type === 'progress'} · <b class="prog">{isPT ? 'em progresso' : 'in progress'}</b>{/if}
+      </span>
+      <span class="ls-go" aria-hidden="true">→</span>
     </a>
 
-    <!-- EMEA -->
-    <div class="league-card soon" style="--lc:var(--col-emea); opacity:{cardsReady?1:0}; transform:{cardsReady?'translateY(0)':'translateY(18px)'}; transition-delay:135ms">
-      <div class="league-icon-wrap"><img src="/assets/logos/emea.png" alt="VCT EMEA" /></div>
-      <div class="league-name">VCT<br>EMEA</div>
-      <div class="league-region">EU · TR · CIS</div>
-      <div class="soon-badge">{isPT ? 'Em breve' : 'Soon'}</div>
-    </div>
-
-    <!-- Pacific -->
-    <div class="league-card soon" style="--lc:var(--col-pacific); opacity:{cardsReady?1:0}; transform:{cardsReady?'translateY(0)':'translateY(18px)'}; transition-delay:190ms">
-      <div class="league-icon-wrap"><img src="/assets/logos/pacific.png" alt="VCT Pacific" /></div>
-      <div class="league-name">VCT<br>Pacific</div>
-      <div class="league-region">KR · JP · SEA</div>
-      <div class="soon-badge">{isPT ? 'Em breve' : 'Soon'}</div>
-    </div>
-
-    <!-- China -->
-    <div class="league-card soon" style="--lc:var(--col-china); opacity:{cardsReady?1:0}; transform:{cardsReady?'translateY(0)':'translateY(18px)'}; transition-delay:245ms">
-      <div class="league-icon-wrap"><img src="/assets/logos/china.png" alt="VCT China" /></div>
-      <div class="league-name">VCT<br>China</div>
-      <div class="league-region">CN</div>
-      <div class="soon-badge">{isPT ? 'Em breve' : 'Soon'}</div>
-    </div>
-
-    <!-- All -->
-    <div class="league-card all soon" style="--lc:var(--col-all); opacity:{cardsReady?1:0}; transform:{cardsReady?'translateY(0)':'translateY(18px)'}; transition-delay:300ms">
-      <svg class="league-icon" viewBox="0 0 56 56" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <circle cx="28" cy="28" r="22" stroke="#E5C96A" stroke-width="2"/>
-        <ellipse cx="28" cy="28" rx="11" ry="22" stroke="#E5C96A" stroke-width="1.5"/>
-        <line x1="6" y1="18" x2="50" y2="18" stroke="#E5C96A" stroke-width="1" opacity="0.5"/>
-        <line x1="6" y1="28" x2="50" y2="28" stroke="#E5C96A" stroke-width="1.5"/>
-        <line x1="6" y1="38" x2="50" y2="38" stroke="#E5C96A" stroke-width="1" opacity="0.5"/>
-        <circle cx="28" cy="28" r="3.5" fill="#E5C96A"/>
-      </svg>
-      <div class="league-name">All —<br>Todas</div>
-      <div class="league-region">AM · EMEA · PAC · CN</div>
-      <div class="soon-badge">{isPT ? 'Em breve' : 'Soon'}</div>
-    </div>
+    {#each soon as l}
+      <div class="ls-card soon" style={`--lc:${l.color}`}>
+        <span class="ls-icon">{#if l.id !== 'all'}<img src={`/assets/logos/${l.id}.png`} alt={`VCT ${l.name}`} />{:else}<svg viewBox="0 0 56 56" fill="none"><circle cx="28" cy="28" r="20" stroke="currentColor" stroke-width="2"/><ellipse cx="28" cy="28" rx="10" ry="20" stroke="currentColor" stroke-width="1.5"/><line x1="8" y1="28" x2="48" y2="28" stroke="currentColor" stroke-width="1.5"/></svg>{/if}</span>
+        <span class="ls-name">{l.id === 'all' ? l.name : `VCT ${l.name}`}</span>
+        <span class="ls-region">{l.region}</span>
+        <span class="ls-soon">{isPT ? 'Em breve' : 'Soon'}</span>
+      </div>
+    {/each}
   </div>
 
-  <p class="page-footer">{isPT ? 'Dados aproximados — Mai 2026' : 'Approximate data — May 2026'}</p>
-</div>
+  <p class="ls-foot">{isPT ? 'Dados aproximados — Mai 2026' : 'Approximate data — May 2026'}</p>
+</main>
 
 <style>
-  :global(*, *::before, *::after) { box-sizing: border-box; margin: 0; padding: 0; }
-  :global(:root) {
-    --bg:#08090d; --surface:#0e1018; --surface2:#141620; --border:#1c1f2e; --border2:#252838;
-    --red:#FF4655; --text:#eeeef5; --text-dim:#6e7190; --text-mid:#8a8da8;
-    --font-display:'Russo One', sans-serif; --font-ui:'Outfit', sans-serif; --font-mono:'Outfit', sans-serif;
-    --col-americas:#FF5400; --col-emea:#C4FF00; --col-pacific:#00DCFF; --col-china:#FF1675; --col-all:#E5C96A;
+  .ls-head { padding:20px 0 6px; }
+  .ls-head h1 { font-family:var(--font-display); font-size:clamp(1.8rem, 3.4vw, 2.8rem); font-weight:400; }
+  .ls-head h1 em { font-style:normal; color:var(--accent); }
+  .ls-head p { color:var(--text-dim); font-size:0.82rem; margin-top:8px; }
+
+  .ls-grid { display:grid; grid-template-columns:repeat(auto-fit, minmax(150px, 1fr)); gap:12px; }
+
+  .ls-card {
+    position:relative; display:flex; flex-direction:column; align-items:flex-start; gap:8px;
+    padding:24px 22px; background:var(--surface); border:1px solid var(--border2); color:var(--text);
+    text-decoration:none;
+    animation:a-rise 0.45s var(--ease-out) both;
+    transition:border-color var(--t-fast) var(--ease-out), background var(--t-fast) var(--ease-out), translate var(--t-fast) var(--ease-out);
   }
-  :global(html, body) { min-height:100vh; background:var(--bg); color:var(--text); font-family:var(--font-ui); }
-  :global(body::before) { content:''; position:fixed; inset:0; z-index:0; background-image:radial-gradient(circle,#1c1f2e 1px,transparent 1px); background-size:28px 28px; pointer-events:none; opacity:0.5; }
+  .ls-card.active { border-bottom:2px solid var(--accent); }
+  .ls-card.active:hover { border-color:color-mix(in srgb,var(--accent) 55%,transparent); border-bottom-color:var(--accent); background:var(--surface2); translate:0 -2px; }
+  .ls-icon { width:52px; height:52px; display:flex; align-items:center; justify-content:center; color:var(--accent); }
+  .ls-icon img, .ls-icon svg { width:100%; height:100%; object-fit:contain; }
+  .ls-name { font-family:var(--font-display); font-size:1rem; letter-spacing:0.02em; }
+  .ls-region { font-size:0.6rem; letter-spacing:0.1em; text-transform:uppercase; color:var(--text-dim); font-weight:700; }
+  .ls-meta { font-size:0.72rem; color:var(--text-dim); margin-top:4px; }
+  .ls-meta b.ok { color:var(--green); } .ls-meta b.prog { color:var(--accent); }
+  .ls-go { position:absolute; right:20px; bottom:18px; color:var(--accent); font-weight:700; opacity:0.5; transition:opacity var(--t-fast) var(--ease-out), translate var(--t-fast) var(--ease-out); }
+  .ls-card.active:hover .ls-go { opacity:1; translate:3px 0; }
 
-  .page { position:relative; z-index:1; min-height:100vh; display:flex; flex-direction:column; align-items:center; padding:1.5rem 1.5rem 4rem; animation:fadeUp 0.38s ease both; }
-  .header { width:100%; max-width:900px; display:flex; align-items:center; gap:1rem; padding-bottom:1.5rem; border-bottom:1px solid var(--border); margin-bottom:2.5rem; }
-  .back-btn { background:transparent; border:1px solid var(--border2); color:var(--text-dim); font-family:var(--font-mono); font-size:0.65rem; letter-spacing:0.03em; padding:0.4rem 0.85rem; cursor:pointer; border-radius:3px; transition:all 0.2s; text-decoration:none; }
-  .back-btn:hover { border-color:var(--red); color:var(--red); }
-  .header-logo { font-family:var(--font-display); font-size:1.3rem; color:var(--text); text-transform:uppercase; }
-  .header-logo span { color:var(--red); }
-  .mode-pill { margin-left:auto; font-family:var(--font-mono); font-size:0.6rem; font-weight:700; letter-spacing:0.05em; text-transform:uppercase; background:var(--surface2); border:1px solid var(--border2); color:var(--text-dim); padding:0.3rem 0.7rem; border-radius:2px; }
+  .ls-card.soon { --lc:var(--border2); color:var(--text-dim); filter:grayscale(0.7) brightness(0.7); pointer-events:none; }
+  .ls-card.soon .ls-icon { color:var(--text-dim); }
+  .ls-soon { margin-top:4px; font-size:0.58rem; letter-spacing:0.1em; text-transform:uppercase; font-weight:700; color:var(--text-dim); border:1px solid var(--border2); padding:4px 10px; }
 
-  .hero { text-align:center; margin-bottom:2.5rem; animation:fadeUp 0.38s ease both; }
-  .hero-eyebrow { font-family:var(--font-mono); font-size:0.65rem; letter-spacing:0.02em; text-transform:uppercase; color:var(--red); margin-bottom:0.75rem; opacity:0.85; }
-  .hero-title { font-family:var(--font-display); font-size:clamp(2rem,6vw,3.2rem); text-transform:uppercase; color:var(--text); line-height:1; }
-  .hero-sub { margin-top:0.7rem; font-size:0.8rem; color:var(--text-dim); font-weight:400; }
+  .ls-foot { margin-top:8px; text-align:center; font-size:0.64rem; color:var(--text-dim); }
 
-  .league-grid { width:100%; max-width:900px; display:grid; grid-template-columns:repeat(5,1fr); gap:10px; animation:fadeUp 0.38s 0.07s ease both; }
-  @media (max-width:720px) { .league-grid{grid-template-columns:repeat(2,1fr)} .league-card.all{grid-column:1/-1} }
-
-  .league-card { background:var(--surface); border:1px solid var(--border); border-radius:6px; padding:1.75rem 0.75rem 1.25rem; cursor:pointer; text-decoration:none; color:inherit; display:flex; flex-direction:column; align-items:center; gap:0.7rem; position:relative; overflow:hidden; transition:transform 0.2s, border-color 0.2s, box-shadow 0.2s, opacity 0.35s ease; }
-  .league-card::after { content:''; position:absolute; bottom:0; left:0; right:0; height:3px; background:var(--lc,#fff); transform:scaleX(0); transform-origin:center; transition:transform 0.25s ease; }
-  .league-card:hover { transform:translateY(-4px); border-color:var(--lc,#fff); box-shadow:0 12px 36px rgba(0,0,0,0.4),0 0 0 1px var(--lc,#fff); }
-  .league-card:hover::after { transform:scaleX(1); }
-  .league-card:hover .league-name { color:var(--lc); }
-  .league-icon-wrap { width:64px; height:64px; display:flex; align-items:center; justify-content:center; transition:transform 0.3s,filter 0.3s; }
-  .league-card:hover .league-icon-wrap { transform:scale(1.1); filter:drop-shadow(0 0 8px var(--lc)); }
-  .league-icon-wrap img { width:100%; height:100%; object-fit:contain; }
-  .league-icon { width:60px; height:60px; }
-  .league-name { font-family:var(--font-display); font-size:0.88rem; text-transform:uppercase; text-align:center; color:var(--text); transition:color 0.2s; line-height:1.2; }
-  .league-region { font-family:var(--font-mono); font-size:0.56rem; letter-spacing:0.03em; text-transform:uppercase; text-align:center; color:var(--text-dim); }
-  .league-count { font-family:var(--font-mono); font-size:0.62rem; color:var(--lc,var(--text-dim)); border:1px solid var(--lc,var(--border)); background:var(--surface2); padding:0.18rem 0.65rem; border-radius:2px; margin-top:auto; transition:color 0.2s,border-color 0.2s; opacity:0.7; }
-  .league-card:hover .league-count { opacity:1; }
-
-  .am-badge { font-family:var(--font-mono); font-size:0.58rem; margin-top:-4px; opacity:0.8; }
-  .am-done { color:var(--lc); }
-  .am-prog { color:var(--text-dim); }
-
-  .league-card.soon { filter:grayscale(1) brightness(0.45); cursor:not-allowed !important; pointer-events:none; }
-  .league-card.soon::after { display:none !important; }
-  .soon-badge { font-family:var(--font-mono); font-size:0.56rem; font-weight:700; letter-spacing:0; text-transform:uppercase; background:var(--border2); color:var(--text-dim); border:1px solid var(--border2); padding:0.18rem 0.6rem; border-radius:2px; margin-top:2px; width:fit-content; }
-
-  .page-footer { margin-top:2rem; font-family:var(--font-mono); font-size:0.62rem; color:var(--text-dim); text-align:center; animation:fadeUp 0.38s 0.14s ease both; }
-
-  @keyframes fadeUp { from{opacity:0;transform:translateY(16px)} to{opacity:1;transform:translateY(0)} }
+  @media (max-width: 720px) {
+    .ls-grid { grid-template-columns:repeat(2, 1fr); }
+  }
 </style>

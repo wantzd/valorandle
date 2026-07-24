@@ -6,9 +6,12 @@
   } from '../lib/agents-data.js';
   import {
     getDailyDateKey, msUntilNextDaily, formatCountdown,
-    saveLang,
+    saveLang, loadModeStats, recordModeCompletion,
   } from '../lib/game-utils.js';
   import { loadSoundPref, saveSoundPref, scheduleFlipSounds } from '../lib/sounds.js';
+  import '../styles/arena.css';
+
+  const MODE_ID = 'agents';
 
   const MAX_GUESSES = 8;
   const DAILY_KEY   = () => `valorandle_agents_daily_${getDailyDateKey()}`;
@@ -22,6 +25,7 @@
   // ── Mode ──────────────────────────────────────────────────────────────────────
   let mode       = $state(null);
   let showPicker = $state(false);
+  let streak     = $state(0);
 
   // ── Game state ────────────────────────────────────────────────────────────────
   let targetId    = $state(null);
@@ -62,6 +66,7 @@
     lang    = window.location.pathname.startsWith('/en') ? 'en' : 'pt-BR';
     soundOn = loadSoundPref();
     saveLang(lang);
+    streak  = loadModeStats(MODE_ID).streak || 0;
 
     const P = new URLSearchParams(location.search);
     const m = P.get('mode');
@@ -198,7 +203,10 @@
       if (mode === 'daily') {
         saveDailyState({ targetId, guesses: guesses.map(g => ({ ...g, isNew: false })), finished: isDone, won: isWin });
       }
-      if (isDone && mode === 'daily') startCountdown();
+      if (isDone && mode === 'daily') {
+        streak = recordModeCompletion(MODE_ID, getDailyDateKey(), isWin).streak || 0;
+        startCountdown();
+      }
       tick().then(() => {
         if (!isDone) inputEl?.focus();
         feedbackGridEl?.lastElementChild?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
@@ -279,532 +287,216 @@
 
 <svelte:window onclick={closeAC} />
 
-<!-- ── Mode picker overlay ──────────────────────────────────────────────────── -->
-{#if showPicker}
-<div class="overlay-full" onclick={(e) => { if (e.target === e.currentTarget) showPicker = false; }}>
-  <div class="mpo-card">
-    <div class="mpo-eyebrow">Valorandle</div>
-    <div class="mpo-title">
-      <span class="mpo-wordmark">VALOR<span>ANDLE</span></span>
-      <span class="mpo-mode-tag">{t.modeTag}</span>
-    </div>
-    <div class="mpo-sub">{t.modePicker}</div>
-    <div class="mpo-options">
-      <button class="mpo-option" onclick={() => pickMode('daily')}>
-        <svg class="mpo-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-          stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
-          <rect x="3" y="4" width="18" height="18" rx="2"/>
-          <line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/>
-          <line x1="3" y1="10" x2="21" y2="10"/>
-          <circle cx="12" cy="16" r="1.5" fill="currentColor" stroke="none"/>
-        </svg>
-        <div class="mpo-label">
-          <span class="mpo-name">Daily</span>
-          <span class="mpo-desc">{t.modeDailyDesc}</span>
-        </div>
-        <span class="mpo-arrow">→</span>
-      </button>
-      <button class="mpo-option" onclick={() => pickMode('free')}>
-        <svg class="mpo-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-          stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
-          <polyline points="17 1 21 5 17 9"/>
-          <path d="M3 11V9a4 4 0 0 1 4-4h14"/>
-          <polyline points="7 23 3 19 7 15"/>
-          <path d="M21 13v2a4 4 0 0 1-4 4H3"/>
-        </svg>
-        <div class="mpo-label">
-          <span class="mpo-name">{t.modeFree}</span>
-          <span class="mpo-desc">{t.modeFreeDesc}</span>
-        </div>
-        <span class="mpo-arrow">→</span>
-      </button>
-    </div>
+<header class="ticker">
+  <a class="wordmark" href={lang === 'pt-BR' ? '/' : '/en'} title="Lobby">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg>
+    VALOR<b>ANDLE</b>
+  </a>
+  <div class="meta">
+    <a class="t-btn" href={lang === 'pt-BR' ? '/en/agents' : '/agents'}
+       title={lang === 'pt-BR' ? 'Switch to English' : 'Mudar para Português'}
+       aria-label={lang === 'pt-BR' ? 'Switch to English' : 'Mudar para Português'}>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+        <circle cx="12" cy="12" r="9"/><path d="M3 12h18 M12 3a14.5 14.5 0 0 1 0 18 M12 3a14.5 14.5 0 0 0 0 18"/>
+      </svg>
+      <b>{lang === 'pt-BR' ? 'EN' : 'PT'}</b>
+    </a>
   </div>
-</div>
-{/if}
+</header>
 
-<!-- ── Main game ─────────────────────────────────────────────────────────────── -->
-{#if !showPicker}
-<div class="page">
+<main class="arena">
 
-  <!-- Header -->
-  <header class="game-header">
-    <div class="header-left">
-      <a href={lang === 'pt-BR' ? '/' : '/en'} class="back-btn">
-        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-          stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:3px">
-          <line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/>
-        </svg>Lobby
-      </a>
-      <span class="mode-tag">{t.modeTag}{mode === 'free' ? ' · ' + t.modeFree : ''}</span>
-    </div>
-    <div class="header-center">
-      <span class="wordmark">VALOR<span>ANDLE</span></span>
-    </div>
-    <div class="header-right">
-      <span class="attempts-chip">{attemptsLabel}</span>
-      <button
-        class="sound-btn"
-        class:sound-off={!soundOn}
-        onclick={toggleSound}
-        title={soundOn
-          ? (lang === 'en' ? 'Mute sounds' : 'Silenciar sons')
-          : (lang === 'en' ? 'Enable sounds' : 'Ligar sons')}
-      >
-        {#if soundOn}
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
-            stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-            <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/>
-            <path d="M15.54 8.46a5 5 0 0 1 0 7.07"/>
-            <path d="M19.07 4.93a10 10 0 0 1 0 14.14"/>
-          </svg>
-        {:else}
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
-            stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-            <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/>
-            <line x1="23" y1="9" x2="17" y2="15"/><line x1="17" y1="9" x2="23" y2="15"/>
-          </svg>
-        {/if}
-      </button>
-    </div>
-  </header>
-
-  <!-- Input section -->
-  {#if !finished}
-    <div class="input-section" class:locked={inputLocked}>
-      <div class="guess-input-wrap">
-        <input
-          bind:this={inputEl}
-          bind:value={inputVal}
-          oninput={onInput}
-          onkeydown={onKeydown}
-          type="text"
-          class="guess-input"
-          placeholder={t.placeholder}
-          autocomplete="off"
-          spellcheck="false"
-          disabled={finished || inputLocked}
-        />
-        <button
-          class="guess-btn"
-          onclick={submitByName}
-          disabled={!inputVal.trim() || finished || inputLocked}
-        >{t.confirmBtn}</button>
+  {#if showPicker}
+    <div class="gate">
+      <p class="g-ask">{lang === 'en' ? 'How do you want to play?' : 'Como quer jogar?'}</p>
+      <div class="g-options">
+        <button class="g-opt seq" type="button" onclick={() => pickMode('daily')}>
+          <span class="g-tag">{lang === 'en' ? 'Daily challenge' : 'Desafio do dia'}</span>
+          <span class="g-name">{lang === 'en' ? 'STREAK' : 'SEQUÊNCIA'}</span>
+          <span class="g-desc">
+            {lang === 'en' ? 'One challenge per day. ' : 'Um desafio por dia. '}
+            {#if streak > 0}{lang === 'en' ? 'Keeps your ' : 'Mantém sua sequência de '}<b>{streak} {lang === 'en' ? 'day streak' : 'dias'}</b>{lang === 'en' ? ' in this mode.' : ' neste modo.'}{:else}{lang === 'en' ? 'Starts your streak in this mode.' : 'Começa sua sequência neste modo.'}{/if}
+          </span>
+        </button>
+        <button class="g-opt" type="button" onclick={() => pickMode('free')}>
+          <span class="g-tag">{lang === 'en' ? 'Practice' : 'Treino'}</span>
+          <span class="g-name">{lang === 'en' ? 'FREE' : 'LIVRE'}</span>
+          <span class="g-desc">{lang === 'en' ? 'As many rounds as you want. Does not count toward the streak.' : 'Quantas partidas quiser. Não conta para a sequência.'}</span>
+        </button>
       </div>
+    </div>
+  {:else}
 
-      {#if acResults.length > 0}
-        <div class="autocomplete-list" bind:this={acEl}>
-          {#each acResults as id, i}
-            {@const a = AGENTS_DB[id]}
-            <button
-              class="ac-item"
-              class:highlighted={i === acHighlight}
-              onclick={() => submitGuess(id)}
-            >
-              <div class="ac-icon">
-                <img src={a.icon} alt={a.name} loading="lazy" />
-              </div>
-              <span class="ac-name">{a.name}</span>
-              <span class="ac-role" style:color={roleColor(a.role)}>{roleLabel(a.role)}</span>
-            </button>
-          {/each}
+    <div class="statusbar" aria-label={lang === 'en' ? 'Match status' : 'Estado da partida'}>
+      <div class="sb-mode">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+          <path d="M12 4a4 4 0 1 1 0 8 4 4 0 0 1 0-8z M4 21c0-4 3.6-6.5 8-6.5s8 2.5 8 6.5"/>
+        </svg>
+        <b>{t.modeTag}{mode === 'free' ? ' · ' + t.modeFree : ''}</b>
+      </div>
+      <div class="sb-item">
+        <span class="lab">{lang === 'en' ? 'Attempts' : 'Tentativas'}</span>
+        <span class="val hot">{guesses.length}<small>/{MAX_GUESSES}</small>
+          <span class="ammo" aria-hidden="true">
+            {#each Array(MAX_GUESSES) as _, i}<i class:used={i < guesses.length}></i>{/each}
+          </span>
+        </span>
+      </div>
+      <div class="sb-item">
+        <span class="lab">{lang === 'en' ? 'Streak' : 'Sequência'}</span>
+        <span class="val">{streak}<small>{lang === 'en' ? 'days' : 'dias'}</small></span>
+      </div>
+      <div class="sb-tail">
+        <button class="sb-btn" class:off={!soundOn} onclick={toggleSound}
+          title={soundOn ? (lang === 'en' ? 'Mute sounds' : 'Silenciar sons') : (lang === 'en' ? 'Enable sounds' : 'Ligar sons')}
+          aria-label={soundOn ? (lang === 'en' ? 'Mute sounds' : 'Silenciar sons') : (lang === 'en' ? 'Enable sounds' : 'Ligar sons')}>
+          {#if soundOn}
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg>
+          {:else}
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><line x1="23" y1="9" x2="17" y2="15"/><line x1="17" y1="9" x2="23" y2="15"/></svg>
+          {/if}
+        </button>
+      </div>
+    </div>
+
+    {#if !finished}
+      <div class="gi-wrap" class:locked={inputLocked}>
+        <div class="gi">
+          <svg class="gi-search" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+          <input
+            bind:this={inputEl}
+            bind:value={inputVal}
+            oninput={onInput}
+            onkeydown={onKeydown}
+            type="text"
+            placeholder={t.placeholder}
+            autocomplete="off"
+            spellcheck="false"
+            aria-label={t.placeholder}
+            disabled={finished || inputLocked}
+          />
+          <button class="go" onclick={submitByName} disabled={!inputVal.trim() || finished || inputLocked}>{t.confirmBtn}</button>
         </div>
-      {/if}
 
-      {#if inputError}
-        <div class="input-error">{inputError}</div>
-      {/if}
-    </div>
-  {/if}
+        {#if acResults.length > 0}
+          <ul class="ac" bind:this={acEl}>
+            {#each acResults as id, i}
+              {@const a = AGENTS_DB[id]}
+              <li>
+                <button class="ac-item" class:highlighted={i === acHighlight} onclick={() => submitGuess(id)}>
+                  <span class="ac-avatar"><img src={a.icon} alt={a.name} loading="lazy" /></span>
+                  <span class="ac-name">{a.name}</span>
+                  <span class="ac-role" style:color={roleColor(a.role)}>{roleLabel(a.role)}</span>
+                </button>
+              </li>
+            {/each}
+          </ul>
+        {/if}
 
-  <!-- Grid headers -->
-  {#if guesses.length > 0}
-    <div class="grid-wrapper">
-      <div class="grid-headers">
-        <div class="col-header col-agent">{t.headers.agent}</div>
-        <div class="col-header">{t.headers.gender}</div>
-        <div class="col-header">{t.headers.role}</div>
-        <div class="col-header">{t.headers.origin}</div>
-        <div class="col-header">{t.headers.year}</div>
-        <div class="col-header">{t.headers.ult}</div>
+        {#if inputError}<div class="gi-error">{inputError}</div>{/if}
       </div>
+    {/if}
 
-      <div class="guess-grid" bind:this={feedbackGridEl}>
+    {#if guesses.length > 0 || !finished}
+      <div class="board" bind:this={feedbackGridEl}>
+        <div class="board-head">
+          <span>{t.headers.agent}</span><span>{t.headers.gender}</span><span>{t.headers.role}</span>
+          <span>{t.headers.origin}</span><span>{t.headers.year}</span><span>{t.headers.ult}</span>
+        </div>
+
         {#each guesses as g (g.agentId)}
           {@const a = AGENTS_DB[g.agentId]}
-          <div class="guess-row">
-            <!-- Agent cell — ci=0, no status color -->
-            <div class="guess-cell cell-agent" style="--ci:0" class:flip-new={g.isNew}>
-              <div class="agent-avatar" style:--role-color={roleColor(a.role)}>
-                <img src={a.icon} alt={a.name} loading="lazy" />
-              </div>
-              <span class="agent-name">{a.name}</span>
+          <div class="board-row" class:fresh={g.isNew}>
+            <div class="cell name" style="--ci:0">
+              <span class="agent-avatar" style:--role-color={roleColor(a.role)}><img src={a.icon} alt={a.name} loading="lazy" /></span>
+              {a.name}
             </div>
-            <!-- Feedback cells — ci=1..5 with status colors -->
             {#each g.feedback as cell, ci}
-              <div
-                class="guess-cell"
-                style="--ci:{ci + 1}"
-                class:flip-new={g.isNew}
-                class:correct={cell.status === 'correct'}
-                class:close={cell.status === 'close'}
-                class:wrong={cell.status === 'wrong'}
-              >
+              <div class="cell {cell.status}" style="--ci:{ci + 1}">
+                <em>{[t.headers.gender, t.headers.role, t.headers.origin, t.headers.year, t.headers.ult][ci]}</em>
                 <span class="cell-value">{cell.value}</span>
-                {#if cell.hint}
-                  <span class="cell-hint">{cell.hint}</span>
-                {/if}
+                {#if cell.hint}<span class="cell-hint">{cell.hint}</span>{/if}
               </div>
             {/each}
           </div>
         {/each}
-      </div>
-    </div>
-  {/if}
 
-  <!-- Result panel -->
-  {#if finished && target}
-    <div class="result-panel" class:won class:lost={!won}>
-      <div class="result-status">
-        {won ? t.win : t.lose(target.name)}
-      </div>
-      <div class="result-body">
-        <div class="result-agent">
-          <div class="result-avatar" style:--role-color={roleColor(target.role)}>
-            <img src={target.icon} alt={target.name} />
-          </div>
-          <div class="result-info">
-            <span class="result-name">{target.name}</span>
-            <span class="result-sub">{roleLabel(target.role)} · {target.year}</span>
-          </div>
-        </div>
-        <div class="result-sub-text">{won ? t.winSub(guesses.length) : t.loseSub}</div>
-
-        {#if mode === 'daily'}
-          <div class="result-countdown">
-            <span class="cd-label">{t.nextDaily}</span>
-            <span class="cd-timer">{countdown}</span>
-          </div>
-          <div class="result-actions">
-            <button class="result-btn primary" onclick={share}>{t.shareBtn}</button>
-            <a class="result-btn ghost" href={lang === 'pt-BR' ? '/agents?mode=free' : '/en/agents?mode=free'}>{t.playFree}</a>
-          </div>
-        {:else}
-          <div class="result-actions">
-            <button class="result-btn primary" onclick={newFreeRound}>{t.newRound}</button>
-            <button class="result-btn ghost" onclick={share}>{t.shareBtn}</button>
-          </div>
+        {#if !finished}
+          {#each Array(Math.max(0, MAX_GUESSES - guesses.length)) as _, i}
+            <div class="board-row ghost" aria-hidden="true">
+              <div class="cell name">{guesses.length + i + 1}º</div>
+              {#each Array(ATTR_COLS) as _}<div class="cell"></div>{/each}
+            </div>
+          {/each}
         {/if}
       </div>
-    </div>
+
+      <div class="key">
+        <span class="k-ok"><i></i>{lang === 'en' ? 'exact' : 'exato'}</span>
+        <span class="k-near"><i></i>{lang === 'en' ? 'close' : 'perto'}</span>
+        <span class="k-no"><i></i>{lang === 'en' ? 'no match' : 'sem relação'}</span>
+      </div>
+    {/if}
+
+    {#if finished && target}
+      <div class="result" class:won class:lost={!won}>
+        <div class="result-status">{won ? t.win : t.lose(target.name)}</div>
+        <div class="result-body">
+          <div class="result-agent">
+            <span class="result-avatar" style:--role-color={roleColor(target.role)}><img src={target.icon} alt={target.name} /></span>
+            <div class="result-info">
+              <span class="result-name">{target.name}</span>
+              <span class="result-sub">{roleLabel(target.role)} · {target.year}</span>
+            </div>
+          </div>
+          <div class="result-sub-text">{won ? t.winSub(guesses.length) : t.loseSub}</div>
+          {#if mode === 'daily'}
+            <div class="result-countdown"><span class="cd-label">{t.nextDaily}</span><span class="cd-timer">{countdown}</span></div>
+            <div class="result-actions">
+              <button class="result-btn primary" onclick={share}>{t.shareBtn}</button>
+              <a class="result-btn ghost" href={lang === 'pt-BR' ? '/agents?mode=free' : '/en/agents?mode=free'}>{t.playFree}</a>
+            </div>
+          {:else}
+            <div class="result-actions">
+              <button class="result-btn primary" onclick={newFreeRound}>{t.newRound}</button>
+              <button class="result-btn ghost" onclick={share}>{t.shareBtn}</button>
+            </div>
+          {/if}
+        </div>
+      </div>
+    {/if}
+
   {/if}
+</main>
 
-</div>
-{/if}
-
-<!-- ── Toast ─────────────────────────────────────────────────────────────────── -->
-{#if toastVisible}
-  <div class="toast">{t.copiedToast}</div>
-{/if}
+{#if toastVisible}<div class="toast">{t.copiedToast}</div>{/if}
 
 <style>
-  /* ── CSS tokens ─────────────────────────────────────────────────────────── */
-  :global(:root) {
-    --bg:#08090d; --surface:#0e1018; --surface2:#141620;
-    --border:#1c1f2e; --border2:#252838;
-    --red:#FF4655; --red-dim:rgba(255,70,85,0.08); --red-bd:rgba(255,70,85,0.32);
-    --text:#eeeef5; --text-dim:#6e7190; --text-mid:#8a8da8;
-    --green:#34d47e; --green-bg:rgba(52,212,126,0.10); --green-bd:rgba(52,212,126,0.45);
-    --yellow:#f0b429; --yellow-bg:rgba(240,180,41,0.10); --yellow-bd:rgba(240,180,41,0.42);
-    --font-display:'Russo One',sans-serif; --font-ui:'Outfit',sans-serif; --font-mono:'Outfit',sans-serif;
-  }
-  :global(*, *::before, *::after) { box-sizing:border-box; margin:0; padding:0; }
-  :global(html,body) { min-height:100vh; background:var(--bg); color:var(--text); font-family:var(--font-ui); }
-  :global(body::before) {
-    content:''; position:fixed; inset:0; z-index:0;
-    background-image:radial-gradient(circle,#1c1f2e 1px,transparent 1px);
-    background-size:28px 28px; pointer-events:none; opacity:.5;
-  }
+  .board-head, .board-row { grid-template-columns:1.4fr repeat(5, 1fr); }
+  .gi-wrap.locked { pointer-events:none; }
+  .gi-wrap.locked .gi { opacity:0.5; }
 
-  /* ── Layout ─────────────────────────────────────────────────────────────── */
-  .page {
-    position:relative; z-index:1;
-    max-width:980px; margin:0 auto;
-    padding:0 1rem 5rem; min-height:100vh;
-    display:flex; flex-direction:column; gap:1rem;
-  }
-
-  /* ── Header ─────────────────────────────────────────────────────────────── */
-  .game-header {
-    display:grid; grid-template-columns:1fr auto 1fr;
-    align-items:center; padding:0.85rem 0;
-    border-bottom:1px solid var(--border); margin-bottom:0.2rem;
-  }
-  .header-left  { display:flex; align-items:center; gap:0.6rem; }
-  .header-center { text-align:center; }
-  .header-right { display:flex; justify-content:flex-end; align-items:center; gap:0.6rem; }
-  .back-btn {
-    background:transparent; border:1px solid var(--border2); color:var(--text-dim);
-    font-family:var(--font-mono); font-size:0.65rem; letter-spacing:0.03em;
-    padding:0.35rem 0.75rem; cursor:pointer; border-radius:3px;
-    transition:all 0.2s; text-decoration:none;
-  }
-  .back-btn:hover { border-color:var(--red); color:var(--red); }
-  .mode-tag {
-    font-family:var(--font-mono); font-size:0.6rem; letter-spacing:0.02em;
-    text-transform:uppercase; color:var(--red);
-    border:1px solid var(--red-bd); padding:0.18rem 0.5rem; border-radius:3px;
-  }
-  .wordmark { font-family:var(--font-display); font-size:1.1rem; text-transform:uppercase; }
-  .wordmark span { color:var(--red); }
-  .attempts-chip {
-    font-family:var(--font-mono); font-size:0.72rem; color:var(--text-dim); letter-spacing:0.02em;
-  }
-
-  /* ── Sound toggle button ─────────────────────────────────────────────────── */
-  .sound-btn {
-    width:30px; height:30px; border-radius:50%;
-    background:none; border:1px solid var(--border2);
-    color:var(--text-dim); cursor:pointer;
-    display:flex; align-items:center; justify-content:center;
-    transition:all 0.15s; flex-shrink:0;
-  }
-  .sound-btn svg { width:14px; height:14px; }
-  .sound-btn:hover { border-color:var(--red); color:var(--red); }
-  .sound-btn.sound-off { opacity:0.5; }
-  .sound-btn.sound-off:hover { opacity:1; border-color:var(--red); color:var(--red); }
-
-  /* ── Input ──────────────────────────────────────────────────────────────── */
-  .input-section { position:relative; }
-  .input-section.locked { pointer-events:none; }
-  .input-section.locked .guess-input,
-  .input-section.locked .guess-btn { opacity:0.45; cursor:not-allowed; }
-  .guess-input-wrap { display:flex; gap:6px; }
-  .guess-input {
-    flex:1; background:var(--surface); border:1px solid var(--border2);
-    border-radius:4px;
-    color:var(--text); font-family:var(--font-ui); font-size:0.95rem;
-    padding:0.8rem 1.1rem; outline:none; transition:border-color 0.2s;
-  }
-  .guess-input:focus { border-color:var(--red); }
-  .guess-input::placeholder { color:var(--text-dim); }
-  .guess-input:disabled { opacity:0.4; cursor:not-allowed; }
-  .guess-btn {
-    background:var(--red); border:none; color:#fff;
-    font-family:var(--font-mono); font-size:0.8rem; font-weight:700; letter-spacing:0.02em;
-    padding:0.8rem 1.4rem; border-radius:4px; cursor:pointer; transition:all 0.2s; flex-shrink:0;
-  }
-  .guess-btn:hover:not(:disabled) { background:#e03040; }
-  .guess-btn:disabled { background:var(--surface2); color:var(--text-dim); cursor:not-allowed; }
-
-  /* ── Autocomplete ───────────────────────────────────────────────────────── */
-  .autocomplete-list {
-    position:absolute; top:calc(100% + 4px); left:0; right:0;
-    background:var(--surface2); border:1px solid var(--border2); border-radius:4px;
-    z-index:100; overflow:hidden;
-    box-shadow:0 12px 32px rgba(0,0,0,.5);
-  }
-  .ac-item {
-    display:flex; align-items:center; gap:0.75rem;
-    width:100%; padding:0.55rem 0.9rem;
-    background:none; border:none; border-bottom:1px solid var(--border);
-    color:var(--text); cursor:pointer; text-align:left; transition:background 0.1s;
-  }
-  .ac-item:last-child { border-bottom:none; }
-  .ac-item:hover, .ac-item.highlighted { background:var(--surface); }
-  .ac-icon {
-    width:28px; height:28px; border-radius:50%; overflow:hidden;
-    background:var(--border); flex-shrink:0;
-    border:1px solid rgba(255,255,255,0.08);
-  }
-  .ac-icon img { width:100%; height:100%; object-fit:cover; display:block; }
-  .ac-name { font-size:0.88rem; font-weight:600; flex:1; }
-  .ac-role { font-family:var(--font-mono); font-size:0.65rem; font-weight:700; letter-spacing:0.03em; margin-left:auto; }
-
-  .input-error {
-    font-family:var(--font-mono); font-size:0.7rem; color:var(--red);
-    margin-top:0.45rem; padding-left:0.25rem;
-  }
-
-  /* ── Grid ───────────────────────────────────────────────────────────────── */
-  .grid-wrapper { overflow-x:auto; -webkit-overflow-scrolling:touch; }
-  .grid-headers, .guess-row {
-    display:grid;
-    grid-template-columns:180px repeat(5, 1fr);
-    gap:3px;
-  }
-  .grid-headers { margin-bottom:3px; }
-  .col-header {
-    font-family:var(--font-mono); font-size:0.7rem; font-weight:700;
-    letter-spacing:0.05em; text-transform:uppercase; color:var(--text-dim);
-    text-align:center; padding:0.45rem 0.25rem;
-    background:var(--surface); border:1px solid var(--border); border-radius:3px;
-  }
-  .col-header.col-agent { text-align:left; padding-left:0.75rem; }
-  .guess-grid { display:flex; flex-direction:column; gap:3px; }
-  .guess-row { animation:rowReveal 0.28s ease both; }
-  @keyframes rowReveal { from{opacity:0;transform:translateY(-6px)} to{opacity:1;transform:translateY(0)} }
-
-  /* ── Cells ──────────────────────────────────────────────────────────────── */
-  .guess-cell {
-    background:var(--surface2); border:1px solid var(--border); border-radius:3px;
-    padding:0.5rem 0.4rem; display:flex; flex-direction:column;
-    align-items:center; justify-content:center; gap:3px;
-    text-align:center; min-height:56px;
-  }
-  .guess-cell.correct { background:var(--green-bg); border-color:var(--green-bd); }
-  .guess-cell.close   { background:var(--yellow-bg); border-color:var(--yellow-bd); }
-  .guess-cell.wrong   { background:var(--red-dim);   border-color:var(--red-bd); }
-
-  /* ── Cell flip-reveal animation ─────────────────────────────────────────── */
-  .guess-cell.flip-new {
-    animation:flipReveal 340ms cubic-bezier(0.4,0,0.2,1) both;
-    animation-delay:calc(var(--ci, 0) * 115ms);
-    transform-origin:center;
-  }
-  @keyframes flipReveal {
-    0%   { transform:scaleY(1);    background:var(--surface2); border-color:var(--border); }
-    42%  { transform:scaleY(0.02); background:var(--surface2); border-color:var(--border); }
-    58%  { transform:scaleY(0.02); }
-    100% { transform:scaleY(1); }
-  }
-
-  .cell-agent {
-    align-items:flex-start; text-align:left;
-    padding-left:0.6rem; flex-direction:row; gap:0.55rem;
-  }
   .agent-avatar {
-    width:34px; height:34px; flex-shrink:0;
-    border-radius:50%; overflow:hidden;
-    border:2px solid var(--role-color, var(--border2));
-    background:var(--surface2);
+    width:30px; height:30px; flex:none; overflow:hidden;
+    border:2px solid var(--role-color, var(--border2)); background:var(--surface2);
   }
   .agent-avatar img { width:100%; height:100%; object-fit:cover; display:block; }
-  .agent-name {
-    font-family:var(--font-ui); font-size:0.9rem; font-weight:600;
-    color:var(--text); line-height:1.3; align-self:center;
-  }
+  .ac-avatar { width:26px; height:26px; flex:none; overflow:hidden; border-radius:50%; background:var(--border); }
+  .ac-avatar img { width:100%; height:100%; object-fit:cover; display:block; }
 
-  .cell-value {
-    font-family:var(--font-ui); font-size:0.9rem; font-weight:600;
-    color:var(--text); line-height:1.3;
-  }
-  .cell-flag { font-size:0.95rem; line-height:1; }
-  .cell-flag .fi { border-radius:2px; }
-  .cell-hint {
-    font-family:var(--font-mono); font-size:0.85rem; font-weight:700; line-height:1;
-  }
-  .correct .cell-hint { color:var(--green); }
-  .close   .cell-hint { color:var(--yellow); }
-  .wrong   .cell-hint { color:var(--red); }
-
-  /* ── Result panel ────────────────────────────────────────────────────────── */
-  .result-panel {
-    background:var(--surface); border:1px solid var(--border2);
-    border-radius:8px; overflow:hidden;
-    animation:panelUp 0.38s ease both;
-  }
-  @keyframes panelUp { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
-  .result-status {
-    padding:0.7rem 1.25rem;
-    font-family:var(--font-display); font-size:0.95rem; letter-spacing:0; text-transform:uppercase;
-    border-bottom:1px solid var(--border);
-  }
-  .result-panel.won  .result-status { color:var(--green); background:var(--green-bg); }
-  .result-panel.lost .result-status { color:var(--red);   background:var(--red-dim); }
-  .result-body {
-    padding:1rem 1.25rem; display:flex; flex-direction:column; gap:0.85rem;
-  }
-  .result-agent {
-    display:flex; align-items:center; gap:0.85rem;
-    padding:0.7rem 1rem; background:var(--surface2);
-    border:1px solid var(--border); border-radius:4px;
-  }
-  .result-avatar {
-    width:48px; height:48px; border-radius:50%; overflow:hidden;
-    border:2px solid var(--role-color, var(--border2));
-    background:var(--surface); flex-shrink:0;
-  }
+  .result-agent { display:flex; align-items:center; gap:12px; background:var(--surface2); border:1px solid var(--border); padding:12px 14px; }
+  .result-avatar { width:46px; height:46px; flex:none; overflow:hidden; border:2px solid var(--role-color, var(--border2)); background:var(--surface); }
   .result-avatar img { width:100%; height:100%; object-fit:cover; display:block; }
-  .result-info { display:flex; flex-direction:column; gap:0.2rem; }
-  .result-name { font-family:var(--font-display); font-size:1.15rem; text-transform:uppercase; }
-  .result-sub  { font-family:var(--font-mono); font-size:0.7rem; color:var(--text-mid); }
-  .result-sub-text { font-size:0.82rem; color:var(--text-mid); }
-  .result-countdown { display:flex; flex-direction:column; align-items:flex-start; gap:0.15rem; }
-  .cd-label { font-family:var(--font-mono); font-size:0.58rem; font-weight:700; letter-spacing:0; text-transform:uppercase; color:var(--text-dim); }
-  .cd-timer { font-family:var(--font-mono); font-size:1.3rem; font-weight:700; color:var(--text-dim); letter-spacing:0.02em; }
-  .result-actions { display:flex; gap:0.6rem; flex-wrap:wrap; }
-  .result-btn {
-    font-family:var(--font-mono); font-size:0.75rem; font-weight:700; letter-spacing:0.03em;
-    padding:0.5rem 1.1rem; border-radius:5px; cursor:pointer; border:none;
-    text-decoration:none; transition:opacity 0.15s; display:inline-block;
-  }
-  .result-btn.primary { background:var(--red); color:#fff; }
-  .result-btn.ghost   { background:transparent; color:var(--text-mid); border:1px solid var(--border2); }
-  .result-btn:hover { opacity:0.85; }
+  .result-info { display:flex; flex-direction:column; gap:2px; }
+  .result-name { font-family:var(--font-display); font-size:1.1rem; }
+  .result-sub { font-size:0.72rem; color:var(--text-mid); }
 
-  /* ── Mode picker overlay ─────────────────────────────────────────────────── */
-  .overlay-full {
-    position:fixed; inset:0; z-index:160;
-    background:rgba(8,9,13,0.94); backdrop-filter:blur(4px);
-    display:flex; align-items:center; justify-content:center; padding:1.5rem;
-  }
-  .mpo-card {
-    background:var(--surface); border:1px solid var(--border2);
-    border-radius:12px; padding:2.2rem 2rem;
-    display:flex; flex-direction:column; align-items:center; gap:1.4rem;
-    width:100%; max-width:420px;
-  }
-  .mpo-eyebrow {
-    font-family:var(--font-mono); font-size:0.6rem; letter-spacing:0.07em;
-    text-transform:uppercase; color:var(--text-dim);
-  }
-  .mpo-title {
-    font-family:var(--font-display); font-size:1.6rem; text-transform:uppercase;
-    color:var(--text); display:flex; align-items:center; gap:0.6rem;
-  }
-  .mpo-wordmark span { color:var(--red); }
-  .mpo-mode-tag {
-    font-size:0.65rem; font-family:var(--font-mono); letter-spacing:0;
-    text-transform:uppercase; color:var(--red);
-    border:1px solid var(--red-bd); padding:0.2rem 0.5rem; border-radius:3px;
-    align-self:center;
-  }
-  .mpo-sub { font-family:var(--font-mono); font-size:0.72rem; color:var(--text-dim); letter-spacing:0.02em; }
-  .mpo-options { display:flex; flex-direction:column; gap:0.6rem; width:100%; }
-  .mpo-option {
-    display:flex; align-items:center; gap:1rem;
-    background:var(--surface2); border:1px solid var(--border2);
-    color:var(--text); border-radius:8px; padding:0.9rem 1rem;
-    cursor:pointer; text-align:left; transition:all 0.15s; width:100%;
-  }
-  .mpo-option:hover { border-color:var(--red-bd); background:var(--red-dim); }
-  .mpo-icon { width:36px; height:36px; color:var(--text-mid); flex-shrink:0; transition:color 0.15s; }
-  .mpo-option:hover .mpo-icon { color:var(--red); }
-  .mpo-label { display:flex; flex-direction:column; gap:0.15rem; flex:1; }
-  .mpo-name  { font-family:var(--font-display); font-size:0.95rem; text-transform:uppercase; }
-  .mpo-desc  { font-family:var(--font-mono); font-size:0.62rem; color:var(--text-dim); letter-spacing:0.02em; }
-  .mpo-arrow { font-size:1.1rem; color:var(--text-dim); }
-
-  /* ── Toast ───────────────────────────────────────────────────────────────── */
-  .toast {
-    position:fixed; bottom:1.8rem; left:50%; transform:translateX(-50%);
-    background:var(--surface2); border:1px solid var(--border2);
-    color:var(--text); font-family:var(--font-mono); font-size:0.75rem;
-    letter-spacing:0.02em; padding:0.5rem 1.2rem; border-radius:6px;
-    z-index:300; pointer-events:none;
-  }
-
-  /* ── Responsive ──────────────────────────────────────────────────────────── */
-  @media (max-width:600px) {
-    .game-header { grid-template-columns:1fr 1fr; }
-    .header-center { display:none; }
-    .grid-headers, .guess-row { grid-template-columns:120px repeat(5,1fr); }
-    .agent-name { font-size:0.78rem; }
-    .cell-value { font-size:0.78rem; }
-    .mpo-card { padding:1.6rem 1.2rem; }
-  }
-  @media (max-width:420px) {
-    .grid-headers, .guess-row { grid-template-columns:90px repeat(5,1fr); }
+  @media (max-width: 720px) {
+    .board-head { display:none; }
+    .board-row { grid-template-columns:repeat(3, 1fr); background:var(--surface); border:1px solid var(--border); padding:10px; }
+    .board-row .cell.name { grid-column:1 / -1; background:none; border:none; padding:2px 4px 8px; }
+    .board-row .cell { border-bottom:none; }
+    .board-row .cell:not(.name) { border:1px solid var(--border2); }
+    .board-row .cell em { display:block; }
   }
 </style>
