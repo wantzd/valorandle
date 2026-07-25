@@ -57,6 +57,30 @@
   let inputLocked = $state(false);
   let soundOn     = $state(true);
   let streak      = $state(0);
+  let showTutorial = $state(false);
+
+  const TUT_KEY = 'valorandle_abilities_tutorial_seen_v1';
+  const tutSteps = $derived(isPT ? [
+    'Escolha <b>Descrição</b> (texto revelado palavra a palavra) ou <b>Imagem</b> (ícone revelado aos poucos).',
+    'Digite o nome da habilidade para chutar.',
+    'O feedback compara <b>agente</b>, <b>tecla</b> e se é a <b>ultimate</b>.',
+    'Descrição: palpites ilimitados. Imagem: <b>8 tentativas</b>. Cada erro revela mais.',
+  ] : [
+    'Pick <b>Description</b> (text revealed word by word) or <b>Image</b> (icon uncovered bit by bit).',
+    'Type the ability name to guess.',
+    'Feedback compares <b>agent</b>, <b>key</b> and whether it is the <b>ultimate</b>.',
+    'Description: unlimited guesses. Image: <b>8 attempts</b>. Each miss reveals more.',
+  ]);
+
+  function maybeTutorialThenStart() {
+    if (!localStorage.getItem(TUT_KEY)) showTutorial = true;
+    else startGame();
+  }
+  function dismissTutorial() {
+    try { localStorage.setItem(TUT_KEY, '1'); } catch {}
+    showTutorial = false;
+    startGame();
+  }
 
   // ── Image mode ────────────────────────────────────────────────────────────────
   let revealOrder   = $state([]);
@@ -125,7 +149,7 @@
     if (sub && mode) {
       // Both params present → go straight to game
       view = 'game';
-      startGame();
+      maybeTutorialThenStart();
     } else {
       // Show sub-mode selector
       view = 'select';
@@ -486,7 +510,7 @@
       <div class="msg">{isPT ? 'Carregando…' : 'Loading…'}</div>
     {:else if loadError}
       <div class="msg err">{loadError}</div>
-    {:else}
+    {:else if !showTutorial}
 
       <div class="statusbar" aria-label={isPT ? 'Estado da partida' : 'Match status'}>
         <div class="sb-mode">
@@ -638,6 +662,21 @@
     {/if}
   </main>
 
+{/if}
+
+{#if showTutorial}
+  <div class="gate-overlay">
+    <div class="tut-modal" style="--accent:var(--col-emea)">
+      <div class="tut-eyebrow">{t.title}</div>
+      <div class="tut-title">{isPT ? 'COMO' : 'HOW TO'} <em>{isPT ? 'JOGAR' : 'PLAY'}</em></div>
+      <div class="tut-steps">
+        {#each tutSteps as step, i}
+          <div class="tut-step"><div class="tut-num">{i + 1}</div><div class="tut-text">{@html step}</div></div>
+        {/each}
+      </div>
+      <button class="result-btn primary" onclick={dismissTutorial}>{isPT ? 'Entendido →' : 'Got it →'}</button>
+    </div>
+  </div>
 {/if}
 
 {#if toastVisible}<div class="toast">{t.copied}</div>{/if}

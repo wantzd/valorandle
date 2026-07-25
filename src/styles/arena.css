@@ -135,6 +135,26 @@ body::after  { content:''; position:fixed; top:-200px; left:50%; z-index:0; tran
 .gate-modal .g-ask { margin-bottom:14px; color:var(--text-mid); font-size:0.85rem; }
 .gate-modal .g-options { display:grid; grid-template-columns:1fr 1fr; gap:14px; }
 
+/* tutorial "Como Jogar" (global — usado por todos os modos) */
+.tut-modal {
+  width:100%; max-width:460px; background:var(--surface);
+  border:1px solid var(--border2); border-bottom:2px solid var(--accent); padding:28px;
+  animation:a-pop 0.4s var(--ease-out) both;
+}
+.tut-eyebrow { font-size:0.6rem; letter-spacing:0.2em; text-transform:uppercase; color:var(--accent); font-weight:700; }
+.tut-title { font-family:var(--font-display); font-size:1.6rem; margin:6px 0 18px; }
+.tut-title em { font-style:normal; color:var(--accent); }
+.tut-steps { display:flex; flex-direction:column; gap:12px; margin-bottom:22px; }
+.tut-step { display:flex; gap:12px; align-items:flex-start; }
+.tut-num {
+  width:24px; height:24px; flex:none; display:flex; align-items:center; justify-content:center;
+  background:color-mix(in srgb, var(--accent) 10%, transparent);
+  border:1px solid color-mix(in srgb, var(--accent) 35%, transparent);
+  color:var(--accent); font-family:var(--font-display); font-size:0.8rem;
+}
+.tut-text { font-size:0.85rem; color:var(--text-mid); line-height:1.55; }
+.tut-text b { color:var(--text); font-weight:700; }
+
 /* ── input ──────────────────────────────────────────────────────── */
 .gi-wrap { position:relative; }
 .gi {

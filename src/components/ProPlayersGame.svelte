@@ -131,6 +131,15 @@
 <div id="g-tip"></div>
 <div class="toast" id="toast"></div>
 
+<div class="tut-overlay" id="pp-tutorial" style="display:none">
+  <div class="tut-box">
+    <div class="tut-eyebrow" id="tut-eyebrow">Pro Players</div>
+    <div class="tut-title" id="tut-title">COMO <span>JOGAR</span></div>
+    <div class="tut-steps" id="tut-steps"></div>
+    <button class="tut-btn" id="tut-dismiss">Entendido →</button>
+  </div>
+</div>
+
 <style>
   :global(*, *::before, *::after) { box-sizing:border-box; margin:0; padding:0; }
   :global(:root) {
@@ -291,6 +300,20 @@
   .foot { display:flex; justify-content:space-between; gap:10px; flex-wrap:wrap; margin-top:auto; padding:22px 0 6px; border-top:1px solid var(--border); font-size:0.72rem; color:var(--text-dim); line-height:1.8; }
   .foot a { color:var(--text-mid); text-decoration:none; }
   .foot a:hover { color:var(--red); }
+
+  /* ── tutorial "Como Jogar" (dirigido pelo JS inline) ── */
+  .tut-overlay { position:fixed; inset:0; z-index:200; align-items:center; justify-content:center; padding:24px; background:rgba(8,9,13,0.9); backdrop-filter:blur(6px); }
+  .tut-box { width:100%; max-width:460px; background:var(--surface); border:1px solid var(--border2); border-bottom:2px solid var(--red); padding:28px; animation:pp-rise 0.4s var(--ease-out) both; }
+  .tut-eyebrow { font-size:0.6rem; letter-spacing:0.2em; text-transform:uppercase; color:var(--red); font-weight:700; }
+  .tut-title { font-family:var(--font-display); font-size:1.6rem; margin:6px 0 18px; }
+  :global(#tut-title span) { color:var(--red); }
+  .tut-steps { display:flex; flex-direction:column; gap:12px; margin-bottom:22px; }
+  :global(.tut-step) { display:flex; gap:12px; align-items:flex-start; }
+  :global(.tut-num) { width:24px; height:24px; flex:none; display:flex; align-items:center; justify-content:center; background:color-mix(in srgb,var(--red) 10%,transparent); border:1px solid color-mix(in srgb,var(--red) 35%,transparent); color:var(--red); font-family:var(--font-display); font-size:0.8rem; }
+  :global(.tut-text) { font-size:0.85rem; color:var(--text-mid); line-height:1.55; }
+  :global(.tut-text b) { color:var(--text); font-weight:700; }
+  .tut-btn { font-family:var(--font-display); font-size:0.75rem; letter-spacing:0.08em; background:var(--red); color:#0a0a0c; border:none; padding:13px 26px; cursor:pointer; transition:filter var(--t-fast) var(--ease-out); }
+  .tut-btn:hover { filter:brightness(1.12); }
 
   #loading-overlay { position:fixed; inset:0; z-index:9999; background:var(--bg); display:flex; flex-direction:column; align-items:center; justify-content:center; gap:1.2rem; }
   #loading-overlay .lo-logo { font-family:var(--font-display); font-size:1.6rem; color:var(--text); }

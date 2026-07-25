@@ -26,8 +26,32 @@
 
   // ── Mode ──────────────────────────────────────────────────────────────────────
   let mode       = $state(null);
-  let showPicker = $state(false);
-  let streak     = $state(0);
+  let showPicker   = $state(false);
+  let showTutorial = $state(false);
+  let streak       = $state(0);
+
+  const TUT_KEY = 'valorandle_skins_tutorial_seen_v1';
+  const tutSteps = $derived(lang === 'en' ? [
+    'Press <b>▶ play</b> to hear the inspect sound of the hidden weapon skin.',
+    'Type a skin name to guess. Each miss unlocks a new clue (kill sound, then a muted video).',
+    'Feedback compares <b>bundle</b>, <b>weapon</b> and <b>edition</b> — green if you got it.',
+    'You have <b>6 attempts</b>.',
+  ] : [
+    'Toque em <b>▶ play</b> para ouvir o som de inspeção da skin escondida.',
+    'Digite o nome da skin para chutar. Cada erro libera uma pista nova (som de abate, depois vídeo mudo).',
+    'O feedback compara <b>bundle</b>, <b>arma</b> e <b>edição</b> — verde se acertou.',
+    'Você tem <b>6 tentativas</b>.',
+  ]);
+
+  function maybeTutorialThenStart() {
+    if (!localStorage.getItem(TUT_KEY)) showTutorial = true;
+    else startGame();
+  }
+  function dismissTutorial() {
+    try { localStorage.setItem(TUT_KEY, '1'); } catch {}
+    showTutorial = false;
+    startGame();
+  }
 
   // ── Data (loaded async) ───────────────────────────────────────────────────────
   let allSkins      = $state([]);
@@ -115,7 +139,7 @@
     const m = P.get('mode');
     mode = m === 'free' ? 'free' : m === 'daily' ? 'daily' : null;
     if (!mode) { showPicker = true; return; }
-    startGame();
+    maybeTutorialThenStart();
   });
 
   onDestroy(() => {
@@ -133,7 +157,7 @@
     const url = new URL(location.href);
     url.searchParams.set('mode', m);
     history.replaceState(null, '', url);
-    startGame();
+    maybeTutorialThenStart();
   }
 
   // ─────────────────────────────────────────────────────────────────────────────
@@ -427,7 +451,7 @@
         </button>
       </div>
     </div>
-  {:else}
+  {:else if !showTutorial}
 
     <div class="statusbar" aria-label={lang === 'en' ? 'Match status' : 'Estado da partida'}>
       <div class="sb-mode">
@@ -588,6 +612,21 @@
     {/if}
   {/if}
 </main>
+
+{#if showTutorial}
+  <div class="gate-overlay">
+    <div class="tut-modal" style="--accent:var(--col-all)">
+      <div class="tut-eyebrow">Skins</div>
+      <div class="tut-title">{lang === 'en' ? 'HOW TO' : 'COMO'} <em>{lang === 'en' ? 'PLAY' : 'JOGAR'}</em></div>
+      <div class="tut-steps">
+        {#each tutSteps as step, i}
+          <div class="tut-step"><div class="tut-num">{i + 1}</div><div class="tut-text">{@html step}</div></div>
+        {/each}
+      </div>
+      <button class="result-btn primary" onclick={dismissTutorial}>{lang === 'en' ? 'Got it →' : 'Entendido →'}</button>
+    </div>
+  </div>
+{/if}
 
 {#if toastVisible}<div class="toast">{t.copiedToast}</div>{/if}
 

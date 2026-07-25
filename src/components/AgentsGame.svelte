@@ -23,9 +23,33 @@
   let t    = $derived(AGENTS_I18N[lang] || AGENTS_I18N['pt-BR']);
 
   // ── Mode ──────────────────────────────────────────────────────────────────────
-  let mode       = $state(null);
-  let showPicker = $state(false);
-  let streak     = $state(0);
+  let mode         = $state(null);
+  let showPicker   = $state(false);
+  let showTutorial = $state(false);
+  let streak       = $state(0);
+
+  const TUT_KEY = 'valorandle_agents_tutorial_seen_v1';
+  const tutSteps = $derived(lang === 'en' ? [
+    'A <b>VALORANT agent</b> is hidden. Type agent names to guess who it is.',
+    'Each guess compares <b>role</b>, <b>gender</b>, <b>origin</b>, <b>release year</b> and <b>ult cost</b>.',
+    '🟩 exact, 🟨 close, 🟥 no match. Arrows <b>↑ / ↓</b> tell you if the year is higher or lower.',
+    'You have <b>8 attempts</b>. The confirmed clues stack up as you narrow it down.',
+  ] : [
+    'Um <b>agente de VALORANT</b> está escondido. Digite nomes de agentes para chutar.',
+    'Cada palpite compara <b>função</b>, <b>gênero</b>, <b>origem</b>, <b>ano de lançamento</b> e <b>custo da ult</b>.',
+    '🟩 exato, 🟨 perto, 🟥 sem relação. As setas <b>↑ / ↓</b> mostram se o ano é maior ou menor.',
+    'Você tem <b>8 tentativas</b>. As pistas confirmadas se acumulam conforme você fecha o cerco.',
+  ]);
+
+  function maybeTutorialThenStart() {
+    if (!localStorage.getItem(TUT_KEY)) showTutorial = true;
+    else startGame();
+  }
+  function dismissTutorial() {
+    try { localStorage.setItem(TUT_KEY, '1'); } catch {}
+    showTutorial = false;
+    startGame();
+  }
 
   // ── Game state ────────────────────────────────────────────────────────────────
   let targetId    = $state(null);
@@ -73,7 +97,7 @@
     mode = m === 'free' ? 'free' : m === 'daily' ? 'daily' : null;
 
     if (!mode) { showPicker = true; return; }
-    startGame();
+    maybeTutorialThenStart();
   });
 
   onDestroy(() => {
@@ -90,7 +114,7 @@
     const url = new URL(location.href);
     url.searchParams.set('mode', m);
     history.replaceState(null, '', url);
-    startGame();
+    maybeTutorialThenStart();
   }
 
   // ─────────────────────────────────────────────────────────────────────────────
@@ -325,7 +349,7 @@
         </button>
       </div>
     </div>
-  {:else}
+  {:else if !showTutorial}
 
     <div class="statusbar" aria-label={lang === 'en' ? 'Match status' : 'Estado da partida'}>
       <div class="sb-mode">
@@ -468,6 +492,21 @@
 
   {/if}
 </main>
+
+{#if showTutorial}
+  <div class="gate-overlay">
+    <div class="tut-modal" style="--accent:var(--col-pacific)">
+      <div class="tut-eyebrow">{t.modeTag}</div>
+      <div class="tut-title">{lang === 'en' ? 'HOW TO' : 'COMO'} <em>{lang === 'en' ? 'PLAY' : 'JOGAR'}</em></div>
+      <div class="tut-steps">
+        {#each tutSteps as step, i}
+          <div class="tut-step"><div class="tut-num">{i + 1}</div><div class="tut-text">{@html step}</div></div>
+        {/each}
+      </div>
+      <button class="result-btn primary" onclick={dismissTutorial}>{lang === 'en' ? 'Got it →' : 'Entendido →'}</button>
+    </div>
+  </div>
+{/if}
 
 {#if toastVisible}<div class="toast">{t.copiedToast}</div>{/if}
 

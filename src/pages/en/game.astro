@@ -771,11 +771,49 @@ import ProPlayersGame from '../../components/ProPlayersGame.svelte';
       };
     }
 
+    function showPlayersTutorial() {
+      const isEn = lang === "en";
+      const steps = isEn ? [
+        'A hidden <b>VCT pro player</b> is the answer. Type names and guess who it is.',
+        'Each guess colours the attributes: <b>🟩 exact</b>, <b>🟨 close</b>, <b>🟥 no match</b>.',
+        'Arrows <b>↑ / ↓</b> show whether the age or years active are higher or lower.',
+        "It's <b>5 rounds</b> per daily, with <b>8 attempts</b> each.",
+      ] : [
+        'Um <b>pro player do VCT</b> está escondido. Digite nomes e chute quem é.',
+        'Cada palpite colore os atributos: <b>🟩 exato</b>, <b>🟨 perto</b>, <b>🟥 sem relação</b>.',
+        'As setas <b>↑ / ↓</b> mostram se a idade ou os anos de atividade são maiores ou menores.',
+        'São <b>5 rounds</b> por daily, com <b>8 tentativas</b> em cada.',
+      ];
+      const box = document.getElementById("pp-tutorial");
+      document.getElementById("tut-eyebrow").textContent = "Pro Players";
+      document.getElementById("tut-title").innerHTML = isEn ? 'HOW TO <span>PLAY</span>' : 'COMO <span>JOGAR</span>';
+      const stepsEl = document.getElementById("tut-steps");
+      stepsEl.innerHTML = "";
+      steps.forEach((s, i) => {
+        const row = document.createElement("div"); row.className = "tut-step";
+        const num = document.createElement("div"); num.className = "tut-num"; num.textContent = i + 1;
+        const txt = document.createElement("div"); txt.className = "tut-text"; txt.innerHTML = s;
+        row.appendChild(num); row.appendChild(txt); stepsEl.appendChild(row);
+      });
+      const btn = document.getElementById("tut-dismiss");
+      btn.textContent = isEn ? "Got it →" : "Entendido →";
+      box.style.display = "flex";
+      btn.addEventListener("click", function () {
+        try { localStorage.setItem("valorandle_players_tutorial_seen_v1", "1"); } catch {}
+        box.style.display = "none";
+        initGame();
+      }, { once: true });
+    }
+
     document.addEventListener("DOMContentLoaded", async function () {
       await window.initPlayersDB();
       ACTIVE = LEAGUE === "all" ? PLAYERS_DB : PLAYERS_DB.filter(p => p.leagueId === LEAGUE);
       document.getElementById("loading-overlay").style.display = "none";
-      initGame();
+      if (!localStorage.getItem("valorandle_players_tutorial_seen_v1")) {
+        showPlayersTutorial();
+      } else {
+        initGame();
+      }
     });
   })();
   </script>
