@@ -196,7 +196,8 @@ def clean_team_name(raw_name):
     """Normalise a scraped `current_team.name`.
 
     Returns (team_name, reason) where team_name is None when the value must not
-    be applied. reason is one of: None (clean), "left", "national".
+    be applied. reason is one of: None (clean), "left ...", "national",
+    "unknown ...".
     """
     name = (raw_name or "").strip()
     if not name:
@@ -211,7 +212,21 @@ def clean_team_name(raw_name):
     if is_national_team(name):
         return None, "national"
 
-    return (name, None) if name else (None, None)
+    if not name:
+        return None, None
+
+    # vlrgg's `current_team` is simply the last roster the player appeared on,
+    # which during off-season is often a pickup or scrim side rather than an
+    # org — e.g. nerve showed up as "BOSS BABY", Xeppaa as "Kalebs kitten".
+    # Applying those would put a joke name on the team tile, so anything absent
+    # from the players.js allowlist is refused and reported instead.
+    #
+    # When known_orgs is empty the players.js parse failed upstream; in that
+    # case the check is skipped rather than rejecting every team on earth.
+    if known_orgs and name.lower() not in known_orgs:
+        return None, f"unknown {name}"
+
+    return name, None
 
 
 def agent_to_role(agent_name):
@@ -261,6 +276,11 @@ PLAYERS_JS_PATH = os.path.normpath(
 vlr_id_map = {}
 # name.lower() → vlrId (int)  — for quick lookup
 name_to_vlrid = {}
+# Every org named in players.js, lowercased. Used as an allowlist when applying
+# `current_team` from the API — see clean_team_name(). vlrgg reports whatever
+# roster a player last appeared on, including pickup/scrim sides ("BOSS BABY",
+# "Certified Turtles"), which must never overwrite the real org.
+known_orgs = set()
 
 print("[Step 0] Parsing players.js for vlrId mapping...")
 
@@ -271,6 +291,12 @@ try:
     # Match each { ... } player block
     for block in re.finditer(r'\{[^{}]+\}', js_content):
         text = block.group()
+
+        # Collect the org allowlist from every row, with or without vlrId
+        team_m = re.search(r'\bteam\s*:\s*"([^"]+)"', text)
+        if team_m:
+            known_orgs.add(team_m.group(1).strip().lower())
+
         if 'vlrId' not in text:
             continue
         vlrid_m = re.search(r'vlrId\s*:\s*(\d+)', text)
@@ -283,7 +309,8 @@ try:
             vlr_id_map[vid]             = {"id": pid, "name": name}
             name_to_vlrid[name.lower()] = vid
 
-    print(f"  Found {len(vlr_id_map)} players with vlrId in players.js\n")
+    print(f"  Found {len(vlr_id_map)} players with vlrId in players.js")
+    print(f"  Org allowlist: {len(known_orgs)} teams\n")
 except Exception as e:
     print(f"  ⚠ Could not parse players.js: {e}\n")
 
@@ -376,6 +403,7 @@ vlrid_role_source  = {}   # vlrId (int) → agent list (for role detection)
 
 departures    = []   # [(player, former_team)]  — vlrgg shows tenure as ended
 national_hits = []   # [(player, national_side)] — ignored, not a real org
+unknown_orgs  = []   # [(player, team)] — not in the players.js allowlist
 
 # ── Title detection helpers ────────────────────────────────────────────────────
 def _is_official_vct_event(event_name):
@@ -455,6 +483,9 @@ for vid, pinfo in vlr_id_map.items():
         elif skip_reason and skip_reason.startswith("left"):
             # vlrgg lists them as a former member — the org in players.js is stale
             departures.append((pinfo["name"], skip_reason[5:] or "?"))
+        elif skip_reason and skip_reason.startswith("unknown"):
+            # Pickup side, or a real org missing from players.js — needs a human
+            unknown_orgs.append((pinfo["name"], skip_reason[8:]))
 
         # ── Country ────────────────────────────────────────────────────────────
         raw_country = (seg.get("country") or "").strip()
@@ -523,6 +554,11 @@ if national_hits:
           f" (org kept from players.js):")
     for pname, side in sorted(national_hits):
         print(f"      {pname:20s} → {side}")
+if unknown_orgs:
+    print(f"\n  ⚠ {len(unknown_orgs)} player(s) whose current team is not in the"
+          f" players.js allowlist — pickup side, or a real org that needs adding:")
+    for pname, team in sorted(unknown_orgs):
+        print(f"      {pname:20s} → {team}")
 print()
 
 
