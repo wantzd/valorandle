@@ -1,10 +1,20 @@
 name: Probe API shape
 
 # One-off reconnaissance to find out whether the vlrgg API exposes team rosters.
-# Manual dispatch only — no schedule, no writes to the repository.
-# Delete this workflow and .github/scripts/probe_api.py once the shape is known.
+# No schedule, no writes to the repository.
+#
+# The push trigger is scoped to this branch only, because workflow_dispatch is
+# not available until the file reaches the default branch. Both this workflow
+# and .github/scripts/probe_api.py are meant to be deleted once the API shape
+# is known — they must not reach main.
 on:
   workflow_dispatch:
+  push:
+    branches:
+      - fix/orgmap-data-quality
+    paths:
+      - '.github/workflows/probe-api.yml'
+      - '.github/scripts/probe_api.py'
 
 jobs:
   probe:
