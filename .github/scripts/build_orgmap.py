@@ -144,6 +144,75 @@ COUNTRY_MAP = {
 
 TIMEOUT       = 30
 
+# ── Team-name sanitising ──────────────────────────────────────────────────────
+# vlrgg's `current_team.name` is scraped, and the tenure line sometimes leaks in
+# glued to the org name, in two shapes:
+#
+#   "FURIAjoined in June 2025"                    → still on the team
+#   "Evil GeniusesNovember 2025 – July 2026"      → LEFT in July 2026
+#   "Team HereticsApril 2022 – November 2022"     → LEFT in November 2022
+#
+# A closed date range means the player is listed as a FORMER member. Stripping
+# the suffix and keeping the org would assert they are still there, which is
+# exactly backwards — so those are dropped and reported as departures instead.
+_MONTH = (
+    r'(?:January|February|March|April|May|June|July|August|September|October'
+    r'|November|December)'
+)
+
+# "November 2025 – July 2026" — tenure that has ENDED (player left)
+TENURE_CLOSED_RE = re.compile(
+    rf'{_MONTH}\s+\d{{4}}\s*[–—-]\s*{_MONTH}\s+\d{{4}}\s*$', re.IGNORECASE
+)
+# "joined in June 2025" / "November 2025 – present" — tenure still OPEN
+TENURE_OPEN_RE = re.compile(
+    rf'\s*(?:joined\s+in\s+.+|{_MONTH}\s+\d{{4}}\s*[–—-]\s*present)\s*$',
+    re.IGNORECASE,
+)
+
+# National teams appear as `current_team` during Red Bull Home Ground / Nations
+# style events and would otherwise overwrite the player's real org.
+NATIONAL_TEAM_NAMES = {
+    "argentina", "australia", "brazil", "brasil", "canada", "chile", "china",
+    "colombia", "croatia", "denmark", "dominican republic", "egypt", "finland",
+    "france", "germany", "hong kong", "india", "indonesia", "italy", "japan",
+    "kazakhstan", "korea", "malaysia", "mexico", "mongolia", "morocco",
+    "netherlands", "new zealand", "norway", "peru", "philippines", "poland",
+    "portugal", "romania", "russia", "saudi arabia", "serbia", "singapore",
+    "south korea", "spain", "sweden", "taiwan", "thailand", "turkey",
+    "türkiye", "ukraine", "united states", "uruguay", "vietnam",
+}
+
+
+def is_national_team(team_name):
+    """True when `team_name` looks like a national side rather than an org."""
+    normalised = team_name.strip().lower()
+    # "Team Türkiye", "Team Brazil" → strip the prefix before comparing
+    stripped = re.sub(r'^team\s+', '', normalised)
+    return normalised in NATIONAL_TEAM_NAMES or stripped in NATIONAL_TEAM_NAMES
+
+
+def clean_team_name(raw_name):
+    """Normalise a scraped `current_team.name`.
+
+    Returns (team_name, reason) where team_name is None when the value must not
+    be applied. reason is one of: None (clean), "left", "national".
+    """
+    name = (raw_name or "").strip()
+    if not name:
+        return None, None
+
+    name = TENURE_OPEN_RE.sub('', name).strip()
+
+    if TENURE_CLOSED_RE.search(name):
+        former = TENURE_CLOSED_RE.sub('', name).strip()
+        return None, f"left {former}" if former else "left"
+
+    if is_national_team(name):
+        return None, "national"
+
+    return (name, None) if name else (None, None)
+
 
 def agent_to_role(agent_name):
     return AGENT_ROLE.get(agent_name.lower())
@@ -305,6 +374,9 @@ player_titles    = {}   # name.lower() → [title, ...] from event_placements
 
 vlrid_role_source  = {}   # vlrId (int) → agent list (for role detection)
 
+departures    = []   # [(player, former_team)]  — vlrgg shows tenure as ended
+national_hits = []   # [(player, national_side)] — ignored, not a real org
+
 # ── Title detection helpers ────────────────────────────────────────────────────
 def _is_official_vct_event(event_name):
     name = event_name.lower()
@@ -373,11 +445,16 @@ for vid, pinfo in vlr_id_map.items():
         seg = (r.json().get("data", {}).get("segments") or [{}])[0]
 
         # ── Team full name ─────────────────────────────────────────────────────
-        team_name = (seg.get("current_team") or {}).get("name", "").strip()
-        # Strip "joined in ..." suffix that sometimes leaks in from vlrgg scraping
-        team_name = re.sub(r'\s*joined\s+in\s+.+$', '', team_name, flags=re.IGNORECASE).strip()
+        raw_team = (seg.get("current_team") or {}).get("name", "")
+        team_name, skip_reason = clean_team_name(raw_team)
         if team_name:
             player_teamfull[pname] = team_name
+        elif skip_reason == "national":
+            # Keep whatever players.js already has — a national side is not an org
+            national_hits.append((pinfo["name"], raw_team.strip()))
+        elif skip_reason and skip_reason.startswith("left"):
+            # vlrgg lists them as a former member — the org in players.js is stale
+            departures.append((pinfo["name"], skip_reason[5:] or "?"))
 
         # ── Country ────────────────────────────────────────────────────────────
         raw_country = (seg.get("country") or "").strip()
@@ -432,7 +509,21 @@ for vid, pinfo in vlr_id_map.items():
             print(f"  ✗ vlrId {vid} ({pinfo['name']}): {e}")
 
 print(f"\n  ✓ {ok_count} players fetched, {err_count} errors")
-print(f"  teamFull: {len(player_teamfull)}, country: {len(player_country)}, agents: {len(player_agents_p)}\n")
+print(f"  teamFull: {len(player_teamfull)}, country: {len(player_country)}, agents: {len(player_agents_p)}")
+
+# Roster drift — these need a manual edit in public/js/players.js, since this
+# script only enriches the existing roster and never adds or removes players.
+if departures:
+    print(f"\n  ⚠ {len(departures)} player(s) listed as FORMER members on vlrgg —"
+          f" players.js still has them on a team:")
+    for pname, former in sorted(departures):
+        print(f"      {pname:20s} left {former}")
+if national_hits:
+    print(f"\n  ℹ {len(national_hits)} player(s) currently on a national side"
+          f" (org kept from players.js):")
+    for pname, side in sorted(national_hits):
+        print(f"      {pname:20s} → {side}")
+print()
 
 
 # ── Step 2: Detect role — 3-tier priority ─────────────────────────────────────
@@ -462,8 +553,8 @@ all_known = set(vlr_id_map[v]["name"].lower() for v in vlr_id_map) | set(org_map
 
 for pname in all_known:
     agents = (
-        agents_30d.get(pname) or
         player_agents_p.get(pname) or
+        agents_30d.get(pname) or
         agents_all.get(pname) or
         []
     )
@@ -471,11 +562,11 @@ for pname in all_known:
     if role:
         role_map[pname] = role
 
-t1 = sum(1 for p in role_map if p in agents_30d)
-t2 = sum(1 for p in role_map if p not in agents_30d and p in player_agents_p)
+t1 = sum(1 for p in role_map if p in player_agents_p)
+t2 = sum(1 for p in role_map if p not in player_agents_p and p in agents_30d)
 t3 = len(role_map) - t1 - t2
 print(f"[Step 2] {len(role_map)} roles detected:")
-print(f"  30d stats: {t1} | career stats: {t2} | all-time: {t3}\n")
+print(f"  career stats: {t1} | 30d stats: {t2} | all-time: {t3}\n")
 
 
 # ── Step 3: Liquipedia API — birthdate → age (bulk fetch) ────────────────────
