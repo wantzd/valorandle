@@ -1,26 +1,26 @@
-name: Probe API shape
+name: Seed team map
 
-# Reconnaissance for the roster-sync work. Read-only, never writes to the repo.
+# TEMPORARY — seeds .github/data/team-map.json against the live API and commits
+# it to this branch, so the map ships pre-populated instead of making the first
+# scheduled run do all the discovery.
 #
-# The push trigger is scoped to this branch because workflow_dispatch only works
-# once a workflow reaches the default branch. Neither this file nor
-# .github/scripts/probe_api.py may be merged to main — both are deleted before
-# the roster-sync PR is opened.
+# Deleted before this branch is merged; the recurring job lives in
+# update-players.yml.
 on:
   push:
     branches:
       - feat/roster-sync
     paths:
       - '.github/workflows/probe-api.yml'
-      - '.github/scripts/probe_api.py'
+      - '.github/scripts/build_team_map.py'
 
 jobs:
-  probe:
+  seed:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 20
 
     permissions:
-      contents: read
+      contents: write
 
     steps:
       - name: Checkout repository
@@ -34,8 +34,20 @@ jobs:
       - name: Install dependencies
         run: pip install httpx
 
-      - name: Probe API endpoints
-        run: python .github/scripts/probe_api.py
+      # Wider than the weekly default: the first pass has to cover every league.
+      - name: Build team map
+        run: python .github/scripts/build_team_map.py
         env:
           VLRGG_API_URL: ${{ secrets.VLRGG_API_URL }}
           VLRGG_API_TOKEN: ${{ secrets.VLRGG_API_TOKEN }}
+          MATCH_PAGES: '12'
+          MAX_DETAIL_FETCHES: '120'
+
+      - name: Commit team-map.json
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add .github/data/team-map.json
+          git diff --staged --quiet \
+            && echo "team-map.json unchanged — nothing to commit" \
+            || (git commit -m "chore: seed team-map.json" && git push)
