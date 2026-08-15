@@ -114,7 +114,9 @@ if results:
                 break
 
 if match_id:
-    probe("match details", "/v2/match/details", {"id": match_id}, max_depth=6)
+    # The endpoint rejected `id` with 422 and named the parameter it wants:
+    #   {"loc": ["query", "match_id"], "msg": "Field required"}
+    probe("match details", "/v2/match/details", {"match_id": match_id}, max_depth=7)
 else:
     print("\n>>> no match id found in results — cannot chain into details")
 
