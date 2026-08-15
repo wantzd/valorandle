@@ -123,8 +123,58 @@ if os.path.exists(MAP_PATH):
 else:
     print("[Load] no team-map.json yet — first run, mapping from scratch")
 
-# name.lower() → team_id, to tell which names still need resolving
-name_to_id = {v["name"].strip().lower(): tid for tid, v in teams.items() if v.get("name")}
+# name.lower() → team_id, to tell which names still need resolving.
+# Both the official name and any recorded alias are indexed.
+name_to_id = {}
+for tid, v in teams.items():
+    if v.get("name"):
+        name_to_id[v["name"].strip().lower()] = tid
+    for alias in v.get("aliases") or []:
+        name_to_id[alias.strip().lower()] = tid
+
+
+def lookup(name):
+    """Resolve a results-list team name to a mapped team id, or None.
+
+    Exact match only, against official names and recorded aliases.
+
+    Fuzzy containment was tried here and removed: the two endpoints disagree on
+    naming (results says "Bilibili Gaming", details says "Guangzhou Huadu
+    Bilibili Gaming"), but matching on containment globally would also resolve
+    "MIBR Academy" to MIBR's id — a different team with an id of its own, which
+    would then never be discovered. Aliases are instead learned inside a single
+    match, where both ids are known and the pairing is unambiguous.
+    """
+    return name_to_id.get(name.strip().lower())
+
+
+def pair_aliases(short_names, official):
+    """Map results-feed names → team id, within one match.
+
+    `official` is [(team_id, official_name)] from the match details. Pairing is
+    done per match rather than globally, so a short name can only ever bind to
+    one of the two teams that actually played it.
+    """
+    pairs   = {}
+    left_s  = [s for s in short_names if s.strip()]
+    left_o  = list(official)
+
+    # First pass: unambiguous substring relation
+    for s in list(left_s):
+        sl = s.strip().lower()
+        cands = [(tid, n) for tid, n in left_o
+                 if sl == n.lower() or sl in n.lower() or n.lower() in sl]
+        if len(cands) == 1:
+            tid, _ = cands[0]
+            pairs[s.strip()] = tid
+            left_s.remove(s)
+            left_o = [(t, n) for t, n in left_o if t != tid]
+
+    # Second pass: one short name and one official left — they must be each other
+    if len(left_s) == 1 and len(left_o) == 1:
+        pairs[left_s[0].strip()] = left_o[0][0]
+
+    return pairs
 
 
 # ── Step 1: scan recent results for VCT league matches ────────────────────────
@@ -158,7 +208,7 @@ for seg in segments:
     league_names[league].update(names)
 
     # Only matches that can teach us something are worth a detail request
-    if all(n.lower() in name_to_id for n in names):
+    if all(lookup(n) for n in names):
         continue
 
     page = seg.get("match_page") or ""
@@ -169,7 +219,7 @@ for seg in segments:
 total_seen = sum(len(v) for v in league_names.values())
 print(f"\n  VCT league teams seen in sample: {total_seen}")
 for league in sorted(league_names):
-    known = sum(1 for n in league_names[league] if n.lower() in name_to_id)
+    known = sum(1 for n in league_names[league] if lookup(n))
     print(f"    {league:9s} {len(league_names[league]):3d} teams  ({known} already mapped)")
 
 print(f"\n  {len(pending)} match(es) involve an unmapped team")
@@ -186,7 +236,7 @@ else:
     resolved = 0
     for i, (mid, (league, names)) in enumerate(list(pending.items())[:budget], 1):
         # Skip if an earlier detail in this same run already covered both teams
-        if all(n.lower() in name_to_id for n in names):
+        if all(lookup(n) for n in names):
             continue
 
         data = api_get("/v2/match/details", {"match_id": mid})
@@ -194,35 +244,52 @@ else:
         if not segs:
             continue
 
-        for t in (segs[0].get("teams") or []):
-            tid  = str(t.get("id") or "").strip()
-            name = (t.get("name") or "").strip()
-            if not tid or not name:
-                continue
+        official = [
+            (str(t.get("id") or "").strip(), (t.get("name") or "").strip())
+            for t in (segs[0].get("teams") or [])
+        ]
+        official = [(tid, n) for tid, n in official if tid and n]
 
-            prev = teams.get(tid)
+        # Bind each results-feed name to one of this match's two ids, so the
+        # next run recognises the short form without spending a request.
+        alias_of = pair_aliases(names, official)
+
+        for tid, name in official:
+            prev    = teams.get(tid)
+            aliases = set(prev.get("aliases") or []) if prev else set()
+            aliases.update(
+                s for s, bound in alias_of.items()
+                if bound == tid and s.lower() != name.lower()
+            )
+
             if prev and prev.get("name") != name:
                 # Same org, new branding — keep the id, follow the rename
                 print(f"  ↻ {tid}: '{prev['name']}' → '{name}'")
                 name_to_id.pop(prev["name"].strip().lower(), None)
             elif not prev:
-                print(f"  + {tid}: {name} ({league})")
+                label = f" (alias: {', '.join(sorted(aliases))})" if aliases else ""
+                print(f"  + {tid}: {name} ({league}){label}")
                 resolved += 1
 
-            teams[tid] = {
+            entry = {
                 "name":      name,
                 "league":    league,
                 "last_seen": TODAY,
             }
+            if aliases:
+                entry["aliases"] = sorted(aliases)
+            teams[tid] = entry
+
             name_to_id[name.lower()] = tid
+            for a in aliases:
+                name_to_id[a.lower()] = tid
 
         time.sleep(RATE_SLEEP)
 
     print(f"\n  ✓ {resolved} new team(s) mapped")
 
     still_missing = sorted({
-        n for names in league_names.values() for n in names
-        if n.lower() not in name_to_id
+        n for names in league_names.values() for n in names if not lookup(n)
     })
     if still_missing:
         print(f"\n  ⚠ {len(still_missing)} team(s) still unmapped — raise MATCH_PAGES"
