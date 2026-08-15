@@ -92,13 +92,16 @@ def probe(label, path, params=None, max_depth=4):
 #   a) the shape of each roster entry — does it carry the vlr.gg player id?
 #   b) a way to enumerate every team in a league, to know which ids to fetch
 
-# a) Roster entries. FNATIC (2593) and one Americas org for cross-checking.
-probe("team FNATIC — roster detail", "/v2/team", {"id": 2593}, max_depth=7)
-probe("team NRG — roster detail",    "/v2/team", {"id": 1034}, max_depth=7)
-
-# b) Team enumeration. Rankings is the likeliest source of team ids per region.
-probe("rankings (na)", "/v2/rankings", {"region": "na"}, max_depth=6)
-probe("events list",   "/v2/events",   {"region": "na"}, max_depth=5)
+# Pass 2 established:
+#   /v2/team roster entries carry id / alias / country / is_captain / is_staff
+#     — everything a new players.js row needs
+#   /v2/rankings returns team NAMES but no team id, so it cannot enumerate ids
+#
+# Remaining gap: how to reach team ids at all. If `current_team` on the player
+# endpoint carries an id, the existing 257 vlrIds in players.js can be walked to
+# collect every team id, and those rosters then reveal players missing from the
+# list. That would make the sync fully self-bootstrapping.
+probe("player nerve — current_team fields", "/v2/player", {"id": 754}, max_depth=7)
 
 print("\n" + "=" * 70)
 print("DONE — paste this log back to continue the roster-sync work.")
