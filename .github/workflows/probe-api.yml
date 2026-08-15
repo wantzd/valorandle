@@ -1,0 +1,41 @@
+name: Probe API shape
+
+# Reconnaissance for the roster-sync work. Read-only, never writes to the repo.
+#
+# The push trigger is scoped to this branch because workflow_dispatch only works
+# once a workflow reaches the default branch. Neither this file nor
+# .github/scripts/probe_api.py may be merged to main — both are deleted before
+# the roster-sync PR is opened.
+on:
+  push:
+    branches:
+      - feat/roster-sync
+    paths:
+      - '.github/workflows/probe-api.yml'
+      - '.github/scripts/probe_api.py'
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: pip install httpx
+
+      - name: Probe API endpoints
+        run: python .github/scripts/probe_api.py
+        env:
+          VLRGG_API_URL: ${{ secrets.VLRGG_API_URL }}
+          VLRGG_API_TOKEN: ${{ secrets.VLRGG_API_TOKEN }}
