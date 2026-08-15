@@ -35,6 +35,8 @@ jobs:
         run: pip install httpx
 
       # Wider than the weekly default: the first pass has to cover every league.
+      # Third run of this job is the convergence check — with the map seeded it
+      # should report 0 matches involving an unmapped team and commit nothing.
       - name: Build team map
         run: python .github/scripts/build_team_map.py
         env:
