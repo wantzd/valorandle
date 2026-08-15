@@ -58,7 +58,7 @@ def describe(value, depth=0, max_depth=4):
     return f"{pad}{type(value).__name__}"
 
 
-def probe(label, path, params=None):
+def probe(label, path, params=None, max_depth=4):
     print("\n" + "=" * 70)
     print(f"PROBE: {label}   (path: {path})")
     print("=" * 70)
@@ -76,28 +76,29 @@ def probe(label, path, params=None):
             print(f"body (truncated): {body}")
             return
         data = r.json()
-        print(describe(data))
+        print(describe(data, max_depth=max_depth))
     except Exception as e:
         print(f"ERROR: {type(e).__name__}: {e}")
 
 
-# ── 1. Endpoints the build script already relies on ───────────────────────────
-# Confirms whether /v2/stats segments carry a player id or vlr.gg link. Without
-# one, new players found via stats cannot be given a vlrId automatically.
-probe("stats (region=na, all-time)", "/v2/stats", {"region": "na", "timespan": "all"})
+# ── Pass 2 ────────────────────────────────────────────────────────────────────
+# Pass 1 established:
+#   /v2/stats   200 — segments carry NO player id, only `player` name + `org`,
+#                     so it cannot supply vlrId for players new to the roster
+#   /v2/team    200 — has a `roster` list  ← the promising one
+#   /v2/teams, /v2/team/roster  404
+#
+# What is still needed to write the sync:
+#   a) the shape of each roster entry — does it carry the vlr.gg player id?
+#   b) a way to enumerate every team in a league, to know which ids to fetch
 
-# Known-good player: nerve (vlrId 754). Shows what current_team looks like and
-# whether the payload includes any roster/teammate information.
-probe("player by id", "/v2/player", {"id": 754})
+# a) Roster entries. FNATIC (2593) and one Americas org for cross-checking.
+probe("team FNATIC — roster detail", "/v2/team", {"id": 2593}, max_depth=7)
+probe("team NRG — roster detail",    "/v2/team", {"id": 1034}, max_depth=7)
 
-# ── 2. Candidate roster endpoints — the ones that would make sync possible ────
-# These are guesses; whichever returns HTTP 200 tells us the roster path exists.
-probe("teams list",        "/v2/teams")
-probe("teams by region",   "/v2/teams", {"region": "na"})
-probe("team by id",        "/v2/team", {"id": 2593})       # 2593 = Sentinels on vlr.gg
-probe("team roster",       "/v2/team/roster", {"id": 2593})
-probe("events list",       "/v2/events")
-probe("rankings",          "/v2/rankings", {"region": "na"})
+# b) Team enumeration. Rankings is the likeliest source of team ids per region.
+probe("rankings (na)", "/v2/rankings", {"region": "na"}, max_depth=6)
+probe("events list",   "/v2/events",   {"region": "na"}, max_depth=5)
 
 print("\n" + "=" * 70)
 print("DONE — paste this log back to continue the roster-sync work.")
