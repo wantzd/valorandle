@@ -1,0 +1,39 @@
+name: Test data scripts
+
+# The data scripts only ever run on a weekly schedule, so a mistake in them
+# would otherwise stay invisible for days. This runs their tests on any change.
+on:
+  pull_request:
+    paths:
+      - '.github/scripts/**'
+      - '.github/workflows/test-scripts.yml'
+  push:
+    branches:
+      - main
+    paths:
+      - '.github/scripts/**'
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      # The tests stub httpx and never reach the network, so no secrets and no
+      # dependencies are needed.
+      - name: Compile scripts
+        run: python -m compileall -q .github/scripts
+
+      - name: Test team map builder
+        run: python .github/scripts/test_build_team_map.py
