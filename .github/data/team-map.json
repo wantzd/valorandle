@@ -220,7 +220,10 @@
     "12010": {
       "name": "Guangzhou Huadu Bilibili Gaming",
       "league": "China",
-      "last_seen": "2026-08-15"
+      "last_seen": "2026-08-15",
+      "aliases": [
+        "Bilibili Gaming"
+      ]
     },
     "12064": {
       "name": "Nova Esports",
@@ -260,7 +263,10 @@
     "14137": {
       "name": "Wuxi Titan Esports Club",
       "league": "China",
-      "last_seen": "2026-08-15"
+      "last_seen": "2026-08-15",
+      "aliases": [
+        "Titan Esports Club"
+      ]
     },
     "14419": {
       "name": "GIANTX",
