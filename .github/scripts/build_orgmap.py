@@ -29,6 +29,9 @@ import sys
 import time
 from collections import defaultdict
 
+# Shared lookup tables — see vlr_common.py
+from vlr_common import agent_to_role, country_from_code
+
 # ── Secrets ───────────────────────────────────────────────────────────────────
 API_BASE = os.environ.get("VLRGG_API_URL", "").rstrip("/")
 API_TOKEN = os.environ.get("VLRGG_API_TOKEN", "").strip()
@@ -42,111 +45,91 @@ if not API_TOKEN:
 
 API_HEADERS = {"Authorization": f"Bearer {API_TOKEN}"}
 
-# ── Agent → Role map (all VALORANT agents — updated 2026-05-12) ───────────────
-AGENT_ROLE = {
-    # Duelists
-    "jett":       "Duelist",
-    "reyna":      "Duelist",
-    "phoenix":    "Duelist",
-    "neon":       "Duelist",
-    "iso":        "Duelist",
-    "raze":       "Duelist",
-    "yoru":       "Duelist",
-    "waylay":     "Duelist",
-    # Initiators
-    "sova":       "Initiator",
-    "fade":       "Initiator",
-    "breach":     "Initiator",
-    "kayo":       "Initiator",
-    "kay/o":      "Initiator",
-    "skye":       "Initiator",
-    "gekko":      "Initiator",
-    "tejo":       "Initiator",
-    # Controllers
-    "brimstone":  "Controller",
-    "viper":      "Controller",
-    "omen":       "Controller",
-    "astra":      "Controller",
-    "harbor":     "Controller",
-    "clove":      "Controller",
-    "miks":       "Controller",
-    # Sentinels
-    "killjoy":    "Sentinel",
-    "cypher":     "Sentinel",
-    "sage":       "Sentinel",
-    "chamber":    "Sentinel",
-    "deadlock":   "Sentinel",
-    "vyse":       "Sentinel",
-    "veto":       "Sentinel",
-}
-
-# ── Country code → (Portuguese name, ISO uppercase) ───────────────────────────
-COUNTRY_MAP = {
-    "us": ("EUA",              "US"),
-    "ca": ("Canadá",           "CA"),
-    "br": ("Brasil",           "BR"),
-    "cl": ("Chile",            "CL"),
-    "ar": ("Argentina",        "AR"),
-    "co": ("Colômbia",         "CO"),
-    "mx": ("México",           "MX"),
-    "do": ("Rep. Dominicana",  "DO"),
-    "pe": ("Peru",             "PE"),
-    "uy": ("Uruguai",          "UY"),
-    "gb": ("Reino Unido",      "GB"),
-    "uk": ("Reino Unido",      "GB"),
-    "de": ("Alemanha",         "DE"),
-    "fr": ("França",           "FR"),
-    "es": ("Espanha",          "ES"),
-    "tr": ("Turquia",          "TR"),
-    "ua": ("Ucrânia",          "UA"),
-    "ru": ("Rússia",           "RU"),
-    "se": ("Suécia",           "SE"),
-    "dk": ("Dinamarca",        "DK"),
-    "fi": ("Finlândia",        "FI"),
-    "no": ("Noruega",          "NO"),
-    "nl": ("Holanda",          "NL"),
-    "be": ("Bélgica",          "BE"),
-    "pl": ("Polônia",          "PL"),
-    "pt": ("Portugal",         "PT"),
-    "it": ("Itália",           "IT"),
-    "hr": ("Croácia",          "HR"),
-    "ro": ("Romênia",          "RO"),
-    "rs": ("Sérvia",           "RS"),
-    "kz": ("Cazaquistão",      "KZ"),
-    "kg": ("Quirguistão",      "KG"),
-    "mn": ("Mongólia",         "MN"),
-    "ma": ("Marrocos",         "MA"),
-    "kr": ("Coreia do Sul",    "KR"),
-    "jp": ("Japão",            "JP"),
-    "cn": ("China",            "CN"),
-    "tw": ("Taiwan",           "TW"),
-    "hk": ("Hong Kong",        "HK"),
-    "sg": ("Singapura",        "SG"),
-    "th": ("Tailândia",        "TH"),
-    "ph": ("Filipinas",        "PH"),
-    "id": ("Indonésia",        "ID"),
-    "my": ("Malásia",          "MY"),
-    "vn": ("Vietnã",           "VN"),
-    "au": ("Austrália",        "AU"),
-    "nz": ("Nova Zelândia",    "NZ"),
-    "in": ("Índia",            "IN"),
-    "pk": ("Paquistão",        "PK"),
-    "ch": ("Suíça",            "CH"),
-    "cz": ("República Tcheca", "CZ"),
-    "lt": ("Lituânia",        "LT"),
-    "md": ("Moldávia",         "MD"),
-    "eg": ("Egito",            "EG"),
-    "sa": ("Arábia Saudita",   "SA"),
-    "kh": ("Camboja",          "KH"),
-    "bm": ("Bermudas",         "BM"),
-    "mn": ("Mongólia",         "MN"),
-}
-
 TIMEOUT       = 30
 
+# ── Team-name sanitising ──────────────────────────────────────────────────────
+# vlrgg's `current_team.name` is scraped, and the tenure line sometimes leaks in
+# glued to the org name, in two shapes:
+#
+#   "FURIAjoined in June 2025"                    → still on the team
+#   "Evil GeniusesNovember 2025 – July 2026"      → LEFT in July 2026
+#   "Team HereticsApril 2022 – November 2022"     → LEFT in November 2022
+#
+# A closed date range means the player is listed as a FORMER member. Stripping
+# the suffix and keeping the org would assert they are still there, which is
+# exactly backwards — so those are dropped and reported as departures instead.
+_MONTH = (
+    r'(?:January|February|March|April|May|June|July|August|September|October'
+    r'|November|December)'
+)
 
-def agent_to_role(agent_name):
-    return AGENT_ROLE.get(agent_name.lower())
+# "November 2025 – July 2026" — tenure that has ENDED (player left)
+TENURE_CLOSED_RE = re.compile(
+    rf'{_MONTH}\s+\d{{4}}\s*[–—-]\s*{_MONTH}\s+\d{{4}}\s*$', re.IGNORECASE
+)
+# "joined in June 2025" / "November 2025 – present" — tenure still OPEN
+TENURE_OPEN_RE = re.compile(
+    rf'\s*(?:joined\s+in\s+.+|{_MONTH}\s+\d{{4}}\s*[–—-]\s*present)\s*$',
+    re.IGNORECASE,
+)
+
+# National teams appear as `current_team` during Red Bull Home Ground / Nations
+# style events and would otherwise overwrite the player's real org.
+NATIONAL_TEAM_NAMES = {
+    "argentina", "australia", "brazil", "brasil", "canada", "chile", "china",
+    "colombia", "croatia", "denmark", "dominican republic", "egypt", "finland",
+    "france", "germany", "hong kong", "india", "indonesia", "italy", "japan",
+    "kazakhstan", "korea", "malaysia", "mexico", "mongolia", "morocco",
+    "netherlands", "new zealand", "norway", "peru", "philippines", "poland",
+    "portugal", "romania", "russia", "saudi arabia", "serbia", "singapore",
+    "south korea", "spain", "sweden", "taiwan", "thailand", "turkey",
+    "türkiye", "ukraine", "united states", "uruguay", "vietnam",
+}
+
+
+def is_national_team(team_name):
+    """True when `team_name` looks like a national side rather than an org."""
+    normalised = team_name.strip().lower()
+    # "Team Türkiye", "Team Brazil" → strip the prefix before comparing
+    stripped = re.sub(r'^team\s+', '', normalised)
+    return normalised in NATIONAL_TEAM_NAMES or stripped in NATIONAL_TEAM_NAMES
+
+
+def clean_team_name(raw_name):
+    """Normalise a scraped `current_team.name`.
+
+    Returns (team_name, reason) where team_name is None when the value must not
+    be applied. reason is one of: None (clean), "left ...", "national",
+    "unknown ...".
+    """
+    name = (raw_name or "").strip()
+    if not name:
+        return None, None
+
+    name = TENURE_OPEN_RE.sub('', name).strip()
+
+    if TENURE_CLOSED_RE.search(name):
+        former = TENURE_CLOSED_RE.sub('', name).strip()
+        return None, f"left {former}" if former else "left"
+
+    if is_national_team(name):
+        return None, "national"
+
+    if not name:
+        return None, None
+
+    # vlrgg's `current_team` is simply the last roster the player appeared on,
+    # which during off-season is often a pickup or scrim side rather than an
+    # org — e.g. nerve showed up as "BOSS BABY", Xeppaa as "Kalebs kitten".
+    # Applying those would put a joke name on the team tile, so anything absent
+    # from the players.js allowlist is refused and reported instead.
+    #
+    # When known_orgs is empty the players.js parse failed upstream; in that
+    # case the check is skipped rather than rejecting every team on earth.
+    if known_orgs and name.lower() not in known_orgs:
+        return None, f"unknown {name}"
+
+    return name, None
 
 
 def detect_role(agent_list):
@@ -175,14 +158,6 @@ def detect_role(agent_list):
     return dominant
 
 
-def country_from_code(code):
-    """Return (country_pt, countryCode_upper) or (None, None) if unknown."""
-    if not code:
-        return None, None
-    result = COUNTRY_MAP.get(code.lower().strip())
-    return result if result else (None, None)
-
-
 # ── Step 0: Parse players.js for vlrId mapping ────────────────────────────────
 PLAYERS_JS_PATH = os.path.normpath(
     os.path.join(os.path.dirname(__file__), "..", "..", "public", "js", "players.js")
@@ -192,6 +167,11 @@ PLAYERS_JS_PATH = os.path.normpath(
 vlr_id_map = {}
 # name.lower() → vlrId (int)  — for quick lookup
 name_to_vlrid = {}
+# Every org named in players.js, lowercased. Used as an allowlist when applying
+# `current_team` from the API — see clean_team_name(). vlrgg reports whatever
+# roster a player last appeared on, including pickup/scrim sides ("BOSS BABY",
+# "Certified Turtles"), which must never overwrite the real org.
+known_orgs = set()
 
 print("[Step 0] Parsing players.js for vlrId mapping...")
 
@@ -202,6 +182,12 @@ try:
     # Match each { ... } player block
     for block in re.finditer(r'\{[^{}]+\}', js_content):
         text = block.group()
+
+        # Collect the org allowlist from every row, with or without vlrId
+        team_m = re.search(r'\bteam\s*:\s*"([^"]+)"', text)
+        if team_m:
+            known_orgs.add(team_m.group(1).strip().lower())
+
         if 'vlrId' not in text:
             continue
         vlrid_m = re.search(r'vlrId\s*:\s*(\d+)', text)
@@ -214,7 +200,8 @@ try:
             vlr_id_map[vid]             = {"id": pid, "name": name}
             name_to_vlrid[name.lower()] = vid
 
-    print(f"  Found {len(vlr_id_map)} players with vlrId in players.js\n")
+    print(f"  Found {len(vlr_id_map)} players with vlrId in players.js")
+    print(f"  Org allowlist: {len(known_orgs)} teams\n")
 except Exception as e:
     print(f"  ⚠ Could not parse players.js: {e}\n")
 
@@ -305,6 +292,10 @@ player_titles    = {}   # name.lower() → [title, ...] from event_placements
 
 vlrid_role_source  = {}   # vlrId (int) → agent list (for role detection)
 
+departures    = []   # [(player, former_team)]  — vlrgg shows tenure as ended
+national_hits = []   # [(player, national_side)] — ignored, not a real org
+unknown_orgs  = []   # [(player, team)] — not in the players.js allowlist
+
 # ── Title detection helpers ────────────────────────────────────────────────────
 def _is_official_vct_event(event_name):
     name = event_name.lower()
@@ -373,11 +364,19 @@ for vid, pinfo in vlr_id_map.items():
         seg = (r.json().get("data", {}).get("segments") or [{}])[0]
 
         # ── Team full name ─────────────────────────────────────────────────────
-        team_name = (seg.get("current_team") or {}).get("name", "").strip()
-        # Strip "joined in ..." suffix that sometimes leaks in from vlrgg scraping
-        team_name = re.sub(r'\s*joined\s+in\s+.+$', '', team_name, flags=re.IGNORECASE).strip()
+        raw_team = (seg.get("current_team") or {}).get("name", "")
+        team_name, skip_reason = clean_team_name(raw_team)
         if team_name:
             player_teamfull[pname] = team_name
+        elif skip_reason == "national":
+            # Keep whatever players.js already has — a national side is not an org
+            national_hits.append((pinfo["name"], raw_team.strip()))
+        elif skip_reason and skip_reason.startswith("left"):
+            # vlrgg lists them as a former member — the org in players.js is stale
+            departures.append((pinfo["name"], skip_reason[5:] or "?"))
+        elif skip_reason and skip_reason.startswith("unknown"):
+            # Pickup side, or a real org missing from players.js — needs a human
+            unknown_orgs.append((pinfo["name"], skip_reason[8:]))
 
         # ── Country ────────────────────────────────────────────────────────────
         raw_country = (seg.get("country") or "").strip()
@@ -432,7 +431,26 @@ for vid, pinfo in vlr_id_map.items():
             print(f"  ✗ vlrId {vid} ({pinfo['name']}): {e}")
 
 print(f"\n  ✓ {ok_count} players fetched, {err_count} errors")
-print(f"  teamFull: {len(player_teamfull)}, country: {len(player_country)}, agents: {len(player_agents_p)}\n")
+print(f"  teamFull: {len(player_teamfull)}, country: {len(player_country)}, agents: {len(player_agents_p)}")
+
+# Roster drift — these need a manual edit in public/js/players.js, since this
+# script only enriches the existing roster and never adds or removes players.
+if departures:
+    print(f"\n  ⚠ {len(departures)} player(s) listed as FORMER members on vlrgg —"
+          f" players.js still has them on a team:")
+    for pname, former in sorted(departures):
+        print(f"      {pname:20s} left {former}")
+if national_hits:
+    print(f"\n  ℹ {len(national_hits)} player(s) currently on a national side"
+          f" (org kept from players.js):")
+    for pname, side in sorted(national_hits):
+        print(f"      {pname:20s} → {side}")
+if unknown_orgs:
+    print(f"\n  ⚠ {len(unknown_orgs)} player(s) whose current team is not in the"
+          f" players.js allowlist — pickup side, or a real org that needs adding:")
+    for pname, team in sorted(unknown_orgs):
+        print(f"      {pname:20s} → {team}")
+print()
 
 
 # ── Step 2: Detect role — 3-tier priority ─────────────────────────────────────
@@ -462,8 +480,8 @@ all_known = set(vlr_id_map[v]["name"].lower() for v in vlr_id_map) | set(org_map
 
 for pname in all_known:
     agents = (
-        agents_30d.get(pname) or
         player_agents_p.get(pname) or
+        agents_30d.get(pname) or
         agents_all.get(pname) or
         []
     )
@@ -471,11 +489,11 @@ for pname in all_known:
     if role:
         role_map[pname] = role
 
-t1 = sum(1 for p in role_map if p in agents_30d)
-t2 = sum(1 for p in role_map if p not in agents_30d and p in player_agents_p)
+t1 = sum(1 for p in role_map if p in player_agents_p)
+t2 = sum(1 for p in role_map if p not in player_agents_p and p in agents_30d)
 t3 = len(role_map) - t1 - t2
 print(f"[Step 2] {len(role_map)} roles detected:")
-print(f"  30d stats: {t1} | career stats: {t2} | all-time: {t3}\n")
+print(f"  career stats: {t1} | 30d stats: {t2} | all-time: {t3}\n")
 
 
 # ── Step 3: Liquipedia API — birthdate → age (bulk fetch) ────────────────────

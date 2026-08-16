@@ -11,4 +11,8 @@ sandbox/
 .impeccable/
 .claude/
 
+# Python bytecode from running the data scripts locally
+__pycache__/
+*.pyc
+
 .vercel
