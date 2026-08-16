@@ -31,6 +31,7 @@ from collections import defaultdict
 
 # Shared lookup tables — see vlr_common.py
 from vlr_common import agent_to_role, country_from_code
+from liquipedia import load_players
 
 # ── Secrets ───────────────────────────────────────────────────────────────────
 API_BASE = os.environ.get("VLRGG_API_URL", "").rstrip("/")
@@ -159,6 +160,10 @@ def detect_role(agent_list):
 
 
 # ── Step 0: Parse players.js for vlrId mapping ────────────────────────────────
+LIQ_CACHE = os.path.normpath(
+    os.path.join(os.path.dirname(__file__), "..", "data", "liquipedia.json")
+)
+
 PLAYERS_JS_PATH = os.path.normpath(
     os.path.join(os.path.dirname(__file__), "..", "..", "public", "js", "players.js")
 )
@@ -179,8 +184,14 @@ try:
     with open(PLAYERS_JS_PATH, "r", encoding="utf-8") as f:
         js_content = f.read()
 
+    # sync_roster.py retires players by commenting their line out instead of
+    # deleting it, so those rows must be skipped here too — otherwise a retired
+    # player would be fetched again and reappear in org-map.json.
+    active_js = "\n".join(
+        l for l in js_content.split("\n") if not l.lstrip().startswith("//"))
+
     # Match each { ... } player block
-    for block in re.finditer(r'\{[^{}]+\}', js_content):
+    for block in re.finditer(r'\{[^{}]+\}', active_js):
         text = block.group()
 
         # Collect the org allowlist from every row, with or without vlrId
@@ -496,16 +507,15 @@ print(f"[Step 2] {len(role_map)} roles detected:")
 print(f"  career stats: {t1} | 30d stats: {t2} | all-time: {t3}\n")
 
 
-# ── Step 3: Liquipedia API — birthdate → age (bulk fetch) ────────────────────
+# ── Step 3: Liquipedia — birthdate → age, extradata.role → IGL ───────────────
 #
-# Free tier: 60 req/hour (~1 req/min).  Per-player loops are impossible at this
-# rate with 200+ players.  Instead we fetch ALL Valorant players in 1–3 paginated
-# requests (limit=1000 each) and match locally by vlrId extracted from links.vlr.
+# Reads the shared snapshot in .github/data/liquipedia.json rather than calling
+# the API. The free tier allows 60 requests per hour and a full sweep costs 6,
+# so this script and sync_roster.py used to spend 12 a week between them and a
+# live run did get a 429. liquipedia.py refreshes the snapshot at most weekly
+# and both scripts read it — see that module for the details.
 #
-# Endpoint:  GET https://api.liquipedia.net/api/v3/player
-# Fields:    pagename, birthdate, extradata, links
-# Matching:  links.vlr == "https://www.vlr.gg/player/<vlrId>"  (primary)
-#            pagename.lower() == pname                          (fallback)
+# Matching: links.vlr → vlrId first, then id/pagename by name.
 
 from datetime import date as _date
 
@@ -513,86 +523,24 @@ age_map = {}
 igl_map = {}  # pname → True when Liquipedia confirms IGL role
 LIQUIPEDIA_KEY = os.environ.get("LIQUIPEDIA_API_KEY", "").strip()
 
-if not LIQUIPEDIA_KEY:
-    print("[Step 3] LIQUIPEDIA_API_KEY not set — age and IGL stay hardcoded in players.js\n")
-else:
-    print("[Step 3] Bulk-fetching Valorant players from Liquipedia (birthdate + IGL)...")
+# vlrId → Liquipedia pagename, for players whose in-game name differs from
+# their page title.
+LIQUIPEDIA_PAGE_OVERRIDES = {
+    4712: "HeiB",   # heybay
+    4885: "Whz",    # whzy / whz
+}
+
+print("[Step 3] Liquipedia enrichment (birthdate + IGL)")
+try:
+    liq_players, _ = load_players(
+        LIQUIPEDIA_KEY, LIQ_CACHE,
+        force=os.environ.get("LIQUIPEDIA_FORCE") == "1")
+except Exception as e:
+    print(f"  ✗ {e} — age and IGL stay as players.js has them\n")
+    liq_players = None
+
+if liq_players:
     today = _date.today()
-    liq_headers = {
-        "Authorization": f"Apikey {LIQUIPEDIA_KEY}",
-        "Accept":        "application/json",
-    }
-
-    # ── 4a. Paginated bulk fetch ───────────────────────────────────────────────
-    LIQ_FIELDS    = "pagename,birthdate,extradata,links"
-    LIQ_PAGE_SIZE = 1000
-    LIQ_BASE_URL  = "https://api.liquipedia.net/api/v3/player"
-
-    all_liq_rows = []   # raw Liquipedia player records
-    offset        = 0
-    page_num      = 0
-    liq_fetch_err = 0
-
-    while True:
-        page_num += 1
-        if page_num > 1:
-            time.sleep(3)   # only needed between paginated requests (≤3 total)
-        try:
-            r = httpx.get(
-                LIQ_BASE_URL,
-                params={
-                    "wiki":   "valorant",
-                    "fields": LIQ_FIELDS,
-                    "limit":  LIQ_PAGE_SIZE,
-                    "offset": offset,
-                },
-                headers=liq_headers,
-                timeout=30,
-                follow_redirects=True,
-            )
-            r.raise_for_status()
-            result = r.json().get("result", [])
-            all_liq_rows.extend(result)
-            print(f"  Page {page_num}: {len(result)} records (total so far: {len(all_liq_rows)})")
-            if len(result) < LIQ_PAGE_SIZE:
-                break   # last page
-            offset += LIQ_PAGE_SIZE
-        except Exception as e:
-            liq_fetch_err += 1
-            print(f"  ✗ Liquipedia page {page_num}: {e}")
-            break
-
-    print(f"  Fetched {len(all_liq_rows)} Liquipedia player records in {page_num} request(s)\n")
-
-    # ── 4b. Build lookup dicts ─────────────────────────────────────────────────
-    # vlrId (int) → Liquipedia row
-    liq_by_vlrid  = {}
-    # pagename.lower() → Liquipedia row  (fallback when vlr link absent)
-    liq_by_name   = {}
-
-    VLR_PLAYER_RE = re.compile(r'vlr\.gg/player/(\d+)', re.IGNORECASE)
-
-    for row in all_liq_rows:
-        pagename = (row.get("pagename") or "").strip()
-        if pagename:
-            liq_by_name[pagename.lower()] = row
-
-        links = row.get("links") or {}
-        vlr_url = links.get("vlr") or links.get("vlrgg") or ""
-        m = VLR_PLAYER_RE.search(vlr_url)
-        if m:
-            liq_by_vlrid[int(m.group(1))] = row
-
-    print(f"  Indexed: {len(liq_by_vlrid)} by vlrId, {len(liq_by_name)} by name")
-
-    # ── 4c. Match against our players ─────────────────────────────────────────
-    # vlrId → Liquipedia pagename override for players whose in-game name
-    # differs from their Liquipedia page title.
-    LIQUIPEDIA_PAGE_OVERRIDES = {
-        4712: "HeiB",   # heybay
-        4885: "Whz",    # whzy / whz
-    }
-
     liq_ok = liq_igl = liq_no_match = 0
 
     all_known_players = list(set(
@@ -602,30 +550,18 @@ else:
 
     for pname in all_known_players:
         vid = name_to_vlrid.get(pname)
+        row = liq_players.find(vid, pname)
 
-        # Primary: match by vlrId (direct link in Liquipedia)
-        row = liq_by_vlrid.get(vid) if vid else None
-
-        # Secondary: manual pagename override for name-mismatch players
-        if row is None and vid and vid in LIQUIPEDIA_PAGE_OVERRIDES:
-            override_page = LIQUIPEDIA_PAGE_OVERRIDES[vid].lower()
-            row = liq_by_name.get(override_page)
-
-        # Fallback: match by pagename — try several case variants
-        if row is None:
-            row = (
-                liq_by_name.get(pname) or                   # already lowercased
-                liq_by_name.get(pname.title().lower()) or   # "babybay" → "babybay"
-                liq_by_name.get(pname.upper().lower())       # safety
-            )
+        # Manual pagename override for the few name mismatches
+        if row is None and vid in LIQUIPEDIA_PAGE_OVERRIDES:
+            row = liq_players.by_name(LIQUIPEDIA_PAGE_OVERRIDES[vid])
 
         if row is None:
             liq_no_match += 1
             continue
 
-        # Birthdate → age
-        bd_raw = row.get("birthdate", "")
-        if bd_raw and bd_raw not in ("0000-01-01", ""):
+        bd_raw = row.get("birthdate") or ""
+        if bd_raw and bd_raw != "0000-01-01":
             try:
                 bd  = _date.fromisoformat(bd_raw[:10])
                 age = today.year - bd.year - (
@@ -637,9 +573,7 @@ else:
             except ValueError:
                 pass
 
-        # IGL detection via extradata.role
-        extradata = row.get("extradata") or {}
-        if str(extradata.get("role", "")).lower() == "igl":
+        if row.get("role") == "igl":
             igl_map[pname] = True
             liq_igl += 1
 

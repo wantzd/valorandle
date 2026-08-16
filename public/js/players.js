@@ -12,11 +12,16 @@ var PLAYERS_DB = [
   // ══════════════════════════════════════════════════════════
 
   // ── FURIA ────────────────────────────────────────────────
-  { id:"nerve",     vlrId:754,   name:"nerve",     displayName:"nerve",     country:"EUA",            countryCode:"US", team:"FURIA",         league:"VCT Americas", leagueId:"americas", age:23, role:"Controller", isIGL:true,  yearsActive:6, titles:["Nenhum"] },
-  { id:"eeiu",      vlrId:796,   name:"eeiu",      displayName:"eeiu",      country:"Canadá",          countryCode:"CA", team:"FURIA",         league:"VCT Americas", leagueId:"americas", age:24, role:"Initiator",              yearsActive:6, titles:["Nenhum"] },
+  // saiu do elenco em 2026-08-16 — nao esta em nenhum roster mapeado da vlr.gg
+  // { id:"nerve",     vlrId:754,   name:"nerve",     displayName:"nerve",     country:"EUA",            countryCode:"US", team:"FURIA",         league:"VCT Americas", leagueId:"americas", age:23, role:"Controller", isIGL:true,  yearsActive:6, titles:["Nenhum"] },
+  { id:"Shyy", vlrId:24007, name:"Shyy", displayName:"Shyy", country:"Chile", countryCode:"CL", team:"FURIA", league:"VCT Americas", leagueId:"americas", age:21, role:"Sentinel", yearsActive:5, titles:["Nenhum"] },
+  { id:"basic", vlrId:37354, name:"basic", displayName:"basic", country:"Brasil", countryCode:"BR", team:"FURIA", league:"VCT Americas", leagueId:"americas", age:20, role:"Initiator", yearsActive:3, titles:["Nenhum"] },
+  // saiu do elenco em 2026-08-16 — nao esta em nenhum roster mapeado da vlr.gg
+  // { id:"eeiu",      vlrId:796,   name:"eeiu",      displayName:"eeiu",      country:"Canadá",          countryCode:"CA", team:"FURIA",         league:"VCT Americas", leagueId:"americas", age:24, role:"Initiator",              yearsActive:6, titles:["Nenhum"] },
   { id:"koalanoob", vlrId:3722,  name:"koalanoob", displayName:"koalanoob", country:"Canadá",          countryCode:"CA", team:"FURIA",         league:"VCT Americas", leagueId:"americas", age:23, role:"Sentinel",               yearsActive:4, titles:["Nenhum"] },
   { id:"artzin",    vlrId:5957,  name:"artzin",    displayName:"artzin",    country:"Brasil",          countryCode:"BR", team:"FURIA",         league:"VCT Americas", leagueId:"americas", age:22, role:"Sentinel",               yearsActive:4, titles:["Nenhum"] },
-  { id:"alym",      vlrId:48025, name:"alym",      displayName:"alym",      country:"Quirguistão",     countryCode:"KG", team:"FURIA",         league:"VCT Americas", leagueId:"americas", age:20, role:"Duelist",                yearsActive:2, titles:["Nenhum"] },
+  // saiu do elenco em 2026-08-16 — nao esta em nenhum roster mapeado da vlr.gg
+  // { id:"alym",      vlrId:48025, name:"alym",      displayName:"alym",      country:"Quirguistão",     countryCode:"KG", team:"FURIA",         league:"VCT Americas", leagueId:"americas", age:20, role:"Duelist",                yearsActive:2, titles:["Nenhum"] },
 
   // ── G2 Esports (Ascension 2025) ──────────────────────────
   { id:"valyn",     vlrId:3885,  name:"valyn",     displayName:"valyn",     country:"EUA",            countryCode:"US", team:"G2 Esports",    league:"VCT Americas", leagueId:"americas", age:24, role:"Controller", isIGL:true,  yearsActive:4, titles:["Champions 2024"] },
@@ -48,10 +53,14 @@ var PLAYERS_DB = [
 
   // ── Cloud9 ────────────────────────────────────────────────
   { id:"Zellsis",   vlrId:729,   name:"Zellsis",   displayName:"Zellsis",   country:"EUA",            countryCode:"US", team:"Cloud9",        league:"VCT Americas", leagueId:"americas", age:28, role:"Flex",                   yearsActive:6, titles:["Masters Bangkok 2025"] },
-  { id:"Xeppaa",    vlrId:7871,  name:"Xeppaa",    displayName:"Xeppaa",    country:"EUA",            countryCode:"US", team:"Cloud9",        league:"VCT Americas", leagueId:"americas", age:25, role:"Initiator",              yearsActive:5, titles:["Nenhum"] },
+  { id:"FireBallOps", vlrId:10053, name:"FireBallOps", displayName:"FireBallOps", country:"EUA", countryCode:"US", team:"Cloud9", league:"VCT Americas", leagueId:"americas", age:24, role:"Sentinel", yearsActive:6, titles:["Nenhum"] },
+  { id:"v1c", vlrId:17433, name:"v1c", displayName:"v1c", country:"EUA", countryCode:"US", team:"Cloud9", league:"VCT Americas", leagueId:"americas", age:21, role:"Controller", yearsActive:7, titles:["Nenhum"] },
+  // saiu do elenco em 2026-08-16 — nao esta em nenhum roster mapeado da vlr.gg
+  // { id:"Xeppaa",    vlrId:7871,  name:"Xeppaa",    displayName:"Xeppaa",    country:"EUA",            countryCode:"US", team:"Cloud9",        league:"VCT Americas", leagueId:"americas", age:25, role:"Initiator",              yearsActive:5, titles:["Nenhum"] },
   { id:"OXY",       vlrId:18796, name:"OXY",       displayName:"OXY",       country:"EUA",            countryCode:"US", team:"Cloud9",        league:"VCT Americas", leagueId:"americas", age:20, role:"Duelist",                yearsActive:4, titles:["Nenhum"] },
   { id:"Jackk",     vlrId:44842, name:"Jackk",     displayName:"Jackk",     country:"EUA",            countryCode:"US", team:"Cloud9",        league:"VCT Americas", leagueId:"americas", age:22, role:"Flex",                   yearsActive:4, titles:["Nenhum"] },
-  { id:"Notexxd",   vlrId:39021, name:"Notexxd",   displayName:"Notexxd",   country:"EUA",            countryCode:"US", team:"Cloud9",        league:"VCT Americas", leagueId:"americas", age:21, role:"Duelist",                yearsActive:2, titles:["Nenhum"] },
+  // saiu do elenco em 2026-08-16 — nao esta em nenhum roster mapeado da vlr.gg
+  // { id:"Notexxd",   vlrId:39021, name:"Notexxd",   displayName:"Notexxd",   country:"EUA",            countryCode:"US", team:"Cloud9",        league:"VCT Americas", leagueId:"americas", age:21, role:"Duelist",                yearsActive:2, titles:["Nenhum"] },
 
   // ── Evil Geniuses ─────────────────────────────────────────
   { id:"supamen",   vlrId:826,   name:"supamen",   displayName:"supamen",   country:"EUA",            countryCode:"US", team:"Evil Geniuses", league:"VCT Americas", leagueId:"americas", age:28, role:"Controller",             yearsActive:6, titles:["Nenhum"] },
@@ -59,8 +68,9 @@ var PLAYERS_DB = [
   { id:"bao",       vlrId:34400, name:"bao",       displayName:"bao",       country:"Vietnã",         countryCode:"VN", team:"Evil Geniuses", league:"VCT Americas", leagueId:"americas", age:19, role:"Sentinel",               yearsActive:2, titles:["Nenhum"] },
   { id:"Paincakes", vlrId:2164,  name:"Paincakes", displayName:"Paincakes", country:"EUA",            countryCode:"US", team:"Evil Geniuses", league:"VCT Americas", leagueId:"americas", age:22, role:"Initiator",              yearsActive:3, titles:["Nenhum"] },
   { id:"zerona",    vlrId:14048, name:"zerona",    displayName:"zerona",    country:"EUA",            countryCode:"US", team:"Evil Geniuses", league:"VCT Americas", leagueId:"americas", age:22, role:"Controller", isIGL:true,  yearsActive:3, titles:["Nenhum"] },
-  { id:"C0M",       vlrId:619,   name:"C0M",       displayName:"C0M",       country:"EUA",            countryCode:"US", team:"Evil Geniuses", league:"VCT Americas", leagueId:"americas", age:23, role:"Controller", isIGL:true,  yearsActive:5, titles:["Nenhum"] },
-  { id:"Okeanos",   vlrId:8373,  name:"Okeanos",   displayName:"Okeanos",   country:"Vietnã",         countryCode:"VN", team:"Evil Geniuses", league:"VCT Americas", leagueId:"americas", age:22, role:"Initiator",              yearsActive:3, titles:["Nenhum"] },
+  { id:"C0M",       vlrId:619,   name:"C0M",       displayName:"C0M",       country:"EUA",            countryCode:"US", team:"FURIA", league:"VCT Americas", leagueId:"americas", age:23, role:"Controller", isIGL:true,  yearsActive:5, titles:["Nenhum"] },
+  // saiu do elenco em 2026-08-16 — nao esta em nenhum roster mapeado da vlr.gg
+  // { id:"Okeanos",   vlrId:8373,  name:"Okeanos",   displayName:"Okeanos",   country:"Vietnã",         countryCode:"VN", team:"Evil Geniuses", league:"VCT Americas", leagueId:"americas", age:22, role:"Initiator",              yearsActive:3, titles:["Nenhum"] },
 
   // ── LEVIATÁN ──────────────────────────────────────────────
   { id:"kiNgg",     vlrId:8549,  name:"kiNgg",     displayName:"kiNgg",     country:"Chile",           countryCode:"CL", team:"LEVIATÁN",      league:"VCT Americas", leagueId:"americas", age:24, role:"Controller", isIGL:true,  yearsActive:5, titles:["VCT Americas 2023","Masters Tokyo 2023"] },
@@ -71,8 +81,10 @@ var PLAYERS_DB = [
 
   // ── ENVY (Ascension 2025) ─────────────────────────────────
   { id:"Rossy",     vlrId:1129,  name:"Rossy",     displayName:"Rossy",     country:"EUA",            countryCode:"US", team:"ENVY",          league:"VCT Americas", leagueId:"americas", age:23, role:"Controller", isIGL:true,  yearsActive:4, titles:["Nenhum"] },
+  { id:"nightz", vlrId:41798, name:"nightz", displayName:"nightz", country:"EUA", countryCode:"US", team:"ENVY", league:"VCT Americas", leagueId:"americas", age:18, role:"Duelist", yearsActive:4, titles:["Nenhum"] },
   { id:"keznit",    vlrId:2462,  name:"keznit",    displayName:"keznit",    country:"Chile",           countryCode:"CL", team:"ENVY",          league:"VCT Americas", leagueId:"americas", age:24, role:"Duelist",                yearsActive:5, titles:["Nenhum"] },
-  { id:"P0PPIN",    vlrId:21778, name:"P0PPIN",    displayName:"P0PPIN",    country:"EUA",            countryCode:"US", team:"ENVY",          league:"VCT Americas", leagueId:"americas", age:21, role:"Initiator",              yearsActive:3, titles:["Nenhum"] },
+  // saiu do elenco em 2026-08-16 — nao esta em nenhum roster mapeado da vlr.gg
+  // { id:"P0PPIN",    vlrId:21778, name:"P0PPIN",    displayName:"P0PPIN",    country:"EUA",            countryCode:"US", team:"ENVY",          league:"VCT Americas", leagueId:"americas", age:21, role:"Initiator",              yearsActive:3, titles:["Nenhum"] },
   { id:"Demon1",    vlrId:26171, name:"Demon1",    displayName:"Demon1",    country:"EUA",            countryCode:"US", team:"ENVY",          league:"VCT Americas", leagueId:"americas", age:23, role:"Duelist",                yearsActive:4, titles:["Champions 2023"] },
   { id:"Eggsterr",  vlrId:35302, name:"Eggsterr",  displayName:"Eggsterr",  country:"EUA",            countryCode:"US", team:"ENVY",          league:"VCT Americas", leagueId:"americas", age:23, role:"Sentinel",               yearsActive:4, titles:["Nenhum"] },
 
@@ -85,17 +97,50 @@ var PLAYERS_DB = [
 
   // ── LOUD ──────────────────────────────────────────────────
   { id:"erde",      vlrId:29242, name:"erde",      displayName:"erde",      country:"Chile",           countryCode:"CL", team:"LOUD",          league:"VCT Americas", leagueId:"americas", age:18, role:"Controller", isIGL:true,  yearsActive:4, titles:["Nenhum"] },
-  { id:"Virtyy",    vlrId:3983,  name:"Virtyy",    displayName:"Virtyy",    country:"Rep. Dominicana", countryCode:"DO", team:"LOUD",          league:"VCT Americas", leagueId:"americas", age:23, role:"Flex",                   yearsActive:5, titles:["Nenhum"] },
+  { id:"DaviH", vlrId:10885, name:"DaviH", displayName:"DaviH", country:"Portugal", countryCode:"PT", team:"LOUD", league:"VCT Americas", leagueId:"americas", age:23, role:"Initiator", yearsActive:7, titles:["Nenhum"] },
+  { id:"tkzin", vlrId:41224, name:"tkzin", displayName:"tkzin", country:"Brasil", countryCode:"BR", team:"LOUD", league:"VCT Americas", leagueId:"americas", age:18, role:"Duelist", yearsActive:3, titles:["Nenhum"] },
+  // saiu do elenco em 2026-08-16 — nao esta em nenhum roster mapeado da vlr.gg
+  // { id:"Virtyy",    vlrId:3983,  name:"Virtyy",    displayName:"Virtyy",    country:"Rep. Dominicana", countryCode:"DO", team:"LOUD",          league:"VCT Americas", leagueId:"americas", age:23, role:"Flex",                   yearsActive:5, titles:["Nenhum"] },
   { id:"lukxo",     vlrId:28716, name:"lukxo",     displayName:"lukxo",     country:"Brasil",          countryCode:"BR", team:"LOUD",          league:"VCT Americas", leagueId:"americas", age:19, role:"Sentinel",               yearsActive:3, titles:["Nenhum"] },
   { id:"cauanzin",  vlrId:6193,  name:"cauanzin",  displayName:"cauanzin",  country:"Brasil",          countryCode:"BR", team:"LOUD",          league:"VCT Americas", leagueId:"americas", age:20, role:"Initiator",              yearsActive:4, titles:["VCT Americas 2023"] },
   { id:"Darker",    vlrId:10557, name:"Darker",    displayName:"Darker",    country:"Colômbia",        countryCode:"CO", team:"LOUD",          league:"VCT Americas", leagueId:"americas", age:21, role:"Flex",                   yearsActive:3, titles:["Nenhum"] },
 
   // ── KRÜ Esports ───────────────────────────────────────────
   { id:"saadhak",   vlrId:727,   name:"saadhak",   displayName:"saadhak",   country:"Argentina",       countryCode:"AR", team:"KRÜ Esports",   league:"VCT Americas", leagueId:"americas", age:29, role:"Controller", isIGL:true,  yearsActive:6, titles:["Champions 2022","Masters Copenhagen 2022","VCT Americas 2022"] },
+  { id:"heat", vlrId:8673, name:"heat", displayName:"heat", country:"Brasil", countryCode:"BR", team:"KRÜ Esports", league:"VCT Americas", leagueId:"americas", age:23, role:"Duelist", yearsActive:6, titles:["Nenhum"] },
   { id:"mwzera",    vlrId:939,   name:"mwzera",    displayName:"mwzera",    country:"Brasil",          countryCode:"BR", team:"KRÜ Esports",   league:"VCT Americas", leagueId:"americas", age:24, role:"Duelist",                yearsActive:6, titles:["Nenhum"] },
   { id:"Less",      vlrId:8447,  name:"Less",      displayName:"Less",      country:"Brasil",          countryCode:"BR", team:"KRÜ Esports",   league:"VCT Americas", leagueId:"americas", age:21, role:"Sentinel",               yearsActive:5, titles:["Champions 2022","Masters Copenhagen 2022","VCT Americas 2022"] },
-  { id:"silentzz",  vlrId:11921, name:"silentzz",  displayName:"silentzz",  country:"Brasil",          countryCode:"BR", team:"KRÜ Esports",   league:"VCT Americas", leagueId:"americas", age:21, role:"Controller",             yearsActive:4, titles:["Nenhum"] },
+  // saiu do elenco em 2026-08-16 — nao esta em nenhum roster mapeado da vlr.gg
+  // { id:"silentzz",  vlrId:11921, name:"silentzz",  displayName:"silentzz",  country:"Brasil",          countryCode:"BR", team:"KRÜ Esports",   league:"VCT Americas", leagueId:"americas", age:21, role:"Controller",             yearsActive:4, titles:["Nenhum"] },
   { id:"Dantedeu5", vlrId:41135, name:"Dantedeu5", displayName:"Dantedeu5", country:"Argentina",       countryCode:"AR", team:"KRÜ Esports",   league:"VCT Americas", leagueId:"americas", age:18, role:"Duelist",                yearsActive:3, titles:["Nenhum"] },
+
+  // ── 2Game Esports ─────────────────────────────────────────────
+  { id:"Brinks", vlrId:27149, name:"Brinks", displayName:"Brinks", country:"Brasil", countryCode:"BR", team:"2Game Esports", league:"VCT Americas", leagueId:"americas", age:26, role:"Sentinel", yearsActive:6, titles:["Nenhum"] },
+  { id:"frz", vlrId:651, name:"frz", displayName:"frz", country:"Brasil", countryCode:"BR", team:"2Game Esports", league:"VCT Americas", leagueId:"americas", age:25, role:"Initiator", yearsActive:7, titles:["Nenhum"] },
+  { id:"gobera", vlrId:14950, name:"gobera", displayName:"gobera", country:"Brasil", countryCode:"BR", team:"2Game Esports", league:"VCT Americas", leagueId:"americas", age:25, role:"Duelist", yearsActive:6, titles:["Nenhum"] },
+  { id:"qck", vlrId:1575, name:"qck", displayName:"qck", country:"Brasil", countryCode:"BR", team:"2Game Esports", league:"VCT Americas", leagueId:"americas", age:23, role:"Sentinel", yearsActive:7, titles:["Nenhum"] },
+  { id:"xenom", vlrId:20240, name:"xenom", displayName:"xenom", country:"Brasil", countryCode:"BR", team:"2Game Esports", league:"VCT Americas", leagueId:"americas", age:23, role:"Controller", yearsActive:5, titles:["Nenhum"] },
+
+  // ── BESTIA ────────────────────────────────────────────────────
+  { id:"Loss", vlrId:37105, name:"Loss", displayName:"Loss", country:"Brasil", countryCode:"BR", team:"BESTIA", league:"VCT Americas", leagueId:"americas", age:19, role:"Duelist", yearsActive:6, titles:["Nenhum"] },
+  { id:"Melser", vlrId:1311, name:"Melser", displayName:"Melser", country:"Chile", countryCode:"CL", team:"BESTIA", league:"VCT Americas", leagueId:"americas", age:31, role:"Controller", yearsActive:7, titles:["Nenhum"] },
+  { id:"Tacolilla", vlrId:3828, name:"Tacolilla", displayName:"Tacolilla", country:"Chile", countryCode:"CL", team:"BESTIA", league:"VCT Americas", leagueId:"americas", age:25, role:"Duelist", yearsActive:7, titles:["Nenhum"] },
+  { id:"chubizin", vlrId:33570, name:"chubizin", displayName:"chubizin", country:"Chile", countryCode:"CL", team:"BESTIA", league:"VCT Americas", leagueId:"americas", age:18, role:"Initiator", yearsActive:5, titles:["Nenhum"] },
+  { id:"david", vlrId:12872, name:"david", displayName:"david", country:"Chile", countryCode:"CL", team:"BESTIA", league:"VCT Americas", leagueId:"americas", age:22, role:"Sentinel", yearsActive:6, titles:["Nenhum"] },
+
+  // ── Fluxo W7M ─────────────────────────────────────────────────
+  { id:"Palla", vlrId:15681, name:"Palla", displayName:"Palla", country:"Brasil", countryCode:"BR", team:"Fluxo W7M", league:"VCT Americas", leagueId:"americas", age:20, role:"Duelist", yearsActive:5, titles:["Nenhum"] },
+  { id:"Zanatsu", vlrId:3455, name:"Zanatsu", displayName:"Zanatsu", country:"Brasil", countryCode:"BR", team:"Fluxo W7M", league:"VCT Americas", leagueId:"americas", age:24, role:"Duelist", yearsActive:6, titles:["Nenhum"] },
+  { id:"jzz", vlrId:13093, name:"jzz", displayName:"jzz", country:"Brasil", countryCode:"BR", team:"Fluxo W7M", league:"VCT Americas", leagueId:"americas", age:22, role:"Sentinel", yearsActive:6, titles:["Nenhum"] },
+  { id:"mazin", vlrId:8872, name:"mazin", displayName:"mazin", country:"Brasil", countryCode:"BR", team:"Fluxo W7M", league:"VCT Americas", leagueId:"americas", age:27, role:"Initiator", isIGL:true, yearsActive:6, titles:["Nenhum"] },
+  { id:"tuyz", vlrId:2408, name:"tuyz", displayName:"tuyz", country:"Brasil", countryCode:"BR", team:"Fluxo W7M", league:"VCT Americas", leagueId:"americas", age:23, role:"Controller", yearsActive:7, titles:["Nenhum"] },
+
+  // ── M80 ───────────────────────────────────────────────────────
+  { id:"Boni", vlrId:24553, name:"Boni", displayName:"Boni", country:"Filipinas", countryCode:"PH", team:"M80", league:"VCT Americas", leagueId:"americas", age:22, role:"Duelist", yearsActive:4, titles:["Nenhum"] },
+  { id:"Kyu", vlrId:30470, name:"Kyu", displayName:"Kyu", country:"Canadá", countryCode:"CA", team:"M80", league:"VCT Americas", leagueId:"americas", age:22, role:"Initiator", yearsActive:7, titles:["Nenhum"] },
+  { id:"NiSMO", vlrId:4828, name:"NiSMO", displayName:"NiSMO", country:"Canadá", countryCode:"CA", team:"M80", league:"VCT Americas", leagueId:"americas", age:32, yearsActive:7, titles:["Nenhum"] },
+  { id:"Spaz", vlrId:8422, name:"Spaz", displayName:"Spaz", country:"EUA", countryCode:"US", team:"M80", league:"VCT Americas", leagueId:"americas", age:22, role:"Controller", yearsActive:7, titles:["Nenhum"] },
+  { id:"alvinboy", vlrId:17770, name:"alvinboy", displayName:"alvinboy", country:"China", countryCode:"CN", team:"M80", league:"VCT Americas", leagueId:"americas", age:20, role:"Sentinel", yearsActive:4, titles:["Nenhum"] },
 
   // ══════════════════════════════════════════════════════════
   // VCT EMEA (12 times)
