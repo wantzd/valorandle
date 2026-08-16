@@ -4,8 +4,12 @@
   "use strict";
 
   const ORG_MAP_URL    = "/data/org-map.json";
-  const CACHE_DATA_KEY = "valorandle_api_cache_v3";
-  const CACHE_EXP_KEY  = "valorandle_api_cache_exp_v3";
+  // Bump this suffix whenever players.js gains or loses players. The cached
+  // value is the fully merged roster, so a stale cache keeps serving the old
+  // one for up to 24h — and getDailyPlayers() shuffles the whole array, so two
+  // users on different cache states would be solving different dailies.
+  const CACHE_DATA_KEY = "valorandle_api_cache_v4";
+  const CACHE_EXP_KEY  = "valorandle_api_cache_exp_v4";
   const CACHE_TTL_MS   = 24 * 60 * 60 * 1000; // 24 hours — titles update weekly, keep cache fresh
 
   function getCached() {
