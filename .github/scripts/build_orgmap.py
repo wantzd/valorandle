@@ -29,6 +29,9 @@ import sys
 import time
 from collections import defaultdict
 
+# Shared lookup tables — see vlr_common.py
+from vlr_common import agent_to_role, country_from_code
+
 # ── Secrets ───────────────────────────────────────────────────────────────────
 API_BASE = os.environ.get("VLRGG_API_URL", "").rstrip("/")
 API_TOKEN = os.environ.get("VLRGG_API_TOKEN", "").strip()
@@ -41,106 +44,6 @@ if not API_TOKEN:
     sys.exit(1)
 
 API_HEADERS = {"Authorization": f"Bearer {API_TOKEN}"}
-
-# ── Agent → Role map (all VALORANT agents — updated 2026-05-12) ───────────────
-AGENT_ROLE = {
-    # Duelists
-    "jett":       "Duelist",
-    "reyna":      "Duelist",
-    "phoenix":    "Duelist",
-    "neon":       "Duelist",
-    "iso":        "Duelist",
-    "raze":       "Duelist",
-    "yoru":       "Duelist",
-    "waylay":     "Duelist",
-    # Initiators
-    "sova":       "Initiator",
-    "fade":       "Initiator",
-    "breach":     "Initiator",
-    "kayo":       "Initiator",
-    "kay/o":      "Initiator",
-    "skye":       "Initiator",
-    "gekko":      "Initiator",
-    "tejo":       "Initiator",
-    # Controllers
-    "brimstone":  "Controller",
-    "viper":      "Controller",
-    "omen":       "Controller",
-    "astra":      "Controller",
-    "harbor":     "Controller",
-    "clove":      "Controller",
-    "miks":       "Controller",
-    # Sentinels
-    "killjoy":    "Sentinel",
-    "cypher":     "Sentinel",
-    "sage":       "Sentinel",
-    "chamber":    "Sentinel",
-    "deadlock":   "Sentinel",
-    "vyse":       "Sentinel",
-    "veto":       "Sentinel",
-}
-
-# ── Country code → (Portuguese name, ISO uppercase) ───────────────────────────
-COUNTRY_MAP = {
-    "us": ("EUA",              "US"),
-    "ca": ("Canadá",           "CA"),
-    "br": ("Brasil",           "BR"),
-    "cl": ("Chile",            "CL"),
-    "ar": ("Argentina",        "AR"),
-    "co": ("Colômbia",         "CO"),
-    "mx": ("México",           "MX"),
-    "do": ("Rep. Dominicana",  "DO"),
-    "pe": ("Peru",             "PE"),
-    "uy": ("Uruguai",          "UY"),
-    "gb": ("Reino Unido",      "GB"),
-    "uk": ("Reino Unido",      "GB"),
-    "de": ("Alemanha",         "DE"),
-    "fr": ("França",           "FR"),
-    "es": ("Espanha",          "ES"),
-    "tr": ("Turquia",          "TR"),
-    "ua": ("Ucrânia",          "UA"),
-    "ru": ("Rússia",           "RU"),
-    "se": ("Suécia",           "SE"),
-    "dk": ("Dinamarca",        "DK"),
-    "fi": ("Finlândia",        "FI"),
-    "no": ("Noruega",          "NO"),
-    "nl": ("Holanda",          "NL"),
-    "be": ("Bélgica",          "BE"),
-    "pl": ("Polônia",          "PL"),
-    "pt": ("Portugal",         "PT"),
-    "it": ("Itália",           "IT"),
-    "hr": ("Croácia",          "HR"),
-    "ro": ("Romênia",          "RO"),
-    "rs": ("Sérvia",           "RS"),
-    "kz": ("Cazaquistão",      "KZ"),
-    "kg": ("Quirguistão",      "KG"),
-    "mn": ("Mongólia",         "MN"),
-    "ma": ("Marrocos",         "MA"),
-    "kr": ("Coreia do Sul",    "KR"),
-    "jp": ("Japão",            "JP"),
-    "cn": ("China",            "CN"),
-    "tw": ("Taiwan",           "TW"),
-    "hk": ("Hong Kong",        "HK"),
-    "sg": ("Singapura",        "SG"),
-    "th": ("Tailândia",        "TH"),
-    "ph": ("Filipinas",        "PH"),
-    "id": ("Indonésia",        "ID"),
-    "my": ("Malásia",          "MY"),
-    "vn": ("Vietnã",           "VN"),
-    "au": ("Austrália",        "AU"),
-    "nz": ("Nova Zelândia",    "NZ"),
-    "in": ("Índia",            "IN"),
-    "pk": ("Paquistão",        "PK"),
-    "ch": ("Suíça",            "CH"),
-    "cz": ("República Tcheca", "CZ"),
-    "lt": ("Lituânia",        "LT"),
-    "md": ("Moldávia",         "MD"),
-    "eg": ("Egito",            "EG"),
-    "sa": ("Arábia Saudita",   "SA"),
-    "kh": ("Camboja",          "KH"),
-    "bm": ("Bermudas",         "BM"),
-    "mn": ("Mongólia",         "MN"),
-}
 
 TIMEOUT       = 30
 
@@ -229,10 +132,6 @@ def clean_team_name(raw_name):
     return name, None
 
 
-def agent_to_role(agent_name):
-    return AGENT_ROLE.get(agent_name.lower())
-
-
 def detect_role(agent_list):
     """
     Detect dominant role from agent list.
@@ -257,14 +156,6 @@ def detect_role(agent_list):
     if max_secondary >= 2:
         return f"{dominant} (Flex)"
     return dominant
-
-
-def country_from_code(code):
-    """Return (country_pt, countryCode_upper) or (None, None) if unknown."""
-    if not code:
-        return None, None
-    result = COUNTRY_MAP.get(code.lower().strip())
-    return result if result else (None, None)
 
 
 # ── Step 0: Parse players.js for vlrId mapping ────────────────────────────────

@@ -25,6 +25,17 @@ jobs:
       - name: Install dependencies
         run: pip install httpx
 
+      # Keeps .github/data/team-map.json current — vlr.gg team ids, recovered
+      # from match details because the API cannot list them. The map is
+      # committed, so this converges: once every league team is known a run
+      # spends a single request and resolves nothing. New orgs (Ascension
+      # promotions, rebrands) are picked up automatically the week they play.
+      - name: Update team map
+        run: python .github/scripts/build_team_map.py
+        env:
+          VLRGG_API_URL: ${{ secrets.VLRGG_API_URL }}
+          VLRGG_API_TOKEN: ${{ secrets.VLRGG_API_TOKEN }}
+
       - name: Build public/data/org-map.json
         run: python .github/scripts/build_orgmap.py
         env:
@@ -32,10 +43,14 @@ jobs:
           VLRGG_API_TOKEN: ${{ secrets.VLRGG_API_TOKEN }}
           LIQUIPEDIA_API_KEY: ${{ secrets.LIQUIPEDIA_API_KEY }}
 
-      - name: Commit public/data/org-map.json to repository
+      # `A && B || C && D` parses as `((A && B) || C) && D`, so the original
+      # form ran `git push` even on the no-change path. Grouping keeps commit
+      # and push together on the branch that actually has something to send.
+      - name: Commit data updates to repository
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add public/data/org-map.json
-          git diff --staged --quiet && echo "No changes to org-map.json" || \
-            git commit -m "chore: update org-map.json" && git push
+          git add public/data/org-map.json .github/data/team-map.json
+          git diff --staged --quiet \
+            && echo "No data changes to commit" \
+            || (git commit -m "chore: update player data" && git push)
