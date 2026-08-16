@@ -17,6 +17,10 @@ on:
         description: 'Restrict the insert to these leagues (comma-separated, e.g. "VCT Americas"). Empty = all.'
         type: string
         default: ''
+      retire:
+        description: 'Comment out players no longer on any mapped roster'
+        type: boolean
+        default: false
   # Weekly, an hour after update-players so the team map is current first.
   schedule:
     - cron: '0 8 * * 1'
@@ -49,12 +53,13 @@ jobs:
           LIQUIPEDIA_API_KEY: ${{ secrets.LIQUIPEDIA_API_KEY }}
           APPLY: ${{ inputs.apply && '1' || '' }}
           APPLY_LEAGUES: ${{ inputs.leagues }}
+          RETIRE_DEPARTURES: ${{ inputs.retire && '1' || '' }}
 
       - name: Commit drift report
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add .github/data/roster-drift.json public/js/players.js
+          git add .github/data/roster-drift.json .github/data/liquipedia.json public/js/players.js
           git diff --staged --quiet \
             && echo "no drift changes to commit" \
             || (git commit -m "chore: update roster drift report" && git push)

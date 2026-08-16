@@ -52,7 +52,7 @@ STUB_HTTPX = textwrap.dedent('''
         # Org with no section in players.js — exercises append_team_section
         "9500": [
             {"id": "99010", "alias": "estreante1", "country": "br", "is_captain": True,  "is_staff": False},
-            {"id": "99011", "alias": "estreante2", "country": "ar", "is_captain": False, "is_staff": False},
+            {"id": "99011", "alias": "estreante2", "country": "", "is_captain": False, "is_staff": False},
         ],
     }
 
@@ -77,6 +77,20 @@ STUB_HTTPX = textwrap.dedent('''
             "extradata": {"agent1": "Sova"},
             "earningsbyyear": {"2020": 5},
             "links": {"vlr": "https://www.vlr.gg/player/99003"},
+        },
+        {   # NO vlr link — the Frz/Tacolilla case. Must still match, by name.
+            "id": "estreante1", "pagename": "Estreante1",
+            "birthdate": "2003-02-02", "status": "Active", "nationality": "Brazil",
+            "extradata": {"agent1": "Killjoy", "agent2": "Cypher"},
+            "earningsbyyear": {"2022": 10},
+            "links": {"twitter": "https://twitter.com/x"},
+        },
+        {   # no country on the roster entry — nationality must fill it in
+            "id": "estreante2", "birthdate": "2001-05-05", "status": "Active",
+            "nationality": "Argentina",
+            "extradata": {"agent1": "Sova"},
+            "earningsbyyear": {"2023": 10},
+            "links": {"vlr": "https://www.vlr.gg/player/99011"},
         },
     ]
 
@@ -162,7 +176,7 @@ def main():
         for d in (scripts, data, pubjs):
             os.makedirs(d)
 
-        for name in ("sync_roster.py", "vlr_common.py"):
+        for name in ("sync_roster.py", "vlr_common.py", "liquipedia.py"):
             shutil.copy(os.path.join(HERE, name), scripts)
         with open(os.path.join(scripts, "httpx.py"), "w", encoding="utf-8") as f:
             f.write(STUB_HTTPX)
@@ -183,13 +197,16 @@ def main():
             "PYTHONIOENCODING": "utf-8",
             "APPLY": "1",
         })
-        def run_429():
+        def run(**extra):
             e = dict(env)
-            e["LIQ_429"] = "1"
-            e["LIQ_BACKOFF"] = "0"   # do not really sleep through the backoff
+            e.update(extra)
             p = subprocess.run([sys.executable, os.path.join(scripts, "sync_roster.py")],
                                capture_output=True, text=True, encoding="utf-8", env=e)
             return p, None, None
+
+        def run_429():
+            # LIQ_BACKOFF=0 so the retry path does not really sleep
+            return run(LIQ_429="1", LIQ_BACKOFF="0")
 
         proc = subprocess.run([sys.executable, os.path.join(scripts, "sync_roster.py")],
                               capture_output=True, text=True, encoding="utf-8", env=env)
@@ -293,7 +310,49 @@ def main():
                    if l not in set(open(players_path, encoding="utf-8").read().splitlines())]
         check("no original line removed", not removed, str(removed[:3]))
 
+        # Liquipedia matching that does not depend on a vlr.gg link
+        check("matched by name when the page has no vlr link",
+              adds.get("estreante1", {}).get("age") == 23,
+              str(adds.get("estreante1", {}).get("age")))
+        check("role from a name-matched page",
+              adds.get("estreante1", {}).get("role") == "Sentinel",
+              str(adds.get("estreante1", {}).get("role")))
+        check("country falls back to liquipedia nationality",
+              adds.get("estreante2", {}).get("country") == "Argentina",
+              str(adds.get("estreante2", {}).get("country")))
+
+        # The snapshot is written once and reused, so the quota is not spent twice
+        cache = os.path.join(data, "liquipedia.json")
+        check("snapshot written", os.path.exists(cache))
+        blob = json.load(open(cache, encoding="utf-8")) if os.path.exists(cache) else {}
+        check("snapshot is trimmed, not raw",
+              bool(blob.get("players")) and "extradata" not in blob["players"][0],
+              str(list(blob.get("players", [{}])[0].keys()))[:120])
+
+        # Retiring departures: commented out, never deleted, and the file must
+        # still be valid JavaScript afterwards.
+        shutil.copy(os.path.join(REPO, "public", "js", "players.js"), players_path)
+        _, _, _ = run(RETIRE_DEPARTURES="1")
+        retired_text = open(players_path, encoding="utf-8").read()
+        retired_db   = node_players(players_path)
+
+        gone = {d["vlrId"] for d in drift["departures"]}
+        still = [p for p in retired_db if p["vlrId"] in gone]
+        check("departed players leave PLAYERS_DB", not still, f"{len(still)} left")
+        check("retired rows are commented, not deleted",
+              retired_text.count("// saiu do elenco") == len(gone),
+              f"{retired_text.count('// saiu do elenco')} vs {len(gone)}")
+        sample = drift["departures"][0]["vlrId"]
+        check("a retired row keeps its original text",
+              any(f"vlrId:{sample}" in l and l.strip().startswith("//")
+                  for l in retired_text.split("\n")),
+              f"vlrId {sample}")
+        check("newcomers survive the retirement pass",
+              len([p for p in retired_db if p["vlrId"] in (99001, 99002)]) == 2)
+
         # A Liquipedia outage must abort the write, not produce blank rows.
+        # The snapshot has to go first, otherwise the cache would serve the run.
+        os.remove(cache)
         shutil.copy(os.path.join(REPO, "public", "js", "players.js"), players_path)
         pristine = open(players_path, encoding="utf-8").read()
         proc429, _, _ = run_429()

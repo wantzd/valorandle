@@ -54,7 +54,8 @@ import time
 from collections import defaultdict
 from datetime import date
 
-from vlr_common import agent_to_role, country_from_code
+from vlr_common import agent_to_role, country_from_code, country_from_name
+from liquipedia import load_players
 
 # ── Config ────────────────────────────────────────────────────────────────────
 API_BASE  = os.environ.get("VLRGG_API_URL", "").rstrip("/")
@@ -64,6 +65,8 @@ APPLY     = os.environ.get("APPLY", "").strip() == "1"
 # Optional comma-separated allowlist, e.g. "VCT Americas". Empty means every
 # league — rolling one league at a time keeps a review to a readable size.
 APPLY_LEAGUES = {s.strip() for s in os.environ.get("APPLY_LEAGUES", "").split(",") if s.strip()}
+# Comment out players no longer on any mapped roster. Off by default.
+RETIRE = os.environ.get("RETIRE_DEPARTURES", "").strip() == "1"
 
 if not API_BASE or not API_TOKEN:
     print("ERROR: VLRGG_API_URL / VLRGG_API_TOKEN not set.")
@@ -80,6 +83,7 @@ LIQ_BACKOFF = int(os.environ.get("LIQ_BACKOFF", "20"))
 HERE          = os.path.dirname(__file__)
 TEAM_MAP_PATH = os.path.normpath(os.path.join(HERE, "..", "data", "team-map.json"))
 DRIFT_PATH    = os.path.normpath(os.path.join(HERE, "..", "data", "roster-drift.json"))
+LIQ_CACHE     = os.path.normpath(os.path.join(HERE, "..", "data", "liquipedia.json"))
 PLAYERS_JS    = os.path.normpath(os.path.join(HERE, "..", "..", "public", "js", "players.js"))
 
 LEAGUE_FULL = {
@@ -210,60 +214,20 @@ for value, n in sorted(by_role.items(), key=lambda kv: -kv[1])[:12]:
 
 
 # ── Step 3: Liquipedia enrichment ─────────────────────────────────────────────
-liq = {}   # vlrId (int) → liquipedia row
+liq_players = None   # liquipedia.Players, or None when unavailable
 
-if not LIQ_KEY:
-    print("\n[Step 3] LIQUIPEDIA_API_KEY not set — newcomers will have blank"
-          " age/role/yearsActive")
-else:
-    print("\n[Step 3] Bulk-fetching Liquipedia players...")
-    liq_headers = {"Authorization": f"Apikey {LIQ_KEY}", "Accept": "application/json"}
-    VLR_RE = re.compile(r'vlr\.gg/player/(\d+)', re.IGNORECASE)
 
-    offset, page = 0, 0
-    while True:
-        page += 1
-        if page > 1:
-            time.sleep(3)   # free tier is 60 req/hour; only a few pages are needed
-        rows = None
-        for attempt in range(1, 4):
-            try:
-                r = httpx.get(
-                    "https://api.liquipedia.net/api/v3/player",
-                    params={
-                        "wiki": "valorant",
-                        "fields": "pagename,id,birthdate,status,nationality,"
-                                  "extradata,links,earningsbyyear",
-                        "limit": 1000,
-                        "offset": offset,
-                    },
-                    headers=liq_headers, timeout=TIMEOUT, follow_redirects=True,
-                )
-                if r.status_code == 429:
-                    # Hourly quota. Backing off inside one job rarely clears it,
-                    # but a short wait covers a burst from a neighbouring run.
-                    wait = LIQ_BACKOFF * attempt
-                    print(f"  … Liquipedia rate-limited (429), waiting {wait}s")
-                    time.sleep(wait)
-                    continue
-                r.raise_for_status()
-                rows = r.json().get("result", [])
-                break
-            except Exception as e:
-                print(f"  ✗ Liquipedia page {page} attempt {attempt}: {e}")
-                time.sleep(5 * attempt)
-        if rows is None:
-            break
+def liq_row(vid, alias):
+    """Liquipedia record for a player, by vlr link first then by name."""
+    return liq_players.find(vid, alias) if liq_players else None
 
-        for row in rows:
-            m = VLR_RE.search((row.get("links") or {}).get("vlr") or "")
-            if m:
-                liq[int(m.group(1))] = row
-
-        print(f"  page {page}: {len(rows)} rows (indexed by vlrId: {len(liq)})")
-        if len(rows) < 1000:
-            break
-        offset += 1000
+print("\n[Step 3] Liquipedia enrichment")
+try:
+    liq_players, liq_refreshed = load_players(
+        LIQ_KEY, LIQ_CACHE, force=os.environ.get("LIQUIPEDIA_FORCE") == "1")
+except Exception as e:
+    print(f"  ✗ {e}")
+    liq_players = None
 
 
 def age_from(row):
@@ -280,10 +244,8 @@ def age_from(row):
 
 def role_from(row):
     """Signature agents are curated on Liquipedia, so they beat pick stats."""
-    extra  = (row or {}).get("extradata") or {}
-    agents = [extra.get(f"agent{i}") for i in (1, 2, 3)]
-    roles  = [agent_to_role(a) for a in agents if a]
-    roles  = [r for r in roles if r]
+    roles = [agent_to_role(a) for a in ((row or {}).get("agents") or [])]
+    roles = [r for r in roles if r]
     if not roles:
         return None
     counts = defaultdict(int)
@@ -294,13 +256,12 @@ def role_from(row):
 
 
 def is_igl(row, captain):
-    extra = (row or {}).get("extradata") or {}
-    return captain or str(extra.get("role", "")).lower() == "igl"
+    return captain or (row or {}).get("role") == "igl"
 
 
 def years_active(row):
-    years = [int(y) for y in ((row or {}).get("earningsbyyear") or {}) if str(y).isdigit()]
-    return (TODAY.year - min(years) + 1) if years else None
+    first = (row or {}).get("firstYear")
+    return (TODAY.year - first + 1) if first else None
 
 
 def is_retired(row):
@@ -357,7 +318,7 @@ def classify_team_change(old, new):
 additions, departures, team_changes, retired_hits = [], [], [], []
 
 for vid, info in sorted(live.items()):
-    row      = liq.get(vid)
+    row      = liq_row(vid, info["alias"])
     league   = info["league"]
     full, lid = LEAGUE_FULL.get(league, (league, league.lower()))
 
@@ -367,6 +328,10 @@ for vid, info in sorted(live.items()):
             retired_hits.append({"vlrId": vid, "name": info["alias"], "team": info["team"]})
             continue
         pt, cc = country_from_code(info["country"])
+        if not pt:
+            # vlrgg sometimes has no country on the roster entry (NiSMO).
+            # Liquipedia carries it as an English name instead of a code.
+            pt, cc = country_from_name((row or {}).get("nationality"))
         additions.append({
             "vlrId":       vid,
             "name":        info["alias"],
@@ -543,11 +508,11 @@ if not APPLY:
 # game, and a Liquipedia 429 is silent from the caller's point of view: the run
 # still "succeeds", it just enriches nothing. Refuse to write in that case
 # rather than quietly degrading the data.
-if LIQ_KEY and not liq:
-    print("\nERROR: Liquipedia returned no rows (rate limit or outage), so"
-          " age/role/yearsActive would all be blank.\n"
+if not liq_players:
+    print("\nERROR: no Liquipedia data (rate limit, outage, or missing"
+          " snapshot), so age/role/yearsActive would all be blank.\n"
           "       Refusing to modify players.js. The drift report above is"
-          " still valid — retry the apply once the hourly quota resets.")
+          " still valid — retry once .github/data/liquipedia.json is available.")
     sys.exit(1)
 
 blank = [a["name"] for a in additions if not (a["age"] and a["role"])]
@@ -602,10 +567,38 @@ for team, group in sorted(by_team.items()):
     text  = text[:last] + lines + text[last:]
     inserted += len(group)
 
-if inserted:
+# ── Step 7: optionally retire departed players ────────────────────────────────
+# Commented out rather than deleted: the row carries curated history (titles,
+# yearsActive, manual role) that the API cannot reproduce, and a wrong call is
+# undone by deleting two slashes. A commented line is invisible to PLAYERS_DB
+# while staying in the file.
+retired = 0
+if RETIRE and departures:
+    dep_ids = {d["vlrId"] for d in departures}
+    if APPLY_LEAGUES:
+        dep_ids = {d["vlrId"] for d in departures
+                   if (existing.get(d["vlrId"], {}).get("league") or "") in APPLY_LEAGUES}
+
+    out = []
+    for line in text.split("\n"):
+        m = re.match(r'^(\s*)\{.*\bvlrId:(\d+)\b', line)
+        if m and int(m.group(2)) in dep_ids:
+            indent = m.group(1)
+            out.append(f"{indent}// saiu do elenco em {TODAY.isoformat()} —"
+                       f" nao esta em nenhum roster mapeado da vlr.gg")
+            out.append(f"{indent}// {line.strip()}")
+            retired += 1
+        else:
+            out.append(line)
+    text = "\n".join(out)
+
+if inserted or retired:
     with open(PLAYERS_JS, "w", encoding="utf-8", newline="\n") as f:
         f.write(text)
+if inserted:
     print(f"\n[Apply] inserted {inserted} player(s) into players.js")
+if retired:
+    print(f"[Apply] commented out {retired} departed player(s)")
 if no_block:
     print(f"[Apply] {len(no_block)} team(s) have no section in players.js —"
           f" add by hand: {', '.join(sorted(no_block))}")
