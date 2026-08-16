@@ -73,6 +73,9 @@ API_HEADERS = {"Authorization": f"Bearer {API_TOKEN}"}
 TIMEOUT     = 30
 RETRIES     = 3
 RATE_SLEEP  = 0.35
+# Seconds to wait after a Liquipedia 429, multiplied by the attempt number.
+# Overridable so the test suite does not actually sleep.
+LIQ_BACKOFF = int(os.environ.get("LIQ_BACKOFF", "20"))
 
 HERE          = os.path.dirname(__file__)
 TEAM_MAP_PATH = os.path.normpath(os.path.join(HERE, "..", "data", "team-map.json"))
@@ -221,23 +224,35 @@ else:
     while True:
         page += 1
         if page > 1:
-            time.sleep(3)   # free tier is 60 req/hour; only 1-3 pages are needed
-        try:
-            r = httpx.get(
-                "https://api.liquipedia.net/api/v3/player",
-                params={
-                    "wiki": "valorant",
-                    "fields": "pagename,id,birthdate,status,nationality,"
-                              "extradata,links,earningsbyyear",
-                    "limit": 1000,
-                    "offset": offset,
-                },
-                headers=liq_headers, timeout=TIMEOUT, follow_redirects=True,
-            )
-            r.raise_for_status()
-            rows = r.json().get("result", [])
-        except Exception as e:
-            print(f"  ✗ Liquipedia page {page}: {e}")
+            time.sleep(3)   # free tier is 60 req/hour; only a few pages are needed
+        rows = None
+        for attempt in range(1, 4):
+            try:
+                r = httpx.get(
+                    "https://api.liquipedia.net/api/v3/player",
+                    params={
+                        "wiki": "valorant",
+                        "fields": "pagename,id,birthdate,status,nationality,"
+                                  "extradata,links,earningsbyyear",
+                        "limit": 1000,
+                        "offset": offset,
+                    },
+                    headers=liq_headers, timeout=TIMEOUT, follow_redirects=True,
+                )
+                if r.status_code == 429:
+                    # Hourly quota. Backing off inside one job rarely clears it,
+                    # but a short wait covers a burst from a neighbouring run.
+                    wait = LIQ_BACKOFF * attempt
+                    print(f"  … Liquipedia rate-limited (429), waiting {wait}s")
+                    time.sleep(wait)
+                    continue
+                r.raise_for_status()
+                rows = r.json().get("result", [])
+                break
+            except Exception as e:
+                print(f"  ✗ Liquipedia page {page} attempt {attempt}: {e}")
+                time.sleep(5 * attempt)
+        if rows is None:
             break
 
         for row in rows:
@@ -523,6 +538,23 @@ def append_team_section(text, league, team, rows):
 if not APPLY:
     print("\nAPPLY not set — players.js untouched.")
     sys.exit(0)
+
+# Writing rows with blank age/role/yearsActive would put empty tiles in the
+# game, and a Liquipedia 429 is silent from the caller's point of view: the run
+# still "succeeds", it just enriches nothing. Refuse to write in that case
+# rather than quietly degrading the data.
+if LIQ_KEY and not liq:
+    print("\nERROR: Liquipedia returned no rows (rate limit or outage), so"
+          " age/role/yearsActive would all be blank.\n"
+          "       Refusing to modify players.js. The drift report above is"
+          " still valid — retry the apply once the hourly quota resets.")
+    sys.exit(1)
+
+blank = [a["name"] for a in additions if not (a["age"] and a["role"])]
+if blank:
+    print(f"\n  note: {len(blank)} addition(s) still lack age or role and will"
+          f" be written with those fields omitted: {', '.join(blank[:12])}"
+          + (" ..." if len(blank) > 12 else ""))
 
 applying = additions
 if APPLY_LEAGUES:

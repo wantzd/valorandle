@@ -94,6 +94,8 @@ STUB_HTTPX = textwrap.dedent('''
         params = params or {}
 
         if "liquipedia.net" in url:
+            if os.environ.get("LIQ_429"):
+                return _Resp({"detail": "rate limited"}, 429)
             if params.get("offset", 0):
                 return _Resp({"result": []})
             return _Resp({"result": LIQ_ROWS})
@@ -181,6 +183,14 @@ def main():
             "PYTHONIOENCODING": "utf-8",
             "APPLY": "1",
         })
+        def run_429():
+            e = dict(env)
+            e["LIQ_429"] = "1"
+            e["LIQ_BACKOFF"] = "0"   # do not really sleep through the backoff
+            p = subprocess.run([sys.executable, os.path.join(scripts, "sync_roster.py")],
+                               capture_output=True, text=True, encoding="utf-8", env=e)
+            return p, None, None
+
         proc = subprocess.run([sys.executable, os.path.join(scripts, "sync_roster.py")],
                               capture_output=True, text=True, encoding="utf-8", env=env)
         if proc.returncode != 0:
@@ -282,6 +292,16 @@ def main():
         removed = [l for l in before_text.splitlines()
                    if l not in set(open(players_path, encoding="utf-8").read().splitlines())]
         check("no original line removed", not removed, str(removed[:3]))
+
+        # A Liquipedia outage must abort the write, not produce blank rows.
+        shutil.copy(os.path.join(REPO, "public", "js", "players.js"), players_path)
+        pristine = open(players_path, encoding="utf-8").read()
+        proc429, _, _ = run_429()
+        check("429 aborts with non-zero exit", proc429.returncode != 0,
+              f"exit {proc429.returncode}")
+        check("429 leaves players.js untouched",
+              open(players_path, encoding="utf-8").read() == pristine)
+        check("429 explains why", "Refusing to modify players.js" in proc429.stdout)
 
         print()
         if fails:
