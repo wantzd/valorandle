@@ -61,6 +61,9 @@ API_BASE  = os.environ.get("VLRGG_API_URL", "").rstrip("/")
 API_TOKEN = os.environ.get("VLRGG_API_TOKEN", "").strip()
 LIQ_KEY   = os.environ.get("LIQUIPEDIA_API_KEY", "").strip()
 APPLY     = os.environ.get("APPLY", "").strip() == "1"
+# Optional comma-separated allowlist, e.g. "VCT Americas". Empty means every
+# league — rolling one league at a time keeps a review to a readable size.
+APPLY_LEAGUES = {s.strip() for s in os.environ.get("APPLY_LEAGUES", "").split(",") if s.strip()}
 
 if not API_BASE or not API_TOKEN:
     print("ERROR: VLRGG_API_URL / VLRGG_API_TOKEN not set.")
@@ -464,6 +467,55 @@ with open(DRIFT_PATH, "w", encoding="utf-8") as f:
 print(f"\n[Done] wrote {DRIFT_PATH}")
 
 
+def append_team_section(text, league, team, rows):
+    """Add a "// ── <team> ──" section at the end of `league`'s region.
+
+    players.js groups players by league behind banner blocks:
+
+        // ══════════════════════════════════
+        // VCT AMERICAS (12 times: ...)
+        // ══════════════════════════════════
+
+        // ── FURIA ──────────────────────────
+        { ... },
+
+    A team promoted into a league has no section, so one is appended just
+    before the next banner (or at end of array for the last region). Returns
+    (text, applied).
+    """
+    banner_re = re.compile(r'^[ \t]*//[ \t]*═{3,}[ \t]*$', re.MULTILINE)
+    label     = league.replace("VCT ", "").upper()
+    region    = re.search(rf'^[ \t]*//[ \t]*VCT[ \t]+{re.escape(label)}\b.*$',
+                          text, re.MULTILINE | re.IGNORECASE)
+    if not region:
+        return text, False
+
+    # The banner immediately below the title closes this region's own header —
+    # only whitespace separates the two, so skip it. The next banner after that
+    # opens the following region, and that is where this region ends.
+    nxt = None
+    for m in banner_re.finditer(text, region.end()):
+        if not text[region.end():m.start()].strip():
+            continue
+        nxt = m
+        break
+
+    if nxt:
+        cut = text.rfind("\n", 0, nxt.start()) + 1
+    else:
+        # Last region — insert before the array's closing bracket
+        close = re.search(r'^\s*\];', text[region.end():], re.MULTILINE)
+        if not close:
+            return text, False
+        cut = region.end() + close.start()
+
+    dashes  = "─" * max(3, 58 - len(team))
+    section = (f"  // ── {team} {dashes}\n"
+               + "\n".join(js_line(a) for a in sorted(rows, key=lambda x: x["name"]))
+               + "\n\n")
+    return text[:cut] + section + text[cut:], True
+
+
 # ── Step 6: optional insertion into players.js ────────────────────────────────
 # Only additions, only into a team block that already exists. A brand-new org
 # needs a new section (and a decision about where it belongs), so those are
@@ -472,7 +524,13 @@ if not APPLY:
     print("\nAPPLY not set — players.js untouched.")
     sys.exit(0)
 
-if not additions:
+applying = additions
+if APPLY_LEAGUES:
+    applying = [a for a in additions if a["league"] in APPLY_LEAGUES]
+    print(f"\nAPPLY_LEAGUES={', '.join(sorted(APPLY_LEAGUES))}"
+          f" — applying {len(applying)} of {len(additions)} addition(s)")
+
+if not applying:
     print("\nNothing to apply.")
     sys.exit(0)
 
@@ -481,16 +539,23 @@ inserted = 0
 no_block = []
 
 by_team = defaultdict(list)
-for a in additions:
+for a in applying:
     by_team[a["team"]].append(a)
 
-for team, group in by_team.items():
+for team, group in sorted(by_team.items()):
     # Team sections are marked "  // ── <team> ────..."
     header = re.search(
         rf'^[ \t]*//[ \t]*[─\-]+[ \t]*{re.escape(team)}\b.*$',
         text, re.MULTILINE)
     if not header:
-        no_block.append(team)
+        # A team new to the league has no section yet. Append one at the end of
+        # its league region, which is delimited by the "// ══" banner blocks.
+        text, ok = append_team_section(text, group[0]["league"], team, group)
+        if ok:
+            inserted += len(group)
+            print(f"  + new section: {team} ({len(group)} players)")
+        else:
+            no_block.append(team)
         continue
 
     # Insert after the last consecutive player row under that header

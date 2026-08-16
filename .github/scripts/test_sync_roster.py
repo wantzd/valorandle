@@ -49,6 +49,11 @@ STUB_HTTPX = textwrap.dedent('''
             {"id": "99007", "alias": "parado",   "country": "br", "is_captain": False,
              "is_staff": False, "role": "inactive"},
         ],
+        # Org with no section in players.js — exercises append_team_section
+        "9500": [
+            {"id": "99010", "alias": "estreante1", "country": "br", "is_captain": True,  "is_staff": False},
+            {"id": "99011", "alias": "estreante2", "country": "ar", "is_captain": False, "is_staff": False},
+        ],
     }
 
     LIQ_ROWS = [
@@ -108,6 +113,7 @@ TEAM_MAP = {
     "generated": "2026-08-16",
     "teams": {
         "2406": {"name": "FURIA", "league": "Americas", "last_seen": "2026-08-16"},
+        "9500": {"name": "Time Novo FC", "league": "Americas", "last_seen": "2026-08-16"},
     },
 }
 
@@ -193,7 +199,9 @@ def main():
 
         adds = {a["name"]: a for a in drift["additions"]}
 
-        check("two newcomers detected", set(adds) == {"novato", "capitao"}, str(sorted(adds)))
+        check("newcomers detected",
+              set(adds) == {"novato", "capitao", "estreante1", "estreante2"},
+              str(sorted(adds)))
         check("is_staff excluded", "treinador" not in adds)
         check("coach excluded despite is_staff false", "coachzin" not in adds)
         check("sub excluded", "reserva" not in adds)
@@ -243,11 +251,25 @@ def main():
               all(p["vlrId"] in {x["vlrId"] for x in after} for p in before))
 
         # Insertion correctness
-        check("two rows added", len(after) == len(before) + 2, f"got {len(after)}")
+        check("four rows added", len(after) == len(before) + 4, f"got {len(after)}")
         new_rows = {p["name"]: p for p in after if p["vlrId"] in (99001, 99002)}
         check("newcomers landed in FURIA",
               all(p["team"] == "FURIA" for p in new_rows.values()),
               str({k: v.get("team") for k, v in new_rows.items()}))
+
+        # Brand-new org gets its own section inside the right league region
+        after_text = open(players_path, encoding="utf-8").read()
+        novos = [p for p in after if p["vlrId"] in (99010, 99011)]
+        check("new org players added", len(novos) == 2, f"got {len(novos)}")
+        check("new org rows carry the team",
+              all(p["team"] == "Time Novo FC" for p in novos))
+        check("new org got a section header", "── Time Novo FC" in after_text)
+        americas = after_text.index("VCT AMERICAS")
+        emea     = after_text.index("VCT EMEA")
+        check("section landed inside the Americas region",
+              americas < after_text.index("── Time Novo FC") < emea)
+        check("new org players sit in the Americas league",
+              all(p["league"] == "VCT Americas" for p in novos))
         check("newcomer has titles placeholder",
               new_rows.get("novato", {}).get("titles") == ["Nenhum"])
 

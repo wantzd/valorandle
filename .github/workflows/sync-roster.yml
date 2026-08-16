@@ -13,6 +13,10 @@ on:
         description: 'Insert newcomers into players.js'
         type: boolean
         default: false
+      leagues:
+        description: 'Restrict the insert to these leagues (comma-separated, e.g. "VCT Americas"). Empty = all.'
+        type: string
+        default: ''
   # Weekly, an hour after update-players so the team map is current first.
   schedule:
     - cron: '0 8 * * 1'
@@ -44,6 +48,7 @@ jobs:
           VLRGG_API_TOKEN: ${{ secrets.VLRGG_API_TOKEN }}
           LIQUIPEDIA_API_KEY: ${{ secrets.LIQUIPEDIA_API_KEY }}
           APPLY: ${{ inputs.apply && '1' || '' }}
+          APPLY_LEAGUES: ${{ inputs.leagues }}
 
       - name: Commit drift report
         run: |
