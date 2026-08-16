@@ -1,0 +1,59 @@
+name: Sync roster
+
+# Reports how far public/js/players.js has drifted from the live VCT rosters.
+#
+# Read-only by default: it writes .github/data/roster-drift.json and prints a
+# report. Set apply=true on a manual dispatch to also insert newcomers into
+# players.js. Departures are never applied automatically — removing a player
+# also removes curated history.
+on:
+  workflow_dispatch:
+    inputs:
+      apply:
+        description: 'Insert newcomers into players.js'
+        type: boolean
+        default: false
+  # Temporary: workflow_dispatch is unavailable until this file reaches main.
+  push:
+    branches:
+      - feat/roster-sync
+    paths:
+      - '.github/workflows/sync-roster.yml'
+      - '.github/scripts/sync_roster.py'
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: pip install httpx
+
+      - name: Sync roster
+        run: python .github/scripts/sync_roster.py
+        env:
+          VLRGG_API_URL: ${{ secrets.VLRGG_API_URL }}
+          VLRGG_API_TOKEN: ${{ secrets.VLRGG_API_TOKEN }}
+          LIQUIPEDIA_API_KEY: ${{ secrets.LIQUIPEDIA_API_KEY }}
+          APPLY: ${{ inputs.apply && '1' || '' }}
+
+      - name: Commit drift report
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add .github/data/roster-drift.json public/js/players.js
+          git diff --staged --quiet \
+            && echo "no drift changes to commit" \
+            || (git commit -m "chore: update roster drift report" && git push)
