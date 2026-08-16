@@ -147,6 +147,7 @@ print(f"\n[Step 2] Fetching {len(team_map)} rosters...")
 
 live = {}          # vlrId (int) → {alias, country, is_captain, team, league}
 roster_errors = []
+roster_role_values = defaultdict(int)   # what vlrgg puts in roster[].role
 
 for tid, meta in sorted(team_map.items(), key=lambda kv: int(kv[0])):
     data = api_get("/v2/team", {"id": tid})
@@ -162,7 +163,9 @@ for tid, meta in sorted(team_map.items(), key=lambda kv: int(kv[0])):
         pid = str(member.get("id") or "").strip()
         if not pid.isdigit():
             continue
+        roster_role_values[(member.get("role") or "").strip().lower() or "(empty)"] += 1
         live[int(pid)] = {
+            "roster_role": (member.get("role") or "").strip(),
             "alias":      (member.get("alias") or "").strip(),
             "country":    (member.get("country") or "").strip(),
             "is_captain": bool(member.get("is_captain")),
@@ -174,6 +177,12 @@ for tid, meta in sorted(team_map.items(), key=lambda kv: int(kv[0])):
 print(f"  {len(live)} players across {len(team_map) - len(roster_errors)} rosters")
 if roster_errors:
     print(f"  ⚠ {len(roster_errors)} roster(s) unavailable: {', '.join(roster_errors[:10])}")
+
+# Rosters run to 8-10 names, well past a starting five, so something in here
+# marks substitutes and inactives. Report the distinct values to find out what.
+print("  roster[].role values seen:")
+for value, n in sorted(roster_role_values.items(), key=lambda kv: -kv[1]):
+    print(f"    {n:4d}  {value}")
 
 
 # ── Step 3: Liquipedia enrichment ─────────────────────────────────────────────
