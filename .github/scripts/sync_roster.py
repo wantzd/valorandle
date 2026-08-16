@@ -98,6 +98,34 @@ LEAGUE_FULL = {
 TODAY = date.today()
 
 
+# Words that mark a roster entry as something other than an active player.
+# Matched as substrings because vlrgg concatenates without separators
+# ("assistant coachInactive", "Kim Ho- (김호용)Sub").
+NON_PLAYER_MARKERS = (
+    "coach", "manager", "analyst", "staff", "sub", "inactive", "stand-in",
+)
+
+
+def is_non_player(role):
+    """True when roster[].role marks staff, a substitute, or an inactive.
+
+    `is_staff` cannot be trusted — a live run surfaced 54 head coaches with the
+    flag unset — but neither can "role is non-empty". The scraper leaks the
+    player's REAL NAME into this field: Ethan came back as role='Arnold' (Ethan
+    Arnold) and Sato as role='Eduardo Kenzo Nagahama'. Treating any non-empty
+    role as staff dropped both from their rosters, leaving NRG and LEVIATÁN
+    with four.
+
+    So the test is for known vocabulary rather than for emptiness. A leaked
+    name matches nothing and stays a player. "loan" is deliberately absent:
+    a loaned player is playing for that team (BESTIA's Loss is their fifth).
+    """
+    r = (role or "").strip().lower()
+    if not r:
+        return False
+    return any(marker in r for marker in NON_PLAYER_MARKERS)
+
+
 def api_get(path, params):
     last = None
     for attempt in range(1, RETRIES + 1):
@@ -187,13 +215,7 @@ for tid, meta in sorted(team_map.items(), key=lambda kv: int(kv[0])):
         member_role = (member.get("role") or "").strip()
         roster_role_values[member_role.lower() or "(empty)"] += 1
 
-        # `is_staff` is unreliable — a live run still surfaced 54 head coaches,
-        # 31 coaches and 29 managers with it unset. `role` is the dependable
-        # signal: it is empty for actual players and names the function for
-        # everyone else (coach, manager, analyst, sub, inactive, loan,
-        # stand-in). Filtering on empty leaves 312 across 62 teams, i.e. the
-        # starting fives.
-        if member.get("is_staff") or member_role:
+        if member.get("is_staff") or is_non_player(member_role):
             non_players.append({
                 "vlrId": int(pid),
                 "name":  (member.get("alias") or "").strip(),

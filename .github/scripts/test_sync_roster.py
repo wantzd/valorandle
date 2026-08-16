@@ -134,6 +134,43 @@ TEAM_MAP = {
 }
 
 
+def load_helper(name, start_marker, end_marker):
+    """Exec a pure helper out of sync_roster.py without running the script."""
+    src = open(os.path.join(HERE, "sync_roster.py"), encoding="utf-8").read()
+    ns  = {"re": __import__("re")}
+    exec(src[src.index(start_marker):src.index(end_marker)], ns)
+    return ns[name]
+
+
+def check_non_player_filter(check):
+    """Real roster[].role values seen in a live run of all 62 teams."""
+    is_non_player = load_helper(
+        "is_non_player", "NON_PLAYER_MARKERS = (", "def api_get")
+
+    players = [
+        "",                              # the common case
+        "Arnold",                        # Ethan Arnold — real name leaked in
+        "Eduardo Kenzo Nagahama",        # Sato
+        "Ng",                            # Xan Ng
+        "Guo (郭浩东)",                   # Haodong Guo
+        "loan",                          # loaned in, but playing — BESTIA's 5th
+    ]
+    staff = [
+        "head coach", "assistant coach", "coach", "manager", "staff",
+        "analyst", "sub", "inactive", "inactivesub", "stand-in",
+        "performance coach",
+        "Lucas assistant coach",         # name + role concatenated
+        "assistant coachInactive",
+        "Kim Ho- (김호용)Sub",
+        "Geissmanager",
+        "Wongperformance coach",
+    ]
+    for role in players:
+        check(f"role {role!r} counts as a player", not is_non_player(role))
+    for role in staff:
+        check(f"role {role!r} is filtered out", is_non_player(role))
+
+
 def load_classifier():
     """Pull classify_team_change out of sync_roster.py without running it.
 
@@ -269,6 +306,8 @@ def main():
         check("league expanded", adds.get("novato", {}).get("league") == "VCT Americas")
 
         # Everyone in players.js but absent from the single stubbed roster
+        check_non_player_filter(check)
+
         # Classification of team changes — proven directly, since the stub only
         # exercises one team.
         classify = load_classifier()
