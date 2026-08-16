@@ -41,6 +41,13 @@ STUB_HTTPX = textwrap.dedent('''
             {"id": "99002", "alias": "capitao",  "country": "br", "is_captain": True,  "is_staff": False},
             {"id": "99003", "alias": "aposentado","country": "us","is_captain": False, "is_staff": False},
             {"id": "99004", "alias": "treinador","country": "br", "is_captain": False, "is_staff": True},
+            # is_staff is unreliable in the real API — role is the real signal
+            {"id": "99005", "alias": "coachzin", "country": "br", "is_captain": False,
+             "is_staff": False, "role": "head coach"},
+            {"id": "99006", "alias": "reserva",  "country": "br", "is_captain": False,
+             "is_staff": False, "role": "sub"},
+            {"id": "99007", "alias": "parado",   "country": "br", "is_captain": False,
+             "is_staff": False, "role": "inactive"},
         ],
     }
 
@@ -173,7 +180,14 @@ def main():
         adds = {a["name"]: a for a in drift["additions"]}
 
         check("two newcomers detected", set(adds) == {"novato", "capitao"}, str(sorted(adds)))
-        check("staff excluded", "treinador" not in adds)
+        check("is_staff excluded", "treinador" not in adds)
+        check("coach excluded despite is_staff false", "coachzin" not in adds)
+        check("sub excluded", "reserva" not in adds)
+        check("inactive excluded", "parado" not in adds)
+        check("non-players reported, not silently dropped",
+              {p["name"] for p in drift["non_players"]}
+              == {"treinador", "coachzin", "reserva", "parado"},
+              str(sorted(p["name"] for p in drift["non_players"])))
         check("retired player skipped",
               [s["name"] for s in drift["skipped_retired"]] == ["aposentado"],
               str(drift["skipped_retired"]))

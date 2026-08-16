@@ -147,6 +147,7 @@ print(f"\n[Step 2] Fetching {len(team_map)} rosters...")
 
 live = {}          # vlrId (int) → {alias, country, is_captain, team, league}
 roster_errors = []
+non_players   = []                      # staff, subs, inactives — reported, not added
 roster_role_values = defaultdict(int)   # what vlrgg puts in roster[].role
 
 for tid, meta in sorted(team_map.items(), key=lambda kv: int(kv[0])):
@@ -157,15 +158,29 @@ for tid, meta in sorted(team_map.items(), key=lambda kv: int(kv[0])):
         continue
 
     for member in (segs[0].get("roster") or []):
-        # Coaches and analysts share the roster array with players
-        if member.get("is_staff"):
-            continue
         pid = str(member.get("id") or "").strip()
         if not pid.isdigit():
             continue
-        roster_role_values[(member.get("role") or "").strip().lower() or "(empty)"] += 1
+
+        member_role = (member.get("role") or "").strip()
+        roster_role_values[member_role.lower() or "(empty)"] += 1
+
+        # `is_staff` is unreliable — a live run still surfaced 54 head coaches,
+        # 31 coaches and 29 managers with it unset. `role` is the dependable
+        # signal: it is empty for actual players and names the function for
+        # everyone else (coach, manager, analyst, sub, inactive, loan,
+        # stand-in). Filtering on empty leaves 312 across 62 teams, i.e. the
+        # starting fives.
+        if member.get("is_staff") or member_role:
+            non_players.append({
+                "vlrId": int(pid),
+                "name":  (member.get("alias") or "").strip(),
+                "team":  meta.get("name", ""),
+                "role":  member_role or "is_staff",
+            })
+            continue
+
         live[int(pid)] = {
-            "roster_role": (member.get("role") or "").strip(),
             "alias":      (member.get("alias") or "").strip(),
             "country":    (member.get("country") or "").strip(),
             "is_captain": bool(member.get("is_captain")),
@@ -174,15 +189,18 @@ for tid, meta in sorted(team_map.items(), key=lambda kv: int(kv[0])):
         }
     time.sleep(RATE_SLEEP)
 
-print(f"  {len(live)} players across {len(team_map) - len(roster_errors)} rosters")
+teams_ok = len(team_map) - len(roster_errors)
+print(f"  {len(live)} players across {teams_ok} rosters"
+      f"  ({len(live) / teams_ok:.1f} per team)")
+print(f"  {len(non_players)} non-players filtered out (staff, subs, inactives)")
 if roster_errors:
     print(f"  ⚠ {len(roster_errors)} roster(s) unavailable: {', '.join(roster_errors[:10])}")
 
-# Rosters run to 8-10 names, well past a starting five, so something in here
-# marks substitutes and inactives. Report the distinct values to find out what.
-print("  roster[].role values seen:")
-for value, n in sorted(roster_role_values.items(), key=lambda kv: -kv[1]):
-    print(f"    {n:4d}  {value}")
+by_role = defaultdict(int)
+for p in non_players:
+    by_role[p["role"].lower()] += 1
+for value, n in sorted(by_role.items(), key=lambda kv: -kv[1])[:12]:
+    print(f"      {n:4d}  {value}")
 
 
 # ── Step 3: Liquipedia enrichment ─────────────────────────────────────────────
@@ -373,6 +391,7 @@ drift = {
     "team_changes":  team_changes,
     "departures":    departures,
     "skipped_retired": retired_hits,
+    "non_players":   non_players,
     "js_lines":      [js_line(a) for a in additions],
 }
 
