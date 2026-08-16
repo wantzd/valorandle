@@ -37,3 +37,8 @@ jobs:
 
       - name: Test team map builder
         run: python .github/scripts/test_build_team_map.py
+
+      # Needs node, which ubuntu-latest already provides, to confirm the
+      # rewritten players.js is still valid JavaScript.
+      - name: Test roster sync
+        run: python .github/scripts/test_sync_roster.py

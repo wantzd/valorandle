@@ -13,13 +13,9 @@ on:
         description: 'Insert newcomers into players.js'
         type: boolean
         default: false
-  # Temporary: workflow_dispatch is unavailable until this file reaches main.
-  push:
-    branches:
-      - feat/roster-sync
-    paths:
-      - '.github/workflows/sync-roster.yml'
-      - '.github/scripts/sync_roster.py'
+  # Weekly, an hour after update-players so the team map is current first.
+  schedule:
+    - cron: '0 8 * * 1'
 
 jobs:
   sync:
