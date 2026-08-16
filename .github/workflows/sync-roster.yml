@@ -21,6 +21,10 @@ on:
         description: 'Comment out players no longer on any mapped roster'
         type: boolean
         default: false
+      transfers:
+        description: 'Move players whose org changed (real transfers only, not renames)'
+        type: boolean
+        default: false
   # Weekly, an hour after update-players so the team map is current first.
   schedule:
     - cron: '0 8 * * 1'
@@ -54,6 +58,7 @@ jobs:
           APPLY: ${{ inputs.apply && '1' || '' }}
           APPLY_LEAGUES: ${{ inputs.leagues }}
           RETIRE_DEPARTURES: ${{ inputs.retire && '1' || '' }}
+          APPLY_TRANSFERS: ${{ inputs.transfers && '1' || '' }}
 
       - name: Commit drift report
         run: |

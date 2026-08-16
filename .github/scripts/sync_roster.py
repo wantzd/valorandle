@@ -67,6 +67,8 @@ APPLY     = os.environ.get("APPLY", "").strip() == "1"
 APPLY_LEAGUES = {s.strip() for s in os.environ.get("APPLY_LEAGUES", "").split(",") if s.strip()}
 # Comment out players no longer on any mapped roster. Off by default.
 RETIRE = os.environ.get("RETIRE_DEPARTURES", "").strip() == "1"
+# Rewrite team on players the API shows on a different org. Off by default.
+APPLY_TRANSFERS = os.environ.get("APPLY_TRANSFERS", "").strip() == "1"
 
 if not API_BASE or not API_TOKEN:
     print("ERROR: VLRGG_API_URL / VLRGG_API_TOKEN not set.")
@@ -127,9 +129,19 @@ print(f"[Step 0] {len(team_map)} teams in team-map.json")
 # ── Step 1: current players.js ────────────────────────────────────────────────
 # Parsed with the same block regex build_orgmap.py uses, so both agree on what
 # counts as a player row.
+def strip_commented_rows(text):
+    """Drop commented-out player lines.
+
+    Retired players are commented rather than deleted, and a commented line
+    still contains a `{ ... }` block. Without this the regex would read them
+    back as active and the retirement would silently undo itself.
+    """
+    return "\n".join(l for l in text.split("\n") if not l.lstrip().startswith("//"))
+
+
 def parse_players_js(text):
     players = {}
-    for block in re.finditer(r'\{[^{}]+\}', text):
+    for block in re.finditer(r'\{[^{}]+\}', strip_commented_rows(text)):
         chunk = block.group()
         vid_m = re.search(r'vlrId\s*:\s*(\d+)', chunk)
         if not vid_m:
@@ -567,6 +579,36 @@ for team, group in sorted(by_team.items()):
     text  = text[:last] + lines + text[last:]
     inserted += len(group)
 
+# ── Step 6b: apply real transfers ─────────────────────────────────────────────
+# Without this, a player who moved leaves both rosters wrong: the old team
+# keeps six and the new one shows four. Only `transfer` is applied — `rename`
+# and `spelling` merely disagree about how an org is written, and rewriting
+# those would churn team names that logos and league grouping depend on.
+moved = 0
+if APPLY_TRANSFERS:
+    scope = [c for c in team_changes if c["kind"] == "transfer"]
+    if APPLY_LEAGUES:
+        scope = [c for c in scope
+                 if (existing.get(c["vlrId"], {}).get("league") or "") in APPLY_LEAGUES]
+
+    for c in scope:
+        pattern = re.compile(rf'^(\s*\{{[^{{}}]*\bvlrId:{c["vlrId"]}\b[^{{}}]*\}},?)$',
+                             re.MULTILINE)
+        m = pattern.search(text)
+        if not m:
+            continue
+        row = m.group(1)
+        new_row = re.sub(r'(\bteam\s*:\s*")[^"]*(")',
+                         lambda mm: mm.group(1) + c["to"] + mm.group(2), row, count=1)
+        if new_row != row:
+            text = text[:m.start(1)] + new_row + text[m.end(1):]
+            moved += 1
+            print(f"  ↔ {c['name']}: {c['from']} → {c['to']}")
+
+    if moved:
+        print(f"\n[Apply] moved {moved} player(s) to their current team")
+
+
 # ── Step 7: optionally retire departed players ────────────────────────────────
 # Commented out rather than deleted: the row carries curated history (titles,
 # yearsActive, manual role) that the API cannot reproduce, and a wrong call is
@@ -592,7 +634,7 @@ if RETIRE and departures:
             out.append(line)
     text = "\n".join(out)
 
-if inserted or retired:
+if inserted or retired or moved:
     with open(PLAYERS_JS, "w", encoding="utf-8", newline="\n") as f:
         f.write(text)
 if inserted:

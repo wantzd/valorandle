@@ -184,8 +184,14 @@ try:
     with open(PLAYERS_JS_PATH, "r", encoding="utf-8") as f:
         js_content = f.read()
 
+    # sync_roster.py retires players by commenting their line out instead of
+    # deleting it, so those rows must be skipped here too — otherwise a retired
+    # player would be fetched again and reappear in org-map.json.
+    active_js = "\n".join(
+        l for l in js_content.split("\n") if not l.lstrip().startswith("//"))
+
     # Match each { ... } player block
-    for block in re.finditer(r'\{[^{}]+\}', js_content):
+    for block in re.finditer(r'\{[^{}]+\}', active_js):
         text = block.group()
 
         # Collect the org allowlist from every row, with or without vlrId

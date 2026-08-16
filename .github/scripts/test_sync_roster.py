@@ -198,11 +198,18 @@ def main():
             "APPLY": "1",
         })
         def run(**extra):
+            """Run the script and return (proc, drift produced by THIS run).
+
+            Each scenario rewrites roster-drift.json, so assertions must read
+            the drift from their own run rather than an earlier one.
+            """
             e = dict(env)
             e.update(extra)
             p = subprocess.run([sys.executable, os.path.join(scripts, "sync_roster.py")],
                                capture_output=True, text=True, encoding="utf-8", env=e)
-            return p, None, None
+            dpath = os.path.join(data, "roster-drift.json")
+            d = json.load(open(dpath, encoding="utf-8")) if os.path.exists(dpath) else {}
+            return p, d
 
         def run_429():
             # LIQ_BACKOFF=0 so the retry path does not really sleep
@@ -226,9 +233,14 @@ def main():
 
         adds = {a["name"]: a for a in drift["additions"]}
 
-        check("newcomers detected",
-              set(adds) == {"novato", "capitao", "estreante1", "estreante2"},
-              str(sorted(adds)))
+        # Which stub players count as new depends on the state of the repo's
+        # players.js, which keeps changing as rosters land, so derive it.
+        LIVE = {754: "nerve", 796: "eeiu", 99001: "novato", 99002: "capitao",
+                99010: "estreante1", 99011: "estreante2"}
+        existing_ids  = {p["vlrId"] for p in before}
+        expected_adds = {n for vid, n in LIVE.items() if vid not in existing_ids}
+        check("newcomers detected", set(adds) == expected_adds,
+              f"got {sorted(adds)}, expected {sorted(expected_adds)}")
         check("is_staff excluded", "treinador" not in adds)
         check("coach excluded despite is_staff false", "coachzin" not in adds)
         check("sub excluded", "reserva" not in adds)
@@ -272,13 +284,20 @@ def main():
             got = classify(old, new)
             check(f"{old!r} → {new!r} is {want}", got == want, got)
 
-        check("departures reported", len(drift["departures"]) == len(before) - 2,
-              f"got {len(drift['departures'])}")
+        # Relative, not absolute: players.js in the repo is a living file, so a
+        # hard-coded count would rot the moment a roster lands.
+        expected  = {p["vlrId"] for p in before} - set(LIVE)
+        reported  = {d["vlrId"] for d in drift["departures"]}
+        check("every non-live player is reported as a departure",
+              reported == expected,
+              f"missing {len(expected - reported)}, extra {len(reported - expected)}")
         check("departures not applied",
               all(p["vlrId"] in {x["vlrId"] for x in after} for p in before))
 
         # Insertion correctness
-        check("four rows added", len(after) == len(before) + 4, f"got {len(after)}")
+        check("every newcomer becomes a row",
+              len(after) == len(before) + len(expected_adds),
+              f"got {len(after)}, expected {len(before) + len(expected_adds)}")
         new_rows = {p["name"]: p for p in after if p["vlrId"] in (99001, 99002)}
         check("newcomers landed in FURIA",
               all(p["team"] == "FURIA" for p in new_rows.values()),
@@ -329,20 +348,41 @@ def main():
               bool(blob.get("players")) and "extradata" not in blob["players"][0],
               str(list(blob.get("players", [{}])[0].keys()))[:120])
 
+        # Transfers: pointing the team-map entry at a different org, with the
+        # same roster, makes every player on it a move.
+        shutil.copy(os.path.join(REPO, "public", "js", "players.js"), players_path)
+        moved_map = json.loads(json.dumps(TEAM_MAP))
+        moved_map["teams"]["2406"]["name"] = "LOUD"
+        with open(os.path.join(data, "team-map.json"), "w", encoding="utf-8") as f:
+            json.dump(moved_map, f)
+        run(APPLY_TRANSFERS="1")
+        moved_db   = node_players(players_path)
+        moved_rows = [p for p in moved_db if p["vlrId"] in (754, 796)]
+        check("transfer rewrites the team",
+              all(p["team"] == "LOUD" for p in moved_rows),
+              str([(p["name"], p["team"]) for p in moved_rows]))
+        dupes = [v for v in {p["vlrId"] for p in moved_db}
+                 if len([p for p in moved_db if p["vlrId"] == v]) > 1]
+        check("transfer does not duplicate any row", not dupes, str(dupes[:5]))
+        with open(os.path.join(data, "team-map.json"), "w", encoding="utf-8") as f:
+            json.dump(TEAM_MAP, f)
+
         # Retiring departures: commented out, never deleted, and the file must
         # still be valid JavaScript afterwards.
         shutil.copy(os.path.join(REPO, "public", "js", "players.js"), players_path)
-        _, _, _ = run(RETIRE_DEPARTURES="1")
+        _, drift_r = run(RETIRE_DEPARTURES="1")
         retired_text = open(players_path, encoding="utf-8").read()
         retired_db   = node_players(players_path)
 
-        gone = {d["vlrId"] for d in drift["departures"]}
+        gone = {d["vlrId"] for d in drift_r["departures"]}
         still = [p for p in retired_db if p["vlrId"] in gone]
         check("departed players leave PLAYERS_DB", not still, f"{len(still)} left")
-        check("retired rows are commented, not deleted",
-              retired_text.count("// saiu do elenco") == len(gone),
-              f"{retired_text.count('// saiu do elenco')} vs {len(gone)}")
-        sample = drift["departures"][0]["vlrId"]
+        commented = {int(m) for m in re.findall(
+            r'^\s*//\s*\{.*?\bvlrId:(\d+)\b', retired_text, re.MULTILINE)}
+        check("every departure is commented out, none deleted",
+              gone <= commented,
+              f"{len(gone - commented)} departure(s) missing from the file")
+        sample = drift_r["departures"][0]["vlrId"]
         check("a retired row keeps its original text",
               any(f"vlrId:{sample}" in l and l.strip().startswith("//")
                   for l in retired_text.split("\n")),
@@ -355,7 +395,7 @@ def main():
         os.remove(cache)
         shutil.copy(os.path.join(REPO, "public", "js", "players.js"), players_path)
         pristine = open(players_path, encoding="utf-8").read()
-        proc429, _, _ = run_429()
+        proc429, _ = run_429()
         check("429 aborts with non-zero exit", proc429.returncode != 0,
               f"exit {proc429.returncode}")
         check("429 leaves players.js untouched",
