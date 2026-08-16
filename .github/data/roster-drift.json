@@ -1281,391 +1281,456 @@
       "vlrId": 4,
       "name": "crashies",
       "from": "Fnatic",
-      "to": "FNATIC"
+      "to": "FNATIC",
+      "kind": "spelling"
     },
     {
       "vlrId": 438,
       "name": "Boaster",
       "from": "Fnatic",
-      "to": "FNATIC"
+      "to": "FNATIC",
+      "kind": "spelling"
     },
     {
       "vlrId": 619,
       "name": "C0M",
       "from": "Evil Geniuses",
-      "to": "FURIA"
+      "to": "FURIA",
+      "kind": "transfer"
     },
     {
       "vlrId": 1916,
       "name": "free1ng",
       "from": "DRX",
-      "to": "KIWOOM DRX"
+      "to": "KIWOOM DRX",
+      "kind": "rename"
     },
     {
       "vlrId": 1960,
       "name": "eKo",
       "from": "ZETA Division",
-      "to": "ZETA DIVISION"
+      "to": "ZETA DIVISION",
+      "kind": "spelling"
     },
     {
       "vlrId": 3017,
       "name": "nobody",
       "from": "EDG",
-      "to": "EDward Gaming"
+      "to": "EDward Gaming",
+      "kind": "rename"
     },
     {
       "vlrId": 3028,
       "name": "Life",
       "from": "FPX",
-      "to": "Dragon Ranger Gaming"
+      "to": "Dragon Ranger Gaming",
+      "kind": "transfer"
     },
     {
       "vlrId": 3045,
       "name": "LuoK1ng",
       "from": "Trace",
-      "to": "Trace Esports"
+      "to": "Trace Esports",
+      "kind": "spelling"
     },
     {
       "vlrId": 3520,
       "name": "ZmjjKK",
       "from": "EDG",
-      "to": "EDward Gaming"
+      "to": "EDward Gaming",
+      "kind": "rename"
     },
     {
       "vlrId": 3741,
       "name": "vo0kashu",
       "from": "Dragon Ranger",
-      "to": "Dragon Ranger Gaming"
+      "to": "Dragon Ranger Gaming",
+      "kind": "spelling"
     },
     {
       "vlrId": 4181,
       "name": "Cloud",
       "from": "GIANTX",
-      "to": "FNATIC"
+      "to": "FNATIC",
+      "kind": "transfer"
     },
     {
       "vlrId": 4462,
       "name": "MaKo",
       "from": "DRX",
-      "to": "KIWOOM DRX"
+      "to": "KIWOOM DRX",
+      "kind": "rename"
     },
     {
       "vlrId": 4678,
       "name": "BeYN",
       "from": "DRX",
-      "to": "KIWOOM DRX"
+      "to": "KIWOOM DRX",
+      "kind": "rename"
     },
     {
       "vlrId": 4705,
       "name": "Flex1n",
       "from": "Dragon Ranger",
-      "to": "Dragon Ranger Gaming"
+      "to": "Dragon Ranger Gaming",
+      "kind": "spelling"
     },
     {
       "vlrId": 4742,
       "name": "Smoggy",
       "from": "EDG",
-      "to": "EDward Gaming"
+      "to": "EDward Gaming",
+      "kind": "rename"
     },
     {
       "vlrId": 4774,
       "name": "Knight",
       "from": "BLG",
-      "to": "Guangzhou Huadu Bilibili Gaming"
+      "to": "Guangzhou Huadu Bilibili Gaming",
+      "kind": "transfer"
     },
     {
       "vlrId": 4885,
       "name": "whzy",
       "from": "BLG",
-      "to": "Guangzhou Huadu Bilibili Gaming"
+      "to": "Guangzhou Huadu Bilibili Gaming",
+      "kind": "transfer"
     },
     {
       "vlrId": 5292,
       "name": "al0rante",
       "from": "PACIFIC",
-      "to": "PCIFIC Esports"
+      "to": "PCIFIC Esports",
+      "kind": "transfer"
     },
     {
       "vlrId": 6022,
       "name": "yosemite",
       "from": "Wolves",
-      "to": "Wolves Esports"
+      "to": "Wolves Esports",
+      "kind": "spelling"
     },
     {
       "vlrId": 6668,
       "name": "SugarZ3ro",
       "from": "ZETA Division",
-      "to": "ZETA DIVISION"
+      "to": "ZETA DIVISION",
+      "kind": "spelling"
     },
     {
       "vlrId": 7105,
       "name": "qpert",
       "from": "PACIFIC",
-      "to": "PCIFIC Esports"
+      "to": "PCIFIC Esports",
+      "kind": "transfer"
     },
     {
       "vlrId": 7849,
       "name": "SiuFatBB",
       "from": "Wolves",
-      "to": "TYLOO"
+      "to": "TYLOO",
+      "kind": "transfer"
     },
     {
       "vlrId": 7857,
       "name": "BerLIN",
       "from": "FPX",
-      "to": "JD Gaming"
+      "to": "JD Gaming",
+      "kind": "transfer"
     },
     {
       "vlrId": 7987,
       "name": "KovaQ",
       "from": "FPX",
-      "to": "FunPlus Phoenix"
+      "to": "FunPlus Phoenix",
+      "kind": "rename"
     },
     {
       "vlrId": 8286,
       "name": "GLYPH",
       "from": "Gentle Mates",
-      "to": "ENVY"
+      "to": "ENVY",
+      "kind": "transfer"
     },
     {
       "vlrId": 8376,
       "name": "seven",
       "from": "PACIFIC",
-      "to": "PCIFIC Esports"
+      "to": "PCIFIC Esports",
+      "kind": "transfer"
     },
     {
       "vlrId": 9554,
       "name": "kaajak",
       "from": "Fnatic",
-      "to": "FNATIC"
+      "to": "FNATIC",
+      "kind": "spelling"
     },
     {
       "vlrId": 9810,
       "name": "Alfajer",
       "from": "Fnatic",
-      "to": "FNATIC"
+      "to": "FNATIC",
+      "kind": "spelling"
     },
     {
       "vlrId": 10698,
       "name": "nephh",
       "from": "BLG",
-      "to": "Guangzhou Huadu Bilibili Gaming"
+      "to": "Guangzhou Huadu Bilibili Gaming",
+      "kind": "transfer"
     },
     {
       "vlrId": 10821,
       "name": "deLb",
       "from": "Trace",
-      "to": "Trace Esports"
+      "to": "Trace Esports",
+      "kind": "spelling"
     },
     {
       "vlrId": 11524,
       "name": "Nicc",
       "from": "Dragon Ranger",
-      "to": "Dragon Ranger Gaming"
+      "to": "Dragon Ranger Gaming",
+      "kind": "spelling"
     },
     {
       "vlrId": 11527,
       "name": "NoMan",
       "from": "XLG",
-      "to": "Xi Lai Gaming"
+      "to": "Xi Lai Gaming",
+      "kind": "rename"
     },
     {
       "vlrId": 11917,
       "name": "ExiT",
       "from": "NAVI",
-      "to": "Natus Vincere"
+      "to": "Natus Vincere",
+      "kind": "rename"
     },
     {
       "vlrId": 12365,
       "name": "coconut",
       "from": "JD Gaming",
-      "to": "FunPlus Phoenix"
+      "to": "FunPlus Phoenix",
+      "kind": "transfer"
     },
     {
       "vlrId": 12990,
       "name": "SyouTa",
       "from": "ZETA Division",
-      "to": "ZETA DIVISION"
+      "to": "ZETA DIVISION",
+      "kind": "spelling"
     },
     {
       "vlrId": 14125,
       "name": "Spring",
       "from": "Wolves",
-      "to": "Wolves Esports"
+      "to": "Wolves Esports",
+      "kind": "spelling"
     },
     {
       "vlrId": 15559,
       "name": "CHICHOO",
       "from": "EDG",
-      "to": "EDward Gaming"
+      "to": "EDward Gaming",
+      "kind": "rename"
     },
     {
       "vlrId": 15639,
       "name": "chloric",
       "from": "NAVI",
-      "to": "Natus Vincere"
+      "to": "Natus Vincere",
+      "kind": "rename"
     },
     {
       "vlrId": 17049,
       "name": "Hermes",
       "from": "DRX",
-      "to": "ONSIDE GAMING"
+      "to": "ONSIDE GAMING",
+      "kind": "transfer"
     },
     {
       "vlrId": 18677,
       "name": "Ruxic",
       "from": "NAVI",
-      "to": "Natus Vincere"
+      "to": "Natus Vincere",
+      "kind": "rename"
     },
     {
       "vlrId": 19530,
       "name": "AAAAY",
       "from": "FPX",
-      "to": "FunPlus Phoenix"
+      "to": "FunPlus Phoenix",
+      "kind": "rename"
     },
     {
       "vlrId": 19677,
       "name": "lucas",
       "from": "Titan Esports",
-      "to": "Wuxi Titan Esports Club"
+      "to": "Wuxi Titan Esports Club",
+      "kind": "rename"
     },
     {
       "vlrId": 22047,
       "name": "Rarga",
       "from": "XLG",
-      "to": "Xi Lai Gaming"
+      "to": "Xi Lai Gaming",
+      "kind": "rename"
     },
     {
       "vlrId": 24308,
       "name": "WsLeo",
       "from": "XLG",
-      "to": "Xi Lai Gaming"
+      "to": "Xi Lai Gaming",
+      "kind": "rename"
     },
     {
       "vlrId": 25221,
       "name": "Xdll",
       "from": "ZETA Division",
-      "to": "ZETA DIVISION"
+      "to": "ZETA DIVISION",
+      "kind": "spelling"
     },
     {
       "vlrId": 28400,
       "name": "HYUNMIN",
       "from": "DRX",
-      "to": "KIWOOM DRX"
+      "to": "KIWOOM DRX",
+      "kind": "rename"
     },
     {
       "vlrId": 28948,
       "name": "NINJA",
       "from": "PACIFIC",
-      "to": "PCIFIC Esports"
+      "to": "PCIFIC Esports",
+      "kind": "transfer"
     },
     {
       "vlrId": 29867,
       "name": "hiro",
       "from": "NAVI",
-      "to": "Natus Vincere"
+      "to": "Natus Vincere",
+      "kind": "rename"
     },
     {
       "vlrId": 31753,
       "name": "SpiritZ1",
       "from": "Dragon Ranger",
-      "to": "Dragon Ranger Gaming"
+      "to": "Dragon Ranger Gaming",
+      "kind": "spelling"
     },
     {
       "vlrId": 34776,
       "name": "Absol",
       "from": "ZETA Division",
-      "to": "ZETA DIVISION"
+      "to": "ZETA DIVISION",
+      "kind": "spelling"
     },
     {
       "vlrId": 37489,
       "name": "Lysoar",
       "from": "XLG",
-      "to": "Xi Lai Gaming"
+      "to": "Xi Lai Gaming",
+      "kind": "rename"
     },
     {
       "vlrId": 37494,
       "name": "Kai",
       "from": "Trace",
-      "to": "Trace Esports"
+      "to": "Trace Esports",
+      "kind": "spelling"
     },
     {
       "vlrId": 37927,
       "name": "happywei",
       "from": "XLG",
-      "to": "Xi Lai Gaming"
+      "to": "Xi Lai Gaming",
+      "kind": "rename"
     },
     {
       "vlrId": 42235,
       "name": "Dynamite",
       "from": "Titan Esports",
-      "to": "Wuxi Titan Esports Club"
+      "to": "Wuxi Titan Esports Club",
+      "kind": "rename"
     },
     {
       "vlrId": 47629,
       "name": "Coco",
       "from": "Titan Esports",
-      "to": "Wuxi Titan Esports Club"
+      "to": "Wuxi Titan Esports Club",
+      "kind": "rename"
     },
     {
       "vlrId": 48878,
       "name": "rushia",
       "from": "BLG",
-      "to": "Guangzhou Huadu Bilibili Gaming"
+      "to": "Guangzhou Huadu Bilibili Gaming",
+      "kind": "transfer"
     },
     {
       "vlrId": 49973,
       "name": "glacier",
       "from": "Wolves",
-      "to": "Wolves Esports"
+      "to": "Wolves Esports",
+      "kind": "spelling"
     },
     {
       "vlrId": 50025,
       "name": "Setrod",
       "from": "FPX",
-      "to": "FunPlus Phoenix"
+      "to": "FunPlus Phoenix",
+      "kind": "rename"
     },
     {
       "vlrId": 51100,
       "name": "Flicker",
       "from": "DRX",
-      "to": "KIWOOM DRX"
+      "to": "KIWOOM DRX",
+      "kind": "rename"
     },
     {
       "vlrId": 51244,
       "name": "Jieni7",
       "from": "EDG",
-      "to": "EDward Gaming"
+      "to": "EDward Gaming",
+      "kind": "rename"
     },
     {
       "vlrId": 52904,
       "name": "Akeman",
       "from": "Dragon Ranger",
-      "to": "KeepBest Gaming"
+      "to": "KeepBest Gaming",
+      "kind": "transfer"
     },
     {
       "vlrId": 54487,
       "name": "Xlele",
       "from": "Trace",
-      "to": "FunPlus Phoenix"
+      "to": "FunPlus Phoenix",
+      "kind": "transfer"
     },
     {
       "vlrId": 56260,
       "name": "bud",
       "from": "BLG",
-      "to": "Guangzhou Huadu Bilibili Gaming"
+      "to": "Guangzhou Huadu Bilibili Gaming",
+      "kind": "transfer"
     },
     {
       "vlrId": 62947,
       "name": "yilai",
       "from": "BLG",
-      "to": "Guangzhou Huadu Bilibili Gaming"
+      "to": "Guangzhou Huadu Bilibili Gaming",
+      "kind": "transfer"
     },
     {
       "vlrId": 63107,
       "name": "ra1ny",
       "from": "Titan Esports",
-      "to": "Wuxi Titan Esports Club"
+      "to": "Wuxi Titan Esports Club",
+      "kind": "rename"
     }
   ],
   "departures": [
