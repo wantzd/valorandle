@@ -289,6 +289,52 @@ def is_retired(row):
     return str((row or {}).get("status", "")).lower() == "retired"
 
 
+ORG_NOISE_RE = re.compile(
+    r'\b(esports?|gaming|club|team|e-?sports)\b|[^a-z0-9]', re.IGNORECASE)
+
+
+def normalise_org(name):
+    """Reduce an org name to a comparable core: 'Trace Esports' → 'trace'."""
+    return ORG_NOISE_RE.sub('', (name or "").lower())
+
+
+def _letters(name):
+    return re.sub(r'[^a-z0-9]', '', (name or "").lower())
+
+
+def _is_subsequence(short, long_):
+    it = iter(long_)
+    return all(ch in it for ch in short)
+
+
+def classify_team_change(old, new):
+    """Tell a real transfer apart from the two teams merely being spelled
+    differently in players.js and on vlrgg.
+
+    A live run produced 65 "changes", most of which were noise: Fnatic/FNATIC,
+    ZETA Division/ZETA DIVISION, Trace/Trace Esports, EDG/EDward Gaming.
+    Presenting those next to an actual move would bury the moves.
+    """
+    a, b = normalise_org(old), normalise_org(new)
+    if not a or not b:
+        return "transfer"
+    if a == b:
+        return "spelling"          # same org, different casing or suffix
+
+    # Containment is checked on the full names, not the noise-stripped ones:
+    # "DRX" → "KIWOOM DRX" survives either way, but an initialism like
+    # "EDG" → "EDward Gaming" takes its final letter from the very word that
+    # gets stripped as noise.
+    ra, rb = _letters(old), _letters(new)
+    if ra in rb or rb in ra:
+        return "rename"
+
+    short, long_ = (ra, rb) if len(ra) <= len(rb) else (rb, ra)
+    if len(short) <= 4 and short[:1] == long_[:1] and _is_subsequence(short, long_):
+        return "rename"            # EDG → EDward Gaming
+    return "transfer"
+
+
 # ── Step 4: diff ──────────────────────────────────────────────────────────────
 additions, departures, team_changes, retired_hits = [], [], [], []
 
@@ -322,16 +368,23 @@ for vid, info in sorted(live.items()):
             "name":  info["alias"],
             "from":  existing[vid]["team"],
             "to":    info["team"],
+            "kind":  classify_team_change(existing[vid]["team"], info["team"]),
         })
 
 for vid, info in sorted(existing.items()):
     if vid not in live:
         departures.append({"vlrId": vid, "name": info["name"], "team": info["team"]})
 
+kinds = defaultdict(int)
+for c in team_changes:
+    kinds[c["kind"]] += 1
+
 print(f"\n[Step 4] Drift")
 print(f"  additions:    {len(additions)}")
 print(f"  departures:   {len(departures)}")
-print(f"  team changes: {len(team_changes)}")
+print(f"  team changes: {len(team_changes)}"
+      f"  (transfers {kinds['transfer']}, renames {kinds['rename']},"
+      f" spelling {kinds['spelling']})")
 if retired_hits:
     print(f"  skipped (Liquipedia says retired): {len(retired_hits)}")
 
@@ -375,10 +428,19 @@ if additions:
             print(f"       {a['name']:18s} {a['country'] or '?':16s}"
                   f" {a['role'] or '?':12s}{flag}")
 
-if team_changes:
-    print("\n  Team changes:")
-    for c in team_changes:
+for kind, title in (
+    ("transfer", "Real transfers"),
+    ("rename",   "Org renamed / expanded (same team)"),
+    ("spelling", "Spelling only — players.js and vlrgg disagree on the name"),
+):
+    group = [c for c in team_changes if c["kind"] == kind]
+    if not group:
+        continue
+    print(f"\n  {title}: {len(group)}")
+    for c in group[:40]:
         print(f"    {c['name']:18s} {c['from']} → {c['to']}")
+    if len(group) > 40:
+        print(f"    ... and {len(group) - 40} more")
 
 if departures:
     print("\n  Not on any mapped roster (review by hand — never auto-removed):")

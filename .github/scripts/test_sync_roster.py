@@ -112,6 +112,20 @@ TEAM_MAP = {
 }
 
 
+def load_classifier():
+    """Pull classify_team_change out of sync_roster.py without running it.
+
+    Importing the module would hit the network and sys.exit on missing secrets,
+    so the pure helpers are sliced out and exec'd on their own.
+    """
+    src   = open(os.path.join(HERE, "sync_roster.py"), encoding="utf-8").read()
+    start = src.index("ORG_NOISE_RE = ")
+    end   = src.index("# ── Step 4")
+    ns = {"re": __import__("re")}
+    exec(src[start:end], ns)
+    return ns["classify_team_change"]
+
+
 def node_players(path):
     """Parse players.js with node and return the array, or raise."""
     out = subprocess.run(
@@ -208,6 +222,21 @@ def main():
         check("league expanded", adds.get("novato", {}).get("league") == "VCT Americas")
 
         # Everyone in players.js but absent from the single stubbed roster
+        # Classification of team changes — proven directly, since the stub only
+        # exercises one team.
+        classify = load_classifier()
+        for old, new, want in [
+            ("Fnatic", "FNATIC", "spelling"),
+            ("ZETA Division", "ZETA DIVISION", "spelling"),
+            ("Trace", "Trace Esports", "spelling"),
+            ("DRX", "KIWOOM DRX", "rename"),
+            ("EDG", "EDward Gaming", "rename"),
+            ("Evil Geniuses", "FURIA", "transfer"),
+            ("GIANTX", "FNATIC", "transfer"),
+        ]:
+            got = classify(old, new)
+            check(f"{old!r} → {new!r} is {want}", got == want, got)
+
         check("departures reported", len(drift["departures"]) == len(before) - 2,
               f"got {len(drift['departures'])}")
         check("departures not applied",
