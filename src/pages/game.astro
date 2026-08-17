@@ -136,6 +136,16 @@ import ProPlayersGame from '../components/ProPlayersGame.svelte';
       renderRound();
       setupInput();
       setupGlobalTooltip();
+
+      // A finished round is only escapable through the result banner, since
+      // renderRound() disables the input while state.finished is true. The
+      // banner lives in the DOM, not in storage, so returning from the lobby
+      // used to leave a dead round: no input, no "next" button.
+      if (MODE === "daily" && state.finished && !state.dailyDone) {
+        const target = state.targets[state.currentRound];
+        const result = (state.roundResults || [])[state.currentRound];
+        if (target) showRoundResult(!!(result && result.won), target, "auto");
+      }
     }
 
     function applyLeagueTag() {
@@ -522,7 +532,9 @@ import ProPlayersGame from '../components/ProPlayersGame.svelte';
       if (MODE==="daily") saveLeagueDailyState(getSerializableState());
     }
 
-    function showRoundResult(won, target) {
+    // `scroll` is "smooth" when the round just ended, "auto" when the banner is
+    // rebuilt on load — an animated scroll on page open reads as a glitch.
+    function showRoundResult(won, target, scroll = "smooth") {
       const panel = document.getElementById("result-banner");
       panel.style.display = "block";
       panel.className     = "result-panel " + (won?"won":"lost");
@@ -584,6 +596,28 @@ import ProPlayersGame from '../components/ProPlayersGame.svelte';
       acts.appendChild(makeBtn(t.shareBtn,"btn-action btn-share",shareDaily));
       acts.appendChild(makeBtn(lang==="pt-BR"?"Img":"Img","btn-action btn-img",shareImage));
       acts.appendChild(makeBtn(t.backLobby,"btn-action btn-lobby",()=>{ window.location.href="/"; }));
+
+      if (scroll) scrollToActions(acts, scroll);
+    }
+
+    // The guess grid grows with every attempt, so by the end of a round the
+    // banner sits well below the fold and the next round is a scroll away.
+    function scrollToActions(acts, behavior) {
+      const reduced = window.matchMedia
+        && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      // Called straight away rather than inside requestAnimationFrame: the
+      // banner was just populated, so layout is already resolved, and rAF does
+      // not fire while the tab is in the background — the scroll would simply
+      // be lost if the round ended after switching away.
+      try {
+        acts.scrollIntoView({
+          // Centre the buttons rather than the banner: the banner can be
+          // taller than the viewport, and it is the buttons that must be
+          // reachable.
+          behavior: reduced ? "auto" : behavior,
+          block: "center",
+        });
+      } catch { acts.scrollIntoView(false); }
     }
 
     function makeBtn(label, cls, fn) {
