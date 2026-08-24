@@ -1,5 +1,5 @@
 {
-  "generated": "2026-08-17",
+  "generated": "2026-08-24",
   "additions": [
     {
       "vlrId": 309,
@@ -270,7 +270,7 @@
       "league": "VCT Pacific",
       "leagueId": "pacific",
       "age": 25,
-      "role": null,
+      "role": "Sentinel",
       "isIGL": false,
       "yearsActive": 7
     },
@@ -309,7 +309,7 @@
       "league": "VCT China",
       "leagueId": "china",
       "age": 22,
-      "role": "Flex",
+      "role": "Sentinel",
       "isIGL": false,
       "yearsActive": 6
     },
@@ -347,7 +347,7 @@
       "team": "ONSIDE GAMING",
       "league": "VCT Pacific",
       "leagueId": "pacific",
-      "age": 21,
+      "age": 22,
       "role": null,
       "isIGL": true,
       "yearsActive": 5
@@ -413,7 +413,7 @@
       "league": "VCT Pacific",
       "leagueId": "pacific",
       "age": 24,
-      "role": null,
+      "role": "Initiator",
       "isIGL": false,
       "yearsActive": 6
     },
@@ -556,7 +556,7 @@
       "league": "VCT Pacific",
       "leagueId": "pacific",
       "age": 21,
-      "role": "Sentinel",
+      "role": "Duelist",
       "isIGL": false,
       "yearsActive": 4
     },
@@ -608,7 +608,7 @@
       "league": "VCT China",
       "leagueId": "china",
       "age": 22,
-      "role": null,
+      "role": "Duelist",
       "isIGL": false,
       "yearsActive": 7
     },
@@ -621,7 +621,7 @@
       "league": "VCT Pacific",
       "leagueId": "pacific",
       "age": 23,
-      "role": "Initiator",
+      "role": "Flex",
       "isIGL": false,
       "yearsActive": 4
     },
@@ -686,7 +686,7 @@
       "league": "VCT Pacific",
       "leagueId": "pacific",
       "age": 20,
-      "role": null,
+      "role": "Flex",
       "isIGL": false,
       "yearsActive": 5
     },
@@ -751,7 +751,7 @@
       "league": "VCT Pacific",
       "leagueId": "pacific",
       "age": 18,
-      "role": "Duelist",
+      "role": "Sentinel",
       "isIGL": false,
       "yearsActive": 3
     },
@@ -880,7 +880,7 @@
       "team": "KeepBest Gaming",
       "league": "VCT China",
       "leagueId": "china",
-      "age": 22,
+      "age": 23,
       "role": "Controller",
       "isIGL": false,
       "yearsActive": 1
@@ -894,7 +894,7 @@
       "league": "VCT EMEA",
       "leagueId": "emea",
       "age": 17,
-      "role": "Flex",
+      "role": "Duelist",
       "isIGL": false,
       "yearsActive": 2
     },
@@ -1245,6 +1245,13 @@
       "kind": "rename"
     },
     {
+      "vlrId": 16924,
+      "name": "stew",
+      "from": "JD Gaming",
+      "to": "EDward Gaming",
+      "kind": "transfer"
+    },
+    {
       "vlrId": 17049,
       "name": "Hermes",
       "from": "DRX",
@@ -1468,6 +1475,11 @@
       "team": "TYLOO"
     },
     {
+      "vlrId": 3977,
+      "name": "Crws",
+      "team": "FULL SENSE"
+    },
+    {
       "vlrId": 4382,
       "name": "sScary",
       "team": "FPX"
@@ -1506,11 +1518,6 @@
       "vlrId": 13258,
       "name": "CyvOph",
       "team": "Fnatic"
-    },
-    {
-      "vlrId": 16924,
-      "name": "stew",
-      "team": "JD Gaming"
     },
     {
       "vlrId": 18350,
@@ -3027,18 +3034,18 @@
     "  { id:\"DeadInk\", vlrId:5564, name:\"DeadInk\", displayName:\"DeadInk\", country:\"Turquia\", countryCode:\"TR\", team:\"Fire Flux Esports\", league:\"VCT EMEA\", leagueId:\"emea\", age:24, role:\"Duelist\", yearsActive:7, titles:[\"Nenhum\"] },",
     "  { id:\"sibeastw0w\", vlrId:6126, name:\"sibeastw0w\", displayName:\"sibeastw0w\", country:\"Rússia\", countryCode:\"RU\", team:\"KeepBest Gaming\", league:\"VCT China\", leagueId:\"china\", age:26, role:\"Initiator\", yearsActive:6, titles:[\"Nenhum\"] },",
     "  { id:\"neT\", vlrId:6582, name:\"neT\", displayName:\"neT\", country:\"EUA\", countryCode:\"US\", team:\"GIANTX\", league:\"VCT EMEA\", leagueId:\"emea\", age:23, role:\"Initiator\", yearsActive:7, titles:[\"Nenhum\"] },",
-    "  { id:\"natz\", vlrId:7049, name:\"natz\", displayName:\"natz\", country:\"Indonésia\", countryCode:\"ID\", team:\"Team Secret\", league:\"VCT Pacific\", leagueId:\"pacific\", age:25, yearsActive:7, titles:[\"Nenhum\"] },",
+    "  { id:\"natz\", vlrId:7049, name:\"natz\", displayName:\"natz\", country:\"Indonésia\", countryCode:\"ID\", team:\"Team Secret\", league:\"VCT Pacific\", leagueId:\"pacific\", age:25, role:\"Sentinel\", yearsActive:7, titles:[\"Nenhum\"] },",
     "  { id:\"Fizzy\", vlrId:7660, name:\"Fizzy\", displayName:\"Fizzy\", country:\"Portugal\", countryCode:\"PT\", team:\"Eintracht Frankfurt\", league:\"VCT EMEA\", leagueId:\"emea\", age:25, role:\"Controller\", yearsActive:6, titles:[\"Nenhum\"] },",
     "  { id:\"waddle\", vlrId:8226, name:\"waddle\", displayName:\"waddle\", country:\"Reino Unido\", countryCode:\"GB\", team:\"PCIFIC Esports\", league:\"VCT EMEA\", leagueId:\"emea\", age:25, role:\"Initiator\", yearsActive:6, titles:[\"Nenhum\"] },",
-    "  { id:\"Layla\", vlrId:8240, name:\"Layla\", displayName:\"Layla\", country:\"Vietnã\", countryCode:\"VN\", team:\"A Team\", league:\"VCT China\", leagueId:\"china\", age:22, role:\"Flex\", yearsActive:6, titles:[\"Nenhum\"] },",
+    "  { id:\"Layla\", vlrId:8240, name:\"Layla\", displayName:\"Layla\", country:\"Vietnã\", countryCode:\"VN\", team:\"A Team\", league:\"VCT China\", leagueId:\"china\", age:22, role:\"Sentinel\", yearsActive:6, titles:[\"Nenhum\"] },",
     "  { id:\"Laz\", vlrId:8582, name:\"Laz\", displayName:\"Laz\", country:\"Tailândia\", countryCode:\"TH\", team:\"Sharper Esports\", league:\"VCT Pacific\", leagueId:\"pacific\", yearsActive:6, titles:[\"Nenhum\"] },",
     "  { id:\"Deryeon\", vlrId:9152, name:\"Deryeon\", displayName:\"Deryeon\", country:\"Singapura\", countryCode:\"SG\", team:\"Wolves Esports\", league:\"VCT China\", leagueId:\"china\", age:26, role:\"Controller\", yearsActive:6, titles:[\"Nenhum\"] },",
-    "  { id:\"Cloudy\", vlrId:9192, name:\"Cloudy\", displayName:\"Cloudy\", country:\"Coreia do Sul\", countryCode:\"KR\", team:\"ONSIDE GAMING\", league:\"VCT Pacific\", leagueId:\"pacific\", age:21, isIGL:true, yearsActive:5, titles:[\"Nenhum\"] },",
+    "  { id:\"Cloudy\", vlrId:9192, name:\"Cloudy\", displayName:\"Cloudy\", country:\"Coreia do Sul\", countryCode:\"KR\", team:\"ONSIDE GAMING\", league:\"VCT Pacific\", leagueId:\"pacific\", age:22, isIGL:true, yearsActive:5, titles:[\"Nenhum\"] },",
     "  { id:\"reazy\", vlrId:10146, name:\"reazy\", displayName:\"reazy\", country:\"Turquia\", countryCode:\"TR\", team:\"Fire Flux Esports\", league:\"VCT EMEA\", leagueId:\"emea\", age:27, role:\"Controller\", yearsActive:6, titles:[\"Nenhum\"] },",
     "  { id:\"Lime\", vlrId:10338, name:\"Lime\", displayName:\"Lime\", country:\"Reino Unido\", countryCode:\"GB\", team:\"Enterprise Esports\", league:\"VCT EMEA\", leagueId:\"emea\", age:25, role:\"Duelist\", yearsActive:6, titles:[\"Nenhum\"] },",
     "  { id:\"Misaya\", vlrId:10628, name:\"Misaya\", displayName:\"Misaya\", country:\"Japão\", countryCode:\"JP\", team:\"QT DIG∞\", league:\"VCT Pacific\", leagueId:\"pacific\", age:24, role:\"Initiator\", isIGL:true, yearsActive:6, titles:[\"Nenhum\"] },",
     "  { id:\"Kicks\", vlrId:11134, name:\"Kicks\", displayName:\"Kicks\", country:\"\", countryCode:\"\", team:\"Team Liquid\", league:\"VCT EMEA\", leagueId:\"emea\", age:20, yearsActive:6, titles:[\"Nenhum\"] },",
-    "  { id:\"STYRON\", vlrId:11704, name:\"STYRON\", displayName:\"STYRON\", country:\"Singapura\", countryCode:\"SG\", team:\"Team Secret\", league:\"VCT Pacific\", leagueId:\"pacific\", age:24, yearsActive:6, titles:[\"Nenhum\"] },",
+    "  { id:\"STYRON\", vlrId:11704, name:\"STYRON\", displayName:\"STYRON\", country:\"Singapura\", countryCode:\"SG\", team:\"Team Secret\", league:\"VCT Pacific\", leagueId:\"pacific\", age:24, role:\"Initiator\", yearsActive:6, titles:[\"Nenhum\"] },",
     "  { id:\"Xan\", vlrId:11737, name:\"Xan\", displayName:\"Xan\", country:\"Malásia\", countryCode:\"MY\", team:\"Rex Regum Qeon\", league:\"VCT Pacific\", leagueId:\"pacific\", age:20, yearsActive:4, titles:[\"Nenhum\"] },",
     "  { id:\"Kadoom\", vlrId:12098, name:\"Kadoom\", displayName:\"Kadoom\", country:\"Tailândia\", countryCode:\"TH\", team:\"Sharper Esports\", league:\"VCT Pacific\", leagueId:\"pacific\", age:21, role:\"Duelist\", yearsActive:7, titles:[\"Nenhum\"] },",
     "  { id:\"monk\", vlrId:14431, name:\"monk\", displayName:\"monk\", country:\"China\", countryCode:\"CN\", team:\"A Team\", league:\"VCT China\", leagueId:\"china\", age:24, role:\"Controller\", yearsActive:6, titles:[\"Nenhum\"] },",
@@ -3049,22 +3056,22 @@
     "  { id:\"runneR\", vlrId:21610, name:\"runneR\", displayName:\"runneR\", country:\"\", countryCode:\"\", team:\"Joblife\", league:\"VCT EMEA\", leagueId:\"emea\", age:22, role:\"Duelist\", yearsActive:5, titles:[\"Nenhum\"] },",
     "  { id:\"Surf\", vlrId:23062, name:\"Surf\", displayName:\"Surf\", country:\"Tailândia\", countryCode:\"TH\", team:\"Xipto Esports\", league:\"VCT Pacific\", leagueId:\"pacific\", age:22, role:\"Sentinel\", yearsActive:5, titles:[\"Nenhum\"] },",
     "  { id:\"Pa1ze\", vlrId:24424, name:\"Pa1ze\", displayName:\"Pa1ze\", country:\"Dinamarca\", countryCode:\"DK\", team:\"Joblife\", league:\"VCT EMEA\", leagueId:\"emea\", age:22, role:\"Duelist\", yearsActive:5, titles:[\"Nenhum\"] },",
-    "  { id:\"Wolverine\", vlrId:25053, name:\"Wolverine\", displayName:\"Wolverine\", country:\"Coreia do Sul\", countryCode:\"KR\", team:\"ONSIDE GAMING\", league:\"VCT Pacific\", leagueId:\"pacific\", age:21, role:\"Sentinel\", yearsActive:4, titles:[\"Nenhum\"] },",
+    "  { id:\"Wolverine\", vlrId:25053, name:\"Wolverine\", displayName:\"Wolverine\", country:\"Coreia do Sul\", countryCode:\"KR\", team:\"ONSIDE GAMING\", league:\"VCT Pacific\", leagueId:\"pacific\", age:21, role:\"Duelist\", yearsActive:4, titles:[\"Nenhum\"] },",
     "  { id:\"Pkm\", vlrId:28401, name:\"Pkm\", displayName:\"Pkm\", country:\"Coreia do Sul\", countryCode:\"KR\", team:\"QT DIG∞\", league:\"VCT Pacific\", leagueId:\"pacific\", age:19, role:\"Duelist\", yearsActive:5, titles:[\"Nenhum\"] },",
     "  { id:\"yuran\", vlrId:29840, name:\"yuran\", displayName:\"yuran\", country:\"Japão\", countryCode:\"JP\", team:\"QT DIG∞\", league:\"VCT Pacific\", leagueId:\"pacific\", age:21, role:\"Duelist\", isIGL:true, yearsActive:5, titles:[\"Nenhum\"] },",
     "  { id:\"margaret\", vlrId:33576, name:\"margaret\", displayName:\"margaret\", country:\"Coreia do Sul\", countryCode:\"KR\", team:\"QT DIG∞\", league:\"VCT Pacific\", leagueId:\"pacific\", age:19, role:\"Sentinel\", yearsActive:5, titles:[\"Nenhum\"] },",
-    "  { id:\"cb\", vlrId:39697, name:\"cb\", displayName:\"cb\", country:\"China\", countryCode:\"CN\", team:\"Nova Esports\", league:\"VCT China\", leagueId:\"china\", age:22, yearsActive:7, titles:[\"Nenhum\"] },",
-    "  { id:\"NIZ\", vlrId:40511, name:\"NIZ\", displayName:\"NIZ\", country:\"Tailândia\", countryCode:\"TH\", team:\"Sharper Esports\", league:\"VCT Pacific\", leagueId:\"pacific\", age:23, role:\"Initiator\", yearsActive:4, titles:[\"Nenhum\"] },",
+    "  { id:\"cb\", vlrId:39697, name:\"cb\", displayName:\"cb\", country:\"China\", countryCode:\"CN\", team:\"Nova Esports\", league:\"VCT China\", leagueId:\"china\", age:22, role:\"Duelist\", yearsActive:7, titles:[\"Nenhum\"] },",
+    "  { id:\"NIZ\", vlrId:40511, name:\"NIZ\", displayName:\"NIZ\", country:\"Tailândia\", countryCode:\"TH\", team:\"Sharper Esports\", league:\"VCT Pacific\", leagueId:\"pacific\", age:23, role:\"Flex\", yearsActive:4, titles:[\"Nenhum\"] },",
     "  { id:\"endoist\", vlrId:41694, name:\"endoist\", displayName:\"endoist\", country:\"Tailândia\", countryCode:\"TH\", team:\"Xipto Esports\", league:\"VCT Pacific\", leagueId:\"pacific\", age:19, role:\"Duelist\", yearsActive:3, titles:[\"Nenhum\"] },",
     "  { id:\"canady\", vlrId:41702, name:\"canady\", displayName:\"canady\", country:\"Tailândia\", countryCode:\"TH\", team:\"Xipto Esports\", league:\"VCT Pacific\", leagueId:\"pacific\", role:\"Initiator\", yearsActive:3, titles:[\"Nenhum\"] },",
     "  { id:\"Spear\", vlrId:41718, name:\"Spear\", displayName:\"Spear\", country:\"Turquia\", countryCode:\"TR\", team:\"Eternal Fire\", league:\"VCT EMEA\", leagueId:\"emea\", age:19, role:\"Duelist\", yearsActive:3, titles:[\"Nenhum\"] },",
     "  { id:\"Dingwei\", vlrId:42513, name:\"Dingwei\", displayName:\"Dingwei\", country:\"China\", countryCode:\"CN\", team:\"A Team\", league:\"VCT China\", leagueId:\"china\", age:21, role:\"Initiator\", yearsActive:2, titles:[\"Nenhum\"] },",
-    "  { id:\"DH\", vlrId:43057, name:\"DH\", displayName:\"DH\", country:\"Coreia do Sul\", countryCode:\"KR\", team:\"T1\", league:\"VCT Pacific\", leagueId:\"pacific\", age:20, yearsActive:5, titles:[\"Nenhum\"] },",
+    "  { id:\"DH\", vlrId:43057, name:\"DH\", displayName:\"DH\", country:\"Coreia do Sul\", countryCode:\"KR\", team:\"T1\", league:\"VCT Pacific\", leagueId:\"pacific\", age:20, role:\"Flex\", yearsActive:5, titles:[\"Nenhum\"] },",
     "  { id:\"swagzor\", vlrId:45492, name:\"swagzor\", displayName:\"swagzor\", country:\"Rússia\", countryCode:\"RU\", team:\"Nova Esports\", league:\"VCT China\", leagueId:\"china\", age:18, role:\"Duelist\", yearsActive:4, titles:[\"Nenhum\"] },",
     "  { id:\"Proxh\", vlrId:45494, name:\"Proxh\", displayName:\"Proxh\", country:\"Turquia\", countryCode:\"TR\", team:\"Gentle Mates\", league:\"VCT EMEA\", leagueId:\"emea\", age:23, role:\"Controller\", yearsActive:3, titles:[\"Nenhum\"] },",
     "  { id:\"Kippei\", vlrId:48431, name:\"Kippei\", displayName:\"Kippei\", country:\"Japão\", countryCode:\"JP\", team:\"QT DIG∞\", league:\"VCT Pacific\", leagueId:\"pacific\", age:18, role:\"Controller\", yearsActive:3, titles:[\"Nenhum\"] },",
     "  { id:\"doffy\", vlrId:48516, name:\"doffy\", displayName:\"doffy\", country:\"Tailândia\", countryCode:\"TH\", team:\"Xipto Esports\", league:\"VCT Pacific\", leagueId:\"pacific\", role:\"Duelist\", yearsActive:2, titles:[\"Nenhum\"] },",
-    "  { id:\"Raxcal\", vlrId:48925, name:\"Raxcal\", displayName:\"Raxcal\", country:\"Coreia do Sul\", countryCode:\"KR\", team:\"Gen.G\", league:\"VCT Pacific\", leagueId:\"pacific\", age:18, role:\"Duelist\", yearsActive:3, titles:[\"Nenhum\"] },",
+    "  { id:\"Raxcal\", vlrId:48925, name:\"Raxcal\", displayName:\"Raxcal\", country:\"Coreia do Sul\", countryCode:\"KR\", team:\"Gen.G\", league:\"VCT Pacific\", leagueId:\"pacific\", age:18, role:\"Sentinel\", yearsActive:3, titles:[\"Nenhum\"] },",
     "  { id:\"FKEY\", vlrId:51249, name:\"FKEY\", displayName:\"FKEY\", country:\"China\", countryCode:\"CN\", team:\"Trace Esports\", league:\"VCT China\", leagueId:\"china\", titles:[\"Nenhum\"] },",
     "  { id:\"Ying\", vlrId:51250, name:\"Ying\", displayName:\"Ying\", country:\"China\", countryCode:\"CN\", team:\"KeepBest Gaming\", league:\"VCT China\", leagueId:\"china\", age:19, role:\"Duelist\", yearsActive:1, titles:[\"Nenhum\"] },",
     "  { id:\"Bai\", vlrId:52101, name:\"Bai\", displayName:\"Bai\", country:\"China\", countryCode:\"CN\", team:\"All Gamers\", league:\"VCT China\", leagueId:\"china\", age:21, role:\"Flex\", yearsActive:1, titles:[\"Nenhum\"] },",
@@ -3074,8 +3081,8 @@
     "  { id:\"Folykiki\", vlrId:56305, name:\"Folykiki\", displayName:\"Folykiki\", country:\"China\", countryCode:\"CN\", team:\"A Team\", league:\"VCT China\", leagueId:\"china\", titles:[\"Nenhum\"] },",
     "  { id:\"Jamelinho213\", vlrId:57336, name:\"Jamelinho213\", displayName:\"Jamelinho213\", country:\"França\", countryCode:\"FR\", team:\"Eintracht Frankfurt\", league:\"VCT EMEA\", leagueId:\"emea\", age:16, role:\"Duelist\", yearsActive:3, titles:[\"Nenhum\"] },",
     "  { id:\"Tonk\", vlrId:58008, name:\"Tonk\", displayName:\"Tonk\", country:\"Hong Kong\", countryCode:\"HK\", team:\"KeepBest Gaming\", league:\"VCT China\", leagueId:\"china\", age:19, role:\"Sentinel\", yearsActive:1, titles:[\"Nenhum\"] },",
-    "  { id:\"Krst1Ng\", vlrId:58009, name:\"Krst1Ng\", displayName:\"Krst1Ng\", country:\"China\", countryCode:\"CN\", team:\"KeepBest Gaming\", league:\"VCT China\", leagueId:\"china\", age:22, role:\"Controller\", yearsActive:1, titles:[\"Nenhum\"] },",
-    "  { id:\"Kachoww\", vlrId:58496, name:\"Kachoww\", displayName:\"Kachoww\", country:\"Turquia\", countryCode:\"TR\", team:\"Fire Flux Esports\", league:\"VCT EMEA\", leagueId:\"emea\", age:17, role:\"Flex\", yearsActive:2, titles:[\"Nenhum\"] },",
+    "  { id:\"Krst1Ng\", vlrId:58009, name:\"Krst1Ng\", displayName:\"Krst1Ng\", country:\"China\", countryCode:\"CN\", team:\"KeepBest Gaming\", league:\"VCT China\", leagueId:\"china\", age:23, role:\"Controller\", yearsActive:1, titles:[\"Nenhum\"] },",
+    "  { id:\"Kachoww\", vlrId:58496, name:\"Kachoww\", displayName:\"Kachoww\", country:\"Turquia\", countryCode:\"TR\", team:\"Fire Flux Esports\", league:\"VCT EMEA\", leagueId:\"emea\", age:17, role:\"Duelist\", yearsActive:2, titles:[\"Nenhum\"] },",
     "  { id:\"Ray\", vlrId:60576, name:\"Ray\", displayName:\"Ray\", country:\"Coreia do Sul\", countryCode:\"KR\", team:\"ONSIDE GAMING\", league:\"VCT Pacific\", leagueId:\"pacific\", age:18, yearsActive:3, titles:[\"Nenhum\"] },",
     "  { id:\"FT\", vlrId:64029, name:\"FT\", displayName:\"FT\", country:\"China\", countryCode:\"CN\", team:\"Guangzhou Huadu Bilibili Gaming\", league:\"VCT China\", leagueId:\"china\", titles:[\"Nenhum\"] },",
     "  { id:\"Sharks\", vlrId:64849, name:\"Sharks\", displayName:\"Sharks\", country:\"China\", countryCode:\"CN\", team:\"Xi Lai Gaming\", league:\"VCT China\", leagueId:\"china\", titles:[\"Nenhum\"] },",
