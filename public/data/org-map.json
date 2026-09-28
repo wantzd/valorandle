@@ -4,7 +4,7 @@
     "country": "Chile",
     "countryCode": "CL",
     "role": "Sentinel",
-    "age": 21
+    "age": 22
   },
   "37354": {
     "teamFull": "FURIA",
@@ -36,7 +36,7 @@
     "teamFull": "G2 Esports",
     "country": "EUA",
     "countryCode": "US",
-    "role": "IGL/Controller",
+    "role": "IGL",
     "age": 23,
     "titles": [
       "VCT Americas Stage 1 2026",
@@ -62,7 +62,6 @@
     "teamFull": "G2 Esports",
     "country": "Camboja",
     "countryCode": "KH",
-    "role": "Duelist",
     "age": 27,
     "titles": [
       "VCT Americas Stage 1 2026",
@@ -109,7 +108,7 @@
     "teamFull": "NRG",
     "country": "EUA",
     "countryCode": "US",
-    "role": "Flex",
+    "role": "Initiator",
     "age": 26,
     "titles": [
       "Champions 2025"
@@ -148,7 +147,6 @@
     "teamFull": "MIBR",
     "country": "EUA",
     "countryCode": "US",
-    "role": "Duelist",
     "age": 21,
     "titles": [
       "VCT Americas Kickoff 2024"
@@ -378,6 +376,7 @@
     "teamFull": "ENVY",
     "country": "EUA",
     "countryCode": "US",
+    "role": "Duelist",
     "age": 18
   },
   "2462": {
@@ -393,6 +392,7 @@
     "teamFull": "ENVY",
     "country": "EUA",
     "countryCode": "US",
+    "role": "Controller",
     "age": 24,
     "titles": [
       "Champions 2023"
@@ -511,6 +511,7 @@
     "teamFull": "KRÜ Esports",
     "country": "Brasil",
     "countryCode": "BR",
+    "role": "Initiator",
     "age": 25
   },
   "8447": {
@@ -550,7 +551,6 @@
     "age": 25
   },
   "1575": {
-    "teamFull": "2Game Esports",
     "country": "Brasil",
     "countryCode": "BR",
     "age": 23
@@ -593,6 +593,7 @@
     "teamFull": "BESTIA",
     "country": "Chile",
     "countryCode": "CL",
+    "role": "Flex",
     "age": 22
   },
   "15681": {
@@ -710,6 +711,7 @@
     "teamFull": "FUT Esports",
     "country": "Turquia",
     "countryCode": "TR",
+    "role": "Controller",
     "age": 20
   },
   "12793": {
@@ -849,7 +851,7 @@
     "teamFull": "Karmine Corp",
     "country": "EUA",
     "countryCode": "US",
-    "role": "Flex",
+    "role": "Duelist",
     "age": 23,
     "titles": [
       "VCT EMEA Stage 2 2026",
@@ -905,7 +907,6 @@
     "teamFull": "Team Heretics",
     "country": "Turquia",
     "countryCode": "TR",
-    "role": "Initiator",
     "age": 21,
     "titles": [
       "VCT EMEA Stage 1 2026"
@@ -920,10 +921,9 @@
     ]
   },
   "1144": {
-    "teamFull": "Team Heretics",
     "country": "Lituânia",
     "countryCode": "LT",
-    "role": "IGL",
+    "role": "IGL/Controller",
     "age": 28,
     "titles": [
       "VCT EMEA Stage 1 2026"
@@ -948,7 +948,6 @@
     "teamFull": "Team Liquid",
     "country": "Rússia",
     "countryCode": "RU",
-    "role": "Duelist",
     "age": 23
   },
   "457": {
@@ -983,7 +982,6 @@
     "teamFull": "Team Vitality",
     "country": "Finlândia",
     "countryCode": "FI",
-    "role": "Duelist",
     "age": 23,
     "titles": [
       "VCT EMEA Kickoff 2025",
@@ -1008,7 +1006,7 @@
     "teamFull": "Team Vitality",
     "country": "Moldávia",
     "countryCode": "MD",
-    "role": "Flex",
+    "role": "Initiator",
     "age": 18
   },
   "5554": {
@@ -1052,7 +1050,7 @@
     "country": "Turquia",
     "countryCode": "TR",
     "role": "Controller",
-    "age": 18,
+    "age": 19,
     "titles": [
       "VCT EMEA Kickoff 2026"
     ]
@@ -1151,7 +1149,7 @@
     "teamFull": "Paper Rex",
     "country": "Malásia",
     "countryCode": "MY",
-    "role": "IGL/Sentinel",
+    "role": "IGL",
     "age": 27,
     "titles": [
       "VCT Pacific Stage 1 2026",
@@ -1336,7 +1334,6 @@
     "teamFull": "T1",
     "country": "Coreia do Sul",
     "countryCode": "KR",
-    "role": "Controller",
     "age": 26,
     "titles": [
       "Masters Bangkok 2025"
@@ -1346,7 +1343,7 @@
     "teamFull": "T1",
     "country": "Coreia do Sul",
     "countryCode": "KR",
-    "role": "IGL/Sentinel",
+    "role": "IGL",
     "age": 28,
     "titles": [
       "VCT Pacific Stage 2 2024",
@@ -1357,7 +1354,6 @@
     "teamFull": "T1",
     "country": "Coreia do Sul",
     "countryCode": "KR",
-    "role": "Flex",
     "age": 26,
     "titles": [
       "Masters Bangkok 2025",
@@ -1375,7 +1371,7 @@
     "country": "Coreia do Sul",
     "countryCode": "KR",
     "role": "Initiator",
-    "age": 21,
+    "age": 22,
     "titles": [
       "Masters Bangkok 2025"
     ]
@@ -1384,7 +1380,6 @@
     "teamFull": "T1",
     "country": "Coreia do Sul",
     "countryCode": "KR",
-    "role": "Duelist",
     "age": 23,
     "titles": [
       "Masters Bangkok 2025"
@@ -1459,7 +1454,7 @@
     "teamFull": "Global Esports",
     "country": "Austrália",
     "countryCode": "AU",
-    "role": "Sentinel",
+    "role": "Flex",
     "age": 24,
     "titles": [
       "VCT Pacific Stage 2 2026"
@@ -1572,7 +1567,7 @@
     "teamFull": "Rex Regum Qeon",
     "country": "Vietnã",
     "countryCode": "VN",
-    "role": "IGL",
+    "role": "IGL/Initiator",
     "age": 30,
     "titles": [
       "VCT Pacific Stage 1 2025"
@@ -1779,7 +1774,7 @@
   "4774": {
     "country": "China",
     "countryCode": "CN",
-    "role": "Initiator",
+    "role": "Flex",
     "age": 22,
     "titles": [
       "VCT China Stage 2 2025"
@@ -1987,14 +1982,12 @@
     "teamFull": "JD Gaming",
     "country": "China",
     "countryCode": "CN",
-    "role": "Duelist",
     "age": 22
   },
   "11218": {
     "teamFull": "JD Gaming",
     "country": "Taiwan",
     "countryCode": "TW",
-    "role": "Sentinel",
     "age": 22
   },
   "12365": {
@@ -2123,7 +2116,7 @@
     "country": "China",
     "countryCode": "CN",
     "role": "Duelist",
-    "age": 24,
+    "age": 25,
     "titles": [
       "VCT China Stage 2 2026"
     ]
@@ -2157,6 +2150,7 @@
   "14125": {
     "country": "Taiwan",
     "countryCode": "TW",
+    "role": "Controller",
     "age": 23
   },
   "24308": {
@@ -2185,7 +2179,6 @@
   "37927": {
     "country": "Taiwan",
     "countryCode": "TW",
-    "role": "Controller",
     "age": 22,
     "titles": [
       "VCT China Stage 1 2025"
@@ -2198,10 +2191,6 @@
   "ray": {
     "age": 18,
     "role": "Controller"
-  },
-  "trexx": {
-    "age": 22,
-    "role": "Initiator"
   },
   "kozzy": {
     "age": 16,
@@ -2242,6 +2231,10 @@
     "age": 25,
     "role": "IGL/Sentinel"
   },
+  "trexx": {
+    "age": 22,
+    "role": "Initiator"
+  },
   "ying": {
     "age": 19,
     "role": "Flex"
@@ -2249,9 +2242,6 @@
   "layla": {
     "age": 22,
     "role": "Sentinel"
-  },
-  "lewn": {
-    "role": "Duelist"
   },
   "hezacoil": {
     "age": 19,
@@ -2342,7 +2332,7 @@
     "role": "Duelist"
   },
   "hareeee": {
-    "age": 24,
+    "age": 25,
     "role": "Duelist"
   },
   "leobas": {
@@ -2440,7 +2430,7 @@
     "age": 28,
     "role": "Controller"
   },
-  "indra": {
+  "xserten": {
     "role": "Flex"
   },
   "blackhawk": {
@@ -2534,5 +2524,9 @@
   "rawfiul": {
     "age": 25,
     "role": "Duelist"
+  },
+  "yaboidre": {
+    "age": 26,
+    "role": "Flex"
   }
 }
