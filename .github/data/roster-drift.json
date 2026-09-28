@@ -1,19 +1,6 @@
 {
-  "generated": "2026-09-21",
+  "generated": "2026-09-28",
   "additions": [
-    {
-      "vlrId": 309,
-      "name": "paTiTek",
-      "country": "Polônia",
-      "countryCode": "PL",
-      "team": "Enterprise Esports",
-      "league": "VCT EMEA",
-      "leagueId": "emea",
-      "age": 27,
-      "role": "Controller",
-      "isIGL": false,
-      "yearsActive": 7
-    },
     {
       "vlrId": 985,
       "name": "Efina",
@@ -61,8 +48,8 @@
       "team": "Sharper Esports",
       "league": "VCT Pacific",
       "leagueId": "pacific",
-      "age": 27,
-      "role": "Controller",
+      "age": 28,
+      "role": null,
       "isIGL": true,
       "yearsActive": 7
     },
@@ -102,19 +89,6 @@
       "leagueId": "china",
       "age": 22,
       "role": null,
-      "isIGL": false,
-      "yearsActive": 7
-    },
-    {
-      "vlrId": 5564,
-      "name": "DeadInk",
-      "country": "Turquia",
-      "countryCode": "TR",
-      "team": "Fire Flux Esports",
-      "league": "VCT EMEA",
-      "leagueId": "emea",
-      "age": 24,
-      "role": "Duelist",
       "isIGL": false,
       "yearsActive": 7
     },
@@ -223,32 +197,6 @@
       "yearsActive": 5
     },
     {
-      "vlrId": 10146,
-      "name": "reazy",
-      "country": "Turquia",
-      "countryCode": "TR",
-      "team": "Fire Flux Esports",
-      "league": "VCT EMEA",
-      "leagueId": "emea",
-      "age": 27,
-      "role": "Controller",
-      "isIGL": false,
-      "yearsActive": 6
-    },
-    {
-      "vlrId": 10338,
-      "name": "Lime",
-      "country": "Reino Unido",
-      "countryCode": "GB",
-      "team": "Enterprise Esports",
-      "league": "VCT EMEA",
-      "leagueId": "emea",
-      "age": 25,
-      "role": "Duelist",
-      "isIGL": false,
-      "yearsActive": 6
-    },
-    {
       "vlrId": 10628,
       "name": "Misaya",
       "country": "Japão",
@@ -270,22 +218,9 @@
       "league": "VCT EMEA",
       "leagueId": "emea",
       "age": 21,
-      "role": "Flex",
+      "role": "Controller",
       "isIGL": false,
       "yearsActive": 6
-    },
-    {
-      "vlrId": 11737,
-      "name": "Xan",
-      "country": "Malásia",
-      "countryCode": "MY",
-      "team": "Rex Regum Qeon",
-      "league": "VCT Pacific",
-      "leagueId": "pacific",
-      "age": 20,
-      "role": null,
-      "isIGL": false,
-      "yearsActive": 4
     },
     {
       "vlrId": 12098,
@@ -353,19 +288,6 @@
       "yearsActive": 6
     },
     {
-      "vlrId": 18615,
-      "name": "batujnax",
-      "country": "Turquia",
-      "countryCode": "TR",
-      "team": "Fire Flux Esports",
-      "league": "VCT EMEA",
-      "leagueId": "emea",
-      "age": 21,
-      "role": "Initiator",
-      "isIGL": false,
-      "yearsActive": 5
-    },
-    {
       "vlrId": 23062,
       "name": "Surf",
       "country": "Tailândia",
@@ -399,7 +321,7 @@
       "team": "QT DIG∞",
       "league": "VCT Pacific",
       "leagueId": "pacific",
-      "age": 19,
+      "age": 20,
       "role": "Duelist",
       "isIGL": false,
       "yearsActive": 5
@@ -595,7 +517,7 @@
       "league": "VCT EMEA",
       "leagueId": "emea",
       "age": 18,
-      "role": null,
+      "role": "Duelist",
       "isIGL": false,
       "yearsActive": 4
     },
@@ -1096,13 +1018,6 @@
       "kind": "rename"
     },
     {
-      "vlrId": 25221,
-      "name": "Xdll",
-      "from": "ZETA Division",
-      "to": "ZETA DIVISION",
-      "kind": "spelling"
-    },
-    {
       "vlrId": 28400,
       "name": "HYUNMIN",
       "from": "DRX",
@@ -1270,6 +1185,11 @@
       "team": "Gen.G"
     },
     {
+      "vlrId": 939,
+      "name": "mwzera",
+      "team": "KRÜ Esports"
+    },
+    {
       "vlrId": 1129,
       "name": "Rossy",
       "team": "ENVY"
@@ -1278,6 +1198,16 @@
       "vlrId": 1144,
       "name": "Boo",
       "team": "Team Heretics"
+    },
+    {
+      "vlrId": 1575,
+      "name": "qck",
+      "team": "2Game Esports"
+    },
+    {
+      "vlrId": 1818,
+      "name": "tex",
+      "team": "MIBR"
     },
     {
       "vlrId": 1885,
@@ -1303,6 +1233,11 @@
       "vlrId": 3049,
       "name": "sword9",
       "team": "TYLOO"
+    },
+    {
+      "vlrId": 3455,
+      "name": "Zanatsu",
+      "team": "Fluxo W7M"
     },
     {
       "vlrId": 3977,
@@ -1430,9 +1365,19 @@
       "team": "Team Liquid"
     },
     {
+      "vlrId": 25221,
+      "name": "Xdll",
+      "team": "ZETA Division"
+    },
+    {
       "vlrId": 26171,
       "name": "Demon1",
       "team": "ENVY"
+    },
+    {
+      "vlrId": 27149,
+      "name": "Brinks",
+      "team": "2Game Esports"
     },
     {
       "vlrId": 27254,
@@ -1846,6 +1791,18 @@
       "role": "Inactive"
     },
     {
+      "vlrId": 309,
+      "name": "paTiTek",
+      "team": "Enterprise Esports",
+      "role": "Inactive"
+    },
+    {
+      "vlrId": 10338,
+      "name": "Lime",
+      "team": "Enterprise Esports",
+      "role": "Inactive"
+    },
+    {
       "vlrId": 61352,
       "name": "daky",
       "team": "Enterprise Esports",
@@ -1882,12 +1839,6 @@
       "role": "staff"
     },
     {
-      "vlrId": 6570,
-      "name": "Jovi",
-      "team": "Rex Regum Qeon",
-      "role": "head coachInactive"
-    },
-    {
       "vlrId": 4032,
       "name": "Vatsal",
       "team": "Global Esports",
@@ -1916,12 +1867,6 @@
       "name": "taeri",
       "team": "Global Esports",
       "role": "staff"
-    },
-    {
-      "vlrId": 1144,
-      "name": "Boo",
-      "team": "Team Heretics",
-      "role": "Inactive"
     },
     {
       "vlrId": 46268,
@@ -2080,6 +2025,12 @@
       "role": "Inactive"
     },
     {
+      "vlrId": 939,
+      "name": "mwzera",
+      "team": "KRÜ Esports",
+      "role": "Inactive"
+    },
+    {
       "vlrId": 2796,
       "name": "torito",
       "team": "KRÜ Esports",
@@ -2096,12 +2047,6 @@
       "name": "Fadeout",
       "team": "KRÜ Esports",
       "role": "analyst"
-    },
-    {
-      "vlrId": 60310,
-      "name": "Psiarthurleon",
-      "team": "KRÜ Esports",
-      "role": "staff"
     },
     {
       "vlrId": 2455,
@@ -2266,6 +2211,12 @@
       "role": "assistant coach"
     },
     {
+      "vlrId": 25221,
+      "name": "Xdll",
+      "team": "ZETA DIVISION",
+      "role": "Inactive"
+    },
+    {
       "vlrId": 1030,
       "name": "ryota-",
       "team": "ZETA DIVISION",
@@ -2314,12 +2265,6 @@
       "role": "analystInactive"
     },
     {
-      "vlrId": 10160,
-      "name": "Izzy",
-      "team": "Eternal Fire",
-      "role": "Sub"
-    },
-    {
       "vlrId": 12670,
       "name": "nekky",
       "team": "Eternal Fire",
@@ -2366,6 +2311,12 @@
       "name": "balax",
       "team": "LOUD",
       "role": "analyst"
+    },
+    {
+      "vlrId": 1818,
+      "name": "tex",
+      "team": "MIBR",
+      "role": "Inactive"
     },
     {
       "vlrId": 61419,
@@ -2764,6 +2715,12 @@
       "role": "assistant coach"
     },
     {
+      "vlrId": 11216,
+      "name": "Fayde",
+      "team": "Xi Lai Gaming",
+      "role": "analyst"
+    },
+    {
       "vlrId": 50163,
       "name": "Coffin0",
       "team": "Xi Lai Gaming",
@@ -2890,12 +2847,6 @@
       "role": "head coach"
     },
     {
-      "vlrId": 23059,
-      "name": "NegaraL",
-      "team": "2Game Esports",
-      "role": "coach"
-    },
-    {
       "vlrId": 36971,
       "name": "ASI",
       "team": "Xipto Esports",
@@ -2950,16 +2901,34 @@
       "role": "Sub"
     },
     {
+      "vlrId": 18615,
+      "name": "batujnax",
+      "team": "Fire Flux Esports",
+      "role": "Inactive"
+    },
+    {
+      "vlrId": 5564,
+      "name": "DeadInk",
+      "team": "Fire Flux Esports",
+      "role": "Inactive"
+    },
+    {
+      "vlrId": 10146,
+      "name": "reazy",
+      "team": "Fire Flux Esports",
+      "role": "Inactive"
+    },
+    {
       "vlrId": 39524,
       "name": "Lev",
       "team": "Fire Flux Esports",
-      "role": "ent Köktürkcoach"
+      "role": "ent KöktürkcoachInactive"
     },
     {
       "vlrId": 22630,
       "name": "XovLoV",
       "team": "Fire Flux Esports",
-      "role": "assistant coach"
+      "role": "assistant coachInactive"
     },
     {
       "vlrId": 15549,
@@ -2986,6 +2955,12 @@
       "role": "coach"
     },
     {
+      "vlrId": 3455,
+      "name": "Zanatsu",
+      "team": "Fluxo W7M",
+      "role": "Inactive"
+    },
+    {
       "vlrId": 5709,
       "name": "stkJ",
       "team": "Fluxo W7M",
@@ -2993,15 +2968,13 @@
     }
   ],
   "js_lines": [
-    "  { id:\"paTiTek\", vlrId:309, name:\"paTiTek\", displayName:\"paTiTek\", country:\"Polônia\", countryCode:\"PL\", team:\"Enterprise Esports\", league:\"VCT EMEA\", leagueId:\"emea\", age:27, role:\"Controller\", yearsActive:7, titles:[\"Nenhum\"] },",
     "  { id:\"Efina\", vlrId:985, name:\"Efina\", displayName:\"Efina\", country:\"Coreia do Sul\", countryCode:\"KR\", team:\"Gen.G\", league:\"VCT Pacific\", leagueId:\"pacific\", age:25, role:\"Initiator\", yearsActive:7, titles:[\"Nenhum\"] },",
     "  { id:\"trexx\", vlrId:2168, name:\"trexx\", displayName:\"trexx\", country:\"Rússia\", countryCode:\"RU\", team:\"Team Liquid\", league:\"VCT EMEA\", leagueId:\"emea\", age:22, role:\"Initiator\", yearsActive:7, titles:[\"Nenhum\"] },",
     "  { id:\"aLerT\", vlrId:2366, name:\"aLerT\", displayName:\"aLerT\", country:\"Tailândia\", countryCode:\"TH\", team:\"Xipto Esports\", league:\"VCT Pacific\", leagueId:\"pacific\", age:24, role:\"Controller\", yearsActive:7, titles:[\"Nenhum\"] },",
-    "  { id:\"PTC\", vlrId:3401, name:\"PTC\", displayName:\"PTC\", country:\"Tailândia\", countryCode:\"TH\", team:\"Sharper Esports\", league:\"VCT Pacific\", leagueId:\"pacific\", age:27, role:\"Controller\", isIGL:true, yearsActive:7, titles:[\"Nenhum\"] },",
+    "  { id:\"PTC\", vlrId:3401, name:\"PTC\", displayName:\"PTC\", country:\"Tailândia\", countryCode:\"TH\", team:\"Sharper Esports\", league:\"VCT Pacific\", leagueId:\"pacific\", age:28, isIGL:true, yearsActive:7, titles:[\"Nenhum\"] },",
     "  { id:\"musashi\", vlrId:4325, name:\"musashi\", displayName:\"musashi\", country:\"Alemanha\", countryCode:\"DE\", team:\"Eintracht Frankfurt\", league:\"VCT EMEA\", leagueId:\"emea\", age:25, role:\"Initiator\", isIGL:true, yearsActive:7, titles:[\"Nenhum\"] },",
     "  { id:\"azury\", vlrId:4629, name:\"azury\", displayName:\"azury\", country:\"Alemanha\", countryCode:\"DE\", team:\"Eintracht Frankfurt\", league:\"VCT EMEA\", leagueId:\"emea\", age:22, role:\"Controller\", yearsActive:6, titles:[\"Nenhum\"] },",
     "  { id:\"FengF\", vlrId:4770, name:\"FengF\", displayName:\"FengF\", country:\"China\", countryCode:\"CN\", team:\"Trace Esports\", league:\"VCT China\", leagueId:\"china\", age:22, yearsActive:7, titles:[\"Nenhum\"] },",
-    "  { id:\"DeadInk\", vlrId:5564, name:\"DeadInk\", displayName:\"DeadInk\", country:\"Turquia\", countryCode:\"TR\", team:\"Fire Flux Esports\", league:\"VCT EMEA\", leagueId:\"emea\", age:24, role:\"Duelist\", yearsActive:7, titles:[\"Nenhum\"] },",
     "  { id:\"sibeastw0w\", vlrId:6126, name:\"sibeastw0w\", displayName:\"sibeastw0w\", country:\"Rússia\", countryCode:\"RU\", team:\"KeepBest Gaming\", league:\"VCT China\", leagueId:\"china\", age:26, role:\"Initiator\", yearsActive:6, titles:[\"Nenhum\"] },",
     "  { id:\"neT\", vlrId:6582, name:\"neT\", displayName:\"neT\", country:\"EUA\", countryCode:\"US\", team:\"GIANTX\", league:\"VCT EMEA\", leagueId:\"emea\", age:23, role:\"Initiator\", yearsActive:7, titles:[\"Nenhum\"] },",
     "  { id:\"natz\", vlrId:7049, name:\"natz\", displayName:\"natz\", country:\"Indonésia\", countryCode:\"ID\", team:\"Team Secret\", league:\"VCT Pacific\", leagueId:\"pacific\", age:25, role:\"Sentinel\", yearsActive:7, titles:[\"Nenhum\"] },",
@@ -3010,20 +2983,16 @@
     "  { id:\"Laz\", vlrId:8582, name:\"Laz\", displayName:\"Laz\", country:\"Tailândia\", countryCode:\"TH\", team:\"Sharper Esports\", league:\"VCT Pacific\", leagueId:\"pacific\", yearsActive:6, titles:[\"Nenhum\"] },",
     "  { id:\"Deryeon\", vlrId:9152, name:\"Deryeon\", displayName:\"Deryeon\", country:\"Singapura\", countryCode:\"SG\", team:\"Wolves Esports\", league:\"VCT China\", leagueId:\"china\", age:26, role:\"Controller\", yearsActive:6, titles:[\"Nenhum\"] },",
     "  { id:\"Cloudy\", vlrId:9192, name:\"Cloudy\", displayName:\"Cloudy\", country:\"Coreia do Sul\", countryCode:\"KR\", team:\"ONSIDE GAMING\", league:\"VCT Pacific\", leagueId:\"pacific\", age:22, isIGL:true, yearsActive:5, titles:[\"Nenhum\"] },",
-    "  { id:\"reazy\", vlrId:10146, name:\"reazy\", displayName:\"reazy\", country:\"Turquia\", countryCode:\"TR\", team:\"Fire Flux Esports\", league:\"VCT EMEA\", leagueId:\"emea\", age:27, role:\"Controller\", yearsActive:6, titles:[\"Nenhum\"] },",
-    "  { id:\"Lime\", vlrId:10338, name:\"Lime\", displayName:\"Lime\", country:\"Reino Unido\", countryCode:\"GB\", team:\"Enterprise Esports\", league:\"VCT EMEA\", leagueId:\"emea\", age:25, role:\"Duelist\", yearsActive:6, titles:[\"Nenhum\"] },",
     "  { id:\"Misaya\", vlrId:10628, name:\"Misaya\", displayName:\"Misaya\", country:\"Japão\", countryCode:\"JP\", team:\"QT DIG∞\", league:\"VCT Pacific\", leagueId:\"pacific\", age:24, role:\"Initiator\", isIGL:true, yearsActive:6, titles:[\"Nenhum\"] },",
-    "  { id:\"Kicks\", vlrId:11134, name:\"Kicks\", displayName:\"Kicks\", country:\"\", countryCode:\"\", team:\"Team Liquid\", league:\"VCT EMEA\", leagueId:\"emea\", age:21, role:\"Flex\", yearsActive:6, titles:[\"Nenhum\"] },",
-    "  { id:\"Xan\", vlrId:11737, name:\"Xan\", displayName:\"Xan\", country:\"Malásia\", countryCode:\"MY\", team:\"Rex Regum Qeon\", league:\"VCT Pacific\", leagueId:\"pacific\", age:20, yearsActive:4, titles:[\"Nenhum\"] },",
+    "  { id:\"Kicks\", vlrId:11134, name:\"Kicks\", displayName:\"Kicks\", country:\"\", countryCode:\"\", team:\"Team Liquid\", league:\"VCT EMEA\", leagueId:\"emea\", age:21, role:\"Controller\", yearsActive:6, titles:[\"Nenhum\"] },",
     "  { id:\"Kadoom\", vlrId:12098, name:\"Kadoom\", displayName:\"Kadoom\", country:\"Tailândia\", countryCode:\"TH\", team:\"Sharper Esports\", league:\"VCT Pacific\", leagueId:\"pacific\", age:21, role:\"Duelist\", yearsActive:7, titles:[\"Nenhum\"] },",
     "  { id:\"monk\", vlrId:14431, name:\"monk\", displayName:\"monk\", country:\"China\", countryCode:\"CN\", team:\"A Team\", league:\"VCT China\", leagueId:\"china\", age:24, role:\"Controller\", yearsActive:6, titles:[\"Nenhum\"] },",
     "  { id:\"aluba\", vlrId:14441, name:\"aluba\", displayName:\"aluba\", country:\"China\", countryCode:\"CN\", team:\"Wolves Esports\", league:\"VCT China\", leagueId:\"china\", age:25, yearsActive:6, titles:[\"Nenhum\"] },",
     "  { id:\"Eren\", vlrId:14444, name:\"Eren\", displayName:\"Eren\", country:\"China\", countryCode:\"CN\", team:\"A Team\", league:\"VCT China\", leagueId:\"china\", age:22, role:\"Duelist\", yearsActive:6, titles:[\"Nenhum\"] },",
     "  { id:\"Apinya\", vlrId:15897, name:\"Apinya\", displayName:\"Apinya\", country:\"Tailândia\", countryCode:\"TH\", team:\"Sharper Esports\", league:\"VCT Pacific\", leagueId:\"pacific\", age:22, role:\"Flex\", yearsActive:6, titles:[\"Nenhum\"] },",
-    "  { id:\"batujnax\", vlrId:18615, name:\"batujnax\", displayName:\"batujnax\", country:\"Turquia\", countryCode:\"TR\", team:\"Fire Flux Esports\", league:\"VCT EMEA\", leagueId:\"emea\", age:21, role:\"Initiator\", yearsActive:5, titles:[\"Nenhum\"] },",
     "  { id:\"Surf\", vlrId:23062, name:\"Surf\", displayName:\"Surf\", country:\"Tailândia\", countryCode:\"TH\", team:\"Xipto Esports\", league:\"VCT Pacific\", leagueId:\"pacific\", age:22, role:\"Sentinel\", yearsActive:5, titles:[\"Nenhum\"] },",
     "  { id:\"Wolverine\", vlrId:25053, name:\"Wolverine\", displayName:\"Wolverine\", country:\"Coreia do Sul\", countryCode:\"KR\", team:\"ONSIDE GAMING\", league:\"VCT Pacific\", leagueId:\"pacific\", age:21, role:\"Flex\", yearsActive:4, titles:[\"Nenhum\"] },",
-    "  { id:\"Pkm\", vlrId:28401, name:\"Pkm\", displayName:\"Pkm\", country:\"Coreia do Sul\", countryCode:\"KR\", team:\"QT DIG∞\", league:\"VCT Pacific\", leagueId:\"pacific\", age:19, role:\"Duelist\", yearsActive:5, titles:[\"Nenhum\"] },",
+    "  { id:\"Pkm\", vlrId:28401, name:\"Pkm\", displayName:\"Pkm\", country:\"Coreia do Sul\", countryCode:\"KR\", team:\"QT DIG∞\", league:\"VCT Pacific\", leagueId:\"pacific\", age:20, role:\"Duelist\", yearsActive:5, titles:[\"Nenhum\"] },",
     "  { id:\"yuran\", vlrId:29840, name:\"yuran\", displayName:\"yuran\", country:\"Japão\", countryCode:\"JP\", team:\"QT DIG∞\", league:\"VCT Pacific\", leagueId:\"pacific\", age:21, role:\"Duelist\", isIGL:true, yearsActive:5, titles:[\"Nenhum\"] },",
     "  { id:\"margaret\", vlrId:33576, name:\"margaret\", displayName:\"margaret\", country:\"Coreia do Sul\", countryCode:\"KR\", team:\"QT DIG∞\", league:\"VCT Pacific\", leagueId:\"pacific\", age:19, role:\"Sentinel\", yearsActive:5, titles:[\"Nenhum\"] },",
     "  { id:\"cb\", vlrId:39697, name:\"cb\", displayName:\"cb\", country:\"China\", countryCode:\"CN\", team:\"Nova Esports\", league:\"VCT China\", leagueId:\"china\", age:22, role:\"Duelist\", yearsActive:7, titles:[\"Nenhum\"] },",
@@ -3038,7 +3007,7 @@
     "  { id:\"Kippei\", vlrId:48431, name:\"Kippei\", displayName:\"Kippei\", country:\"Japão\", countryCode:\"JP\", team:\"QT DIG∞\", league:\"VCT Pacific\", leagueId:\"pacific\", age:18, role:\"Controller\", yearsActive:3, titles:[\"Nenhum\"] },",
     "  { id:\"doffy\", vlrId:48516, name:\"doffy\", displayName:\"doffy\", country:\"Tailândia\", countryCode:\"TH\", team:\"Xipto Esports\", league:\"VCT Pacific\", leagueId:\"pacific\", role:\"Duelist\", yearsActive:2, titles:[\"Nenhum\"] },",
     "  { id:\"Raxcal\", vlrId:48925, name:\"Raxcal\", displayName:\"Raxcal\", country:\"Coreia do Sul\", countryCode:\"KR\", team:\"Gen.G\", league:\"VCT Pacific\", leagueId:\"pacific\", age:18, role:\"Sentinel\", yearsActive:3, titles:[\"Nenhum\"] },",
-    "  { id:\"GSR\", vlrId:50813, name:\"GSR\", displayName:\"GSR\", country:\"Sérvia\", countryCode:\"RS\", team:\"Team Liquid\", league:\"VCT EMEA\", leagueId:\"emea\", age:18, yearsActive:4, titles:[\"Nenhum\"] },",
+    "  { id:\"GSR\", vlrId:50813, name:\"GSR\", displayName:\"GSR\", country:\"Sérvia\", countryCode:\"RS\", team:\"Team Liquid\", league:\"VCT EMEA\", leagueId:\"emea\", age:18, role:\"Duelist\", yearsActive:4, titles:[\"Nenhum\"] },",
     "  { id:\"FKEY\", vlrId:51249, name:\"FKEY\", displayName:\"FKEY\", country:\"China\", countryCode:\"CN\", team:\"Trace Esports\", league:\"VCT China\", leagueId:\"china\", titles:[\"Nenhum\"] },",
     "  { id:\"Ying\", vlrId:51250, name:\"Ying\", displayName:\"Ying\", country:\"China\", countryCode:\"CN\", team:\"KeepBest Gaming\", league:\"VCT China\", leagueId:\"china\", age:19, role:\"Duelist\", yearsActive:1, titles:[\"Nenhum\"] },",
     "  { id:\"Bai\", vlrId:52101, name:\"Bai\", displayName:\"Bai\", country:\"China\", countryCode:\"CN\", team:\"All Gamers\", league:\"VCT China\", leagueId:\"china\", age:21, role:\"Flex\", yearsActive:1, titles:[\"Nenhum\"] },",
